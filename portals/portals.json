@@ -1,0 +1,769 @@
+{
+  "version": "1.0.0",
+  "portals": [
+    {
+      "id": "parrot",
+      "name": "Parrot Connect",
+      "description": "Sistema POS usado por restaurantes y cafeterías independientes",
+      "url_pattern": "facturacion.parrot.rest",
+      "detection": {
+        "ticket_keywords": [
+          "parrot",
+          "parrotconnect",
+          "facturacion.parrot.rest"
+        ],
+        "url_in_ticket": true
+      },
+      "automation": {
+        "type": "direct_url",
+        "has_url_in_ticket": true,
+        "flow": [
+          {
+            "action": "navigate",
+            "target": "ticket_url"
+          },
+          {
+            "action": "fill",
+            "selector": "#rfc",
+            "value": "{{rfc}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#email",
+            "value": "{{email}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#razon_social",
+            "value": "{{nombre}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#cp",
+            "value": "{{cp}}"
+          },
+          {
+            "action": "select",
+            "selector": "#regimen",
+            "value": "{{regimen}}"
+          },
+          {
+            "action": "select",
+            "selector": "#uso_cfdi",
+            "value": "{{uso_cfdi}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit]"
+          },
+          {
+            "action": "wait_success"
+          }
+        ],
+        "base_url": "https://facturacion.parrot.rest"
+      },
+      "brands": [
+        "Tetecoloh",
+        "restaurantes independientes"
+      ]
+    },
+    {
+      "id": "oxxo",
+      "name": "OXXO Facturación",
+      "description": "Portal de autofacturación OXXO",
+      "url_pattern": "facturacion.oxxo.com",
+      "detection": {
+        "ticket_keywords": [
+          "oxxo",
+          "femsa"
+        ],
+        "rfc_keywords": [
+          "FOX931209NX3"
+        ]
+      },
+      "automation": {
+        "type": "portal",
+        "base_url": "https://www.oxxo.com/servicio-al-cliente/facturacion",
+        "flow": [
+          {
+            "action": "navigate",
+            "target": "base_url"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name='ticket']",
+            "value": "{{folio}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name='total']",
+            "value": "{{total}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name='fecha']",
+            "value": "{{fecha}}"
+          },
+          {
+            "action": "click",
+            "selector": "button.buscar"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name='rfc']",
+            "value": "{{rfc}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name='email']",
+            "value": "{{email}}"
+          },
+          {
+            "action": "select",
+            "selector": "select[name='uso']",
+            "value": "{{uso_cfdi}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit]"
+          },
+          {
+            "action": "wait_success"
+          }
+        ]
+      }
+    },
+    {
+      "id": "walmart",
+      "name": "Walmart / Bodega Aurrerá",
+      "description": "Portal de facturación Walmart México",
+      "url_pattern": "facturacion.walmart.com.mx",
+      "detection": {
+        "ticket_keywords": [
+          "walmart",
+          "bodega aurrera",
+          "superama",
+          "sams club"
+        ],
+        "rfc_keywords": [
+          "WMM950714JH9",
+          "BAB950111IY5"
+        ]
+      },
+      "automation": {
+        "type": "portal",
+        "base_url": "https://facturacion.walmart.com.mx",
+        "requires_account": true,
+        "flow": []
+      }
+    },
+    {
+      "id": "soriana",
+      "name": "Soriana",
+      "description": "Portal de facturación Soriana",
+      "url_pattern": "soriana.com/facturacion",
+      "detection": {
+        "ticket_keywords": [
+          "soriana",
+          "tiendas soriana"
+        ],
+        "rfc_keywords": [
+          "TS0991022PB6"
+        ]
+      },
+      "automation": {
+        "type": "portal",
+        "base_url": "https://www.soriana.com/facturacion-login",
+        "requires_account": true,
+        "flow": []
+      }
+    },
+    {
+      "id": "starbucks",
+      "name": "Starbucks México",
+      "description": "Portal de facturación Starbucks",
+      "url_pattern": "facturacion.starbucks.com.mx",
+      "detection": {
+        "ticket_keywords": [
+          "starbucks"
+        ],
+        "rfc_keywords": [
+          "SCA9809265R3"
+        ]
+      },
+      "automation": {
+        "type": "portal",
+        "base_url": "https://facturacion.starbucks.com.mx",
+        "flow": [
+          {
+            "action": "navigate",
+            "target": "base_url"
+          },
+          {
+            "action": "fill",
+            "selector": "#ticket",
+            "value": "{{folio}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#store",
+            "value": "{{tienda}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#date",
+            "value": "{{fecha}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#total",
+            "value": "{{total}}"
+          },
+          {
+            "action": "click",
+            "selector": ".btn-buscar"
+          },
+          {
+            "action": "fill",
+            "selector": "#rfc",
+            "value": "{{rfc}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#email",
+            "value": "{{email}}"
+          },
+          {
+            "action": "select",
+            "selector": "#uso",
+            "value": "{{uso_cfdi}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit]"
+          },
+          {
+            "action": "wait_success"
+          }
+        ]
+      }
+    },
+    {
+      "id": "chedraui",
+      "name": "Chedraui",
+      "detection": {
+        "ticket_keywords": [
+          "chedraui"
+        ],
+        "rfc_keywords": [
+          "GCH780415"
+        ]
+      },
+      "automation": {
+        "type": "portal",
+        "base_url": "https://facturacion.chedraui.com.mx",
+        "flow": [
+          {
+            "action": "navigate",
+            "target": "base_url"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name='folio'], #folio, input[placeholder*='folio' i]",
+            "value": "{{folio}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name='total'], #total",
+            "value": "{{total}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name='fecha'], #fecha",
+            "value": "{{fecha}}"
+          },
+          {
+            "action": "click",
+            "selector": "button.buscar, button[type=submit], .btn-buscar"
+          },
+          {
+            "action": "wait",
+            "ms": 2000
+          },
+          {
+            "action": "fill",
+            "selector": "input[name='rfc'], #rfc, input[placeholder*='RFC' i]",
+            "value": "{{rfc}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[type='email'], input[name='email'], #email",
+            "value": "{{email}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name='cp'], #cp",
+            "value": "{{cp}}"
+          },
+          {
+            "action": "select",
+            "selector": "select[name*='regimen' i], #regimen",
+            "value": "{{regimen}}"
+          },
+          {
+            "action": "select",
+            "selector": "select[name*='uso' i], #uso_cfdi",
+            "value": "{{uso_cfdi}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit]"
+          },
+          {
+            "action": "wait_success"
+          }
+        ]
+      }
+    },
+    {
+      "id": "mcdonalds",
+      "name": "McDonald's México",
+      "detection": {
+        "ticket_keywords": [
+          "mcdonald",
+          "mcdonalds",
+          "arcos dorados"
+        ],
+        "rfc_keywords": [
+          "AMD9412225K2"
+        ]
+      },
+      "automation": {
+        "type": "portal",
+        "base_url": "https://facturacion.mcdonalds.com.mx",
+        "flow": [
+          {
+            "action": "navigate",
+            "target": "base_url"
+          },
+          {
+            "action": "fill",
+            "selector": "#folio, input[name='folio'], input[placeholder*='folio' i]",
+            "value": "{{folio}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#total, input[name='total']",
+            "value": "{{total}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#fecha, input[name='fecha']",
+            "value": "{{fecha}}"
+          },
+          {
+            "action": "click",
+            "selector": ".btn-buscar, button[type=submit]"
+          },
+          {
+            "action": "wait",
+            "ms": 2000
+          },
+          {
+            "action": "fill",
+            "selector": "#rfc, input[name='rfc']",
+            "value": "{{rfc}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[type='email'], #email",
+            "value": "{{email}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#cp, input[name='cp']",
+            "value": "{{cp}}"
+          },
+          {
+            "action": "select",
+            "selector": "#regimen, select[name*='regimen' i]",
+            "value": "{{regimen}}"
+          },
+          {
+            "action": "select",
+            "selector": "#uso, select[name*='uso' i]",
+            "value": "{{uso_cfdi}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit]"
+          },
+          {
+            "action": "wait_success"
+          }
+        ]
+      }
+    },
+    {
+      "id": "costco",
+      "name": "Costco México",
+      "detection": {
+        "ticket_keywords": [
+          "costco"
+        ],
+        "rfc_keywords": [
+          "CDS980701P74"
+        ]
+      },
+      "automation": {
+        "type": "portal",
+        "base_url": "https://www.costco.com.mx/facturacion",
+        "requires_membership": true,
+        "flow": []
+      }
+    },
+    {
+      "id": "hm",
+      "name": "H&M México",
+      "detection": {
+        "ticket_keywords": [
+          "h&m",
+          "hennes",
+          "mauritz"
+        ],
+        "rfc_keywords": [
+          "HAM111005K69"
+        ]
+      },
+      "automation": {
+        "type": "edicom",
+        "base_url": "https://facturacion2.hm.com/hm/Mexico",
+        "flow": [
+          {
+            "action": "navigate",
+            "target": "base_url"
+          },
+          {
+            "action": "click",
+            "selector": ".store-option"
+          },
+          {
+            "action": "fill",
+            "selector": "#folio",
+            "value": "{{folio}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#total",
+            "value": "{{total}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#fecha",
+            "value": "{{fecha}}"
+          },
+          {
+            "action": "click",
+            "selector": "#validar"
+          },
+          {
+            "action": "fill",
+            "selector": "#rfc",
+            "value": "{{rfc}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#email",
+            "value": "{{email}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#cp",
+            "value": "{{cp}}"
+          },
+          {
+            "action": "select",
+            "selector": "#uso",
+            "value": "{{uso_cfdi}}"
+          },
+          {
+            "action": "click",
+            "selector": "#generar"
+          },
+          {
+            "action": "wait_success"
+          }
+        ]
+      }
+    },
+    {
+      "id": "liverpool",
+      "name": "Liverpool",
+      "detection": {
+        "ticket_keywords": [
+          "liverpool",
+          "suburbia"
+        ],
+        "rfc_keywords": [
+          "LIV3306189R5"
+        ]
+      },
+      "automation": {
+        "type": "portal",
+        "base_url": "https://www.liverpool.com.mx/tienda/facturacion",
+        "flow": [],
+        "requires_account": true
+      }
+    },
+    {
+      "id": "vips",
+      "name": "VIPS / Toks / El Portón",
+      "detection": {
+        "ticket_keywords": [
+          "vips",
+          "toks",
+          "el porton",
+          "crestón"
+        ]
+      },
+      "automation": {
+        "type": "portal",
+        "base_url": "https://facturacion.alsea.net",
+        "flow": [
+          {
+            "action": "navigate",
+            "target": "base_url"
+          },
+          {
+            "action": "fill",
+            "selector": "#ticketNumber, input[name*='ticket' i]",
+            "value": "{{folio}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#restaurantNumber, input[name*='tienda' i], input[name*='store' i]",
+            "value": "{{tienda}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#amount, input[name*='monto' i], input[name*='total' i]",
+            "value": "{{total}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit], .btn-buscar"
+          },
+          {
+            "action": "wait",
+            "ms": 2000
+          },
+          {
+            "action": "fill",
+            "selector": "#rfc, input[name='rfc']",
+            "value": "{{rfc}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[type='email'], #email",
+            "value": "{{email}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#cp, input[name='cp']",
+            "value": "{{cp}}"
+          },
+          {
+            "action": "select",
+            "selector": "select[name*='regimen' i]",
+            "value": "{{regimen}}"
+          },
+          {
+            "action": "select",
+            "selector": "select[name*='uso' i]",
+            "value": "{{uso_cfdi}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit]"
+          },
+          {
+            "action": "wait_success"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dominos",
+      "name": "Domino's Pizza México",
+      "detection": {
+        "ticket_keywords": [
+          "dominos",
+          "domino's"
+        ]
+      },
+      "automation": {
+        "type": "portal",
+        "base_url": "https://facturacion.dominos.com.mx",
+        "flow": [
+          {
+            "action": "navigate",
+            "target": "base_url"
+          },
+          {
+            "action": "fill",
+            "selector": "#orderNumber, input[name*='order' i], input[name*='folio' i]",
+            "value": "{{folio}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#storeNumber, input[name*='store' i], input[name*='tienda' i]",
+            "value": "{{tienda}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit], .btn-buscar"
+          },
+          {
+            "action": "wait",
+            "ms": 2000
+          },
+          {
+            "action": "fill",
+            "selector": "#rfc, input[name='rfc']",
+            "value": "{{rfc}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[type='email'], #email",
+            "value": "{{email}}"
+          },
+          {
+            "action": "fill",
+            "selector": "#cp, input[name='cp']",
+            "value": "{{cp}}"
+          },
+          {
+            "action": "select",
+            "selector": "select[name*='regimen' i]",
+            "value": "{{regimen}}"
+          },
+          {
+            "action": "select",
+            "selector": "select[name*='uso' i]",
+            "value": "{{uso_cfdi}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit]"
+          },
+          {
+            "action": "wait_success"
+          }
+        ]
+      }
+    },
+    {
+      "id": "petroseven",
+      "name": "Petro Seven",
+      "description": "Red de gasolineras Petro Seven / Petromax en México",
+      "url_pattern": "petro7.mx/facturacion",
+      "detection": {
+        "ticket_keywords": [
+          "petro seven",
+          "petroseven",
+          "petromax",
+          "petro7"
+        ],
+        "rfc_keywords": [
+          "PET040903DH1"
+        ],
+        "url_in_ticket": true
+      },
+      "automation": {
+        "type": "direct_url",
+        "has_url_in_ticket": true,
+        "base_url": "http://petro7.mx/facturacion",
+        "flow": [
+          {
+            "action": "navigate",
+            "target": "ticket_url"
+          },
+          {
+            "action": "wait",
+            "ms": 2000
+          },
+          {
+            "action": "fill",
+            "selector": "input[name*='estacion' i], input[id*='estacion' i], input[placeholder*='estacion' i]",
+            "value": "{{tienda}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name*='folio' i], input[id*='folio' i], input[placeholder*='folio' i]",
+            "value": "{{folio}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name*='webid' i], input[id*='webid' i], input[placeholder*='webid' i]",
+            "value": "{{codigo}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name*='total' i], input[id*='total' i], input[placeholder*='total' i]",
+            "value": "{{total}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit], .btn-buscar, button:has-text('Buscar'), button:has-text('Continuar')"
+          },
+          {
+            "action": "wait",
+            "ms": 2000
+          },
+          {
+            "action": "fill",
+            "selector": "input[name*='rfc' i], input[id*='rfc' i], input[placeholder*='RFC' i]",
+            "value": "{{rfc}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[type='email'], input[name*='email' i], input[name*='correo' i]",
+            "value": "{{email}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name*='cp' i], input[id*='cp' i], input[placeholder*='postal' i]",
+            "value": "{{cp}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name*='razon' i], input[name*='nombre' i], input[id*='razon' i]",
+            "value": "{{nombre}}"
+          },
+          {
+            "action": "select",
+            "selector": "select[name*='regimen' i], select[id*='regimen' i]",
+            "value": "{{regimen}}"
+          },
+          {
+            "action": "select",
+            "selector": "select[name*='uso' i], select[id*='uso' i], select[name*='cfdi' i]",
+            "value": "{{uso_cfdi}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit], button:has-text('Generar'), button:has-text('Facturar'), button:has-text('Solicitar')"
+          },
+          {
+            "action": "wait_success"
+          }
+        ]
+      },
+      "brands": [
+        "Petro Seven",
+        "Petromax",
+        "petro7.mx"
+      ]
+    }
+  ]
+}
