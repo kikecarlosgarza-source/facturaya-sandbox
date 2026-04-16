@@ -4,7 +4,7 @@ const { v4: uuid }   = require('uuid');
 const authMiddleware = require('../middleware/auth');
 const automation     = require('../services/automationService');
 const db             = require('../db/database');
-const portalsData    = require('../../portals/portals.json');
+const portalsData    = require('./portals/portals.json');
 
 // POST /api/facturas/solicitar
 // Dispara la automatización completa para solicitar la factura

@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-const portalsData  = require('../../portals/portals.json');
+const portalsData  = require('./portals/portals.json');
 
 class PortalAutomationService {
 
