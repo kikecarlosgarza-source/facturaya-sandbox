@@ -17,6 +17,6 @@ app.use('/api/constancia', require('./routes/constancia'));
 app.get('/health', (req, res) => res.json({ status: 'ok', version: '1.0.0' }));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`FacturaSAT backend corriendo en puerto ${PORT}`));
+app.listen(PORT, () => console.log(`FacturaYa backend corriendo en puerto ${PORT}`));
 
 module.exports = app;

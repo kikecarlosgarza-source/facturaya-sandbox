@@ -764,6 +764,89 @@
         "Petromax",
         "petro7.mx"
       ]
+    },
+    {
+      "id": "oxxogas",
+      "name": "OXXO GAS",
+      "url_pattern": "oxxogas.com",
+      "detection": {
+        "ticket_keywords": [
+          "oxxo gas",
+          "oxxogas",
+          "spin premia"
+        ],
+        "rfc_keywords": [
+          "GCO920428PH6"
+        ]
+      },
+      "automation": {
+        "base_url": "https://www.oxxogas.com/facturacion",
+        "flow": [
+          {
+            "action": "navigate",
+            "target": "base_url"
+          },
+          {
+            "action": "wait",
+            "ms": 2000
+          },
+          {
+            "action": "fill",
+            "selector": "input[name*=\"folio\" i]",
+            "value": "{{folio}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name*=\"fecha\" i]",
+            "value": "{{fecha}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name*=\"total\" i]",
+            "value": "{{total}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit]"
+          },
+          {
+            "action": "wait",
+            "ms": 2000
+          },
+          {
+            "action": "fill",
+            "selector": "input[name*=\"rfc\" i]",
+            "value": "{{rfc}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[type=\"email\"]",
+            "value": "{{email}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input[name*=\"cp\" i]",
+            "value": "{{cp}}"
+          },
+          {
+            "action": "select",
+            "selector": "select[name*=\"regimen\" i]",
+            "value": "{{regimen}}"
+          },
+          {
+            "action": "select",
+            "selector": "select[name*=\"uso\" i]",
+            "value": "{{uso_cfdi}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit]"
+          },
+          {
+            "action": "wait_success"
+          }
+        ]
+      }
     }
   ]
 }
