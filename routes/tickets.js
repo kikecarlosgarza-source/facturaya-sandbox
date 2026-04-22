@@ -1,7 +1,7 @@
 const express       = require('express');
 const router        = express.Router();
 const authMiddleware = require('../middleware/auth');
-const { analizarTicket, buscarPortal } = require('../services/claudeService');
+const { analizarTicket, buscarPortal, decodificarURL } = require('../services/claudeService');
 const automation    = require('../services/automationService');
 
 // POST /api/tickets/analizar
@@ -32,7 +32,7 @@ router.post('/analizar', authMiddleware, async (req, res) => {
     } else if (ticketData.url_facturacion) {
       portalInfo = {
         encontrado: true,
-        portal_url: ticketData.url_facturacion,
+        portal_url: decodificarURL(ticketData.url_facturacion),
         url_directa: true,
         automatizable: true,
         portal_nombre: 'Portal directo del ticket'

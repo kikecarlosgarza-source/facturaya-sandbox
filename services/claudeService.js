@@ -122,3 +122,21 @@ Responde ÚNICAMENTE con JSON válido sin backticks:
 }
 
 module.exports = { analizarTicket, buscarPortal };
+
+// Decodifica URLs con múltiples capas de encoding (como las que vienen de QR de Wansoft)
+function decodificarURL(url) {
+  if (!url) return url;
+  try {
+    let decoded = url;
+    let prev = '';
+    while (decoded !== prev) {
+      prev = decoded;
+      decoded = decodeURIComponent(decoded);
+    }
+    return decoded;
+  } catch {
+    return url;
+  }
+}
+
+module.exports.decodificarURL = decodificarURL;
