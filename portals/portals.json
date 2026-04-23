@@ -847,6 +847,88 @@
           }
         ]
       }
+    },
+    {
+      "id": "wansoft",
+      "name": "Wansoft",
+      "description": "Sistema de facturación Wansoft usado por restaurantes como Tío Ben, Doña Concha y otros",
+      "url_pattern": "wansoft.net",
+      "detection": {
+        "ticket_keywords": [
+          "wansoft",
+          "tio ben",
+          "tioben",
+          "dona concha",
+          "doña concha"
+        ],
+        "rfc_keywords": [],
+        "url_in_ticket": true
+      },
+      "automation": {
+        "type": "wansoft",
+        "base_url": "https://www.wansoft.net",
+        "has_url_in_ticket": true,
+        "flow": [
+          {
+            "action": "navigate",
+            "target": "ticket_url"
+          },
+          {
+            "action": "wait",
+            "ms": 2000
+          },
+          {
+            "action": "fill",
+            "selector": "input#codigoFacturacion, input[name*=\"codigo\" i], input[placeholder*=\"codigo\" i]",
+            "value": "{{codigo}}"
+          },
+          {
+            "action": "click",
+            "selector": "button.btn-buscar, button[type=submit], .fa-search"
+          },
+          {
+            "action": "wait",
+            "ms": 2000
+          },
+          {
+            "action": "fill",
+            "selector": "input#RFC, input[name=\"RFC\"], input[placeholder*=\"RFC\" i]",
+            "value": "{{rfc}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input#Nombre, input[name=\"Nombre\"]",
+            "value": "{{nombre}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input#CorreoElectronico, input[type=\"email\"]",
+            "value": "{{email}}"
+          },
+          {
+            "action": "fill",
+            "selector": "input#CP, input[name=\"CP\"]",
+            "value": "{{cp}}"
+          },
+          {
+            "action": "js_select",
+            "selector": "select#receiverFiscalRegime",
+            "value": "{{regimen}}"
+          },
+          {
+            "action": "js_select",
+            "selector": "select#ReceiverCfdiUse",
+            "value": "{{uso_cfdi}}"
+          },
+          {
+            "action": "click",
+            "selector": "button#btnEmitir, button:has-text(\"EMITIR FACTURA\"), input[type=submit]"
+          },
+          {
+            "action": "wait_success"
+          }
+        ]
+      }
     }
   ]
 }
