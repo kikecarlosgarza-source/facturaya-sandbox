@@ -145,6 +145,12 @@ class PortalAutomationService {
         } else if (step.action === 'wait_selector') {
           await page.waitForSelector(step.selector, { timeout: 15000 });
 
+        } else if (step.action === 'js_select') {
+          await page.evaluate(({sel, val}) => {
+            const el = document.querySelector(sel);
+            if (el) { el.value = val; $(el).selectpicker('val', val); $(el).trigger('change'); }
+          }, {sel: step.selector, val: resolver(step.value)});
+
         } else if (step.action === 'wait_success') {
           await page.waitForTimeout(3000);
           const pageText = await page.textContent('body');
