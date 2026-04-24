@@ -26,7 +26,9 @@ router.post('/analizar', authMiddleware, async (req, res) => {
     try { datos = JSON.parse(txt); } catch { const m = txt.match(/\{[\s\S]*\}/); if (!m) throw new Error('JSON invalido'); datos = JSON.parse(m[0]); }
     if (!datos.rfc || datos.rfc.length < 12) return res.status(422).json({ error: 'No se pudo leer el RFC.' });
     const existe = db.prepare('SELECT id FROM perfiles_fiscales WHERE usuario_id = ?').get(req.userId);
-    if (!existe) {
+    if (existe) {
+      db.prepare('UPDATE perfiles_fiscales SET rfc=?, nombre=?, cp=?, regimen=?, uso_cfdi=? WHERE usuario_id=?').run(datos.rfc, datos.nombre, datos.cp, datos.regimen || '612', 'G03', req.userId);
+    } else {
       const email = db.prepare('SELECT email FROM usuarios WHERE id = ?').get(req.userId)?.email || '';
       db.prepare('INSERT INTO perfiles_fiscales (id,usuario_id,rfc,nombre,cp,regimen,uso_cfdi,email) VALUES (?,?,?,?,?,?,?,?)').run(uuid(), req.userId, datos.rfc, datos.nombre, datos.cp, datos.regimen || '612', 'G03', email);
     }
