@@ -71,7 +71,7 @@ class PortalAutomationService {
         viewport: { width: 390, height: 844 }
       });
       const page = await context.newPage();
-      page.setDefaultTimeout(30000);
+      page.setDefaultTimeout(60000);
 
       const url = url_directa || portal.automation.base_url;
       await page.goto(url, { waitUntil: 'networkidle' });
@@ -174,7 +174,7 @@ class PortalAutomationService {
     try {
       browser = await chromium.launch({ headless: true });
       const page = await (await browser.newContext()).newPage();
-      page.setDefaultTimeout(30000);
+      page.setDefaultTimeout(60000);
 
       await page.goto(url, { waitUntil: 'networkidle' });
 
