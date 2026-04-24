@@ -2,7 +2,7 @@ const Database = require('better-sqlite3');
 const path = require('path');
 
 // Railway tiene filesystem efímero — usar /tmp o la variable RAILWAY_VOLUME_MOUNT_PATH si existe
-const DB_DIR  = process.env.RAILWAY_VOLUME_MOUNT_PATH || '/tmp';
+const DB_DIR  = process.env.DB_DIR || '/tmp';
 const DB_PATH = path.join(DB_DIR, 'facturasat.db');
 
 console.log(`[DB] Usando base de datos en: ${DB_PATH}`);
