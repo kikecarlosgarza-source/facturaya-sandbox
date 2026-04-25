@@ -53,6 +53,24 @@ class PortalAutomationService {
       };
     }
 
+    // Flujo directo para URLs de Wansoft autoInvoicing (vienen del QR)
+    if (ticketData.portal_url && ticketData.portal_url.includes('autoInvoicing')) {
+      let browser2;
+      try {
+        browser2 = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const ctx2 = await browser2.newContext({ userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' });
+        const page2 = await ctx2.newPage();
+        page2.setDefaultTimeout(60000);
+        const resultado = await procesarWansoftAutoInvoicing(page2, ticketData.portal_url, ticketData, perfil);
+        await browser2.close();
+        if (resultado.exito) return { success: true, folio: resultado.folio, cfdi_uuid: resultado.folio };
+        return { success: false, mensaje: resultado.error || 'Error en portal Wansoft' };
+      } catch(e) {
+        if (browser2) await browser2.close().catch(()=>{});
+        return { success: false, mensaje: 'Error Wansoft: ' + e.message };
+      }
+    }
+
     // FIX: portales con flow vacío avisan en lugar de proceder sin hacer nada
     if (!portal.automation.flow || portal.automation.flow.length === 0) {
       return {
