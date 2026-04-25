@@ -288,4 +288,57 @@ async function procesarWansoftAutoInvoicing(page, portalUrl, ticketData, perfil)
   return { exito: false, error: texto };
 }
 
+
+async function procesarConIA(page, url, perfil) {
+  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.waitForTimeout(2000);
+  
+  const axios = require('axios');
+  const HEADERS = { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' };
+  
+  for (let paso = 0; paso < 8; paso++) {
+    const screenshot = await page.screenshot({ type: 'jpeg', quality: 70 });
+    const b64 = screenshot.toString('base64');
+    
+    const resp = await axios.post('https://api.anthropic.com/v1/messages', {
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 500,
+      messages: [{
+        role: 'user',
+        content: [{
+          type: 'image',
+          source: { type: 'base64', media_type: 'image/jpeg', data: b64 }
+        }, {
+          type: 'text',
+          text: `Eres un agente que llena formularios de facturación electrónica en México.
+Datos del receptor: RFC=${perfil.rfc}, Nombre=${perfil.nombre}, CP=${perfil.cp}, Email=${perfil.email}, Régimen=${perfil.regimen || '612'}, UsoCFDI=${perfil.uso_cfdi || 'G03'}
+
+Analiza esta pantalla y dime el siguiente paso. Responde SOLO con JSON:
+{"accion": "click|fill|select|wait|done|error", "selector": "css selector", "valor": "valor a escribir si es fill/select", "descripcion": "qué estás haciendo"}
+
+Si el formulario ya se envió exitosamente responde: {"accion": "done", "descripcion": "factura generada"}
+Si hay un error responde: {"accion": "error", "descripcion": "descripción del error"}`
+        }]
+      }]
+    }, { headers: HEADERS });
+    
+    const texto = resp.data.content[0].text;
+    let instruccion;
+    try { instruccion = JSON.parse(texto.replace(/```json|```/g, '').trim()); }
+    catch(e) { console.log('[IA] No pudo parsear:', texto); break; }
+    
+    console.log('[IA] Paso', paso, ':', instruccion.descripcion);
+    
+    if (instruccion.accion === 'done') return { exito: true, mensaje: instruccion.descripcion };
+    if (instruccion.accion === 'error') return { exito: false, error: instruccion.descripcion };
+    if (instruccion.accion === 'wait') { await page.waitForTimeout(2000); continue; }
+    if (instruccion.accion === 'click') await page.click(instruccion.selector).catch(()=>{});
+    if (instruccion.accion === 'fill') await page.fill(instruccion.selector, instruccion.valor).catch(()=>{});
+    if (instruccion.accion === 'select') await page.selectOption(instruccion.selector, instruccion.valor).catch(()=>{});
+    
+    await page.waitForTimeout(1500);
+  }
+  return { exito: false, error: 'No se completó en 8 pasos' };
+}
+
 module.exports = new PortalAutomationService();
