@@ -90,7 +90,7 @@ Responde ÚNICAMENTE con JSON válido, sin backticks ni texto adicional:
     }]
   }, { headers: HEADERS });
 
-  return parsearRespuestaJSON(response.data.content);
+    const _raw = (response.data.content[0] && response.data.content[0].text) || ""; const _p = parsearRespuestaJSON(response.data.content); const _m = _raw.match(/[0-9]{15,20}/); if(_m && (!_p.codigo_facturacion || String(_p.codigo_facturacion).length < 12)){_p.codigo_facturacion=_m[0]; console.log("[RAW]",_m[0]);} return _p;
 }
 
 /**
