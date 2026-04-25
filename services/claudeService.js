@@ -49,6 +49,9 @@ IMPORTANTE:
 - Si el ticket dice "Powered by Wansoft", el sistema_facturacion es "wansoft"
 - Detecta el sistema de facturación si es posible (Parrot, Wansoft, EdicomGroup, etc.)
 
+EJEMPLO Wansoft: Movimiento:229482 Orden:47 codigo_facturacion:26042229462116685
+NUNCA uses Movimiento ni Orden como codigo_facturacion.
+
 Responde ÚNICAMENTE con JSON válido, sin backticks ni texto adicional:
 {
   "establecimiento": "nombre del negocio",
