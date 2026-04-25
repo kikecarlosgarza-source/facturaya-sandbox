@@ -44,9 +44,10 @@ para solicitar una factura electrónica.
 
 IMPORTANTE:
 - Si el ticket incluye una URL de facturación, extráela EXACTAMENTE como aparece
-- Si hay un código QR o código de facturación, extráelo también
-- El folio debe ser el número completo que identifica la transacción
-- Detecta el sistema de facturación si es posible (Parrot, EdicomGroup, etc.)
+- IMPORTANTE: El campo "codigo_facturacion" debe ser el número largo que aparece después del texto "tu código de facturación:" o "código de facturación:" cerca del QR. NO uses el número de "Movimiento" ni el de "Orden". En tickets Wansoft el código tiene ~17 dígitos y aparece debajo del QR.
+- El campo "folio" debe ser el número de Orden o Movimiento del ticket
+- Si el ticket dice "Powered by Wansoft", el sistema_facturacion es "wansoft"
+- Detecta el sistema de facturación si es posible (Parrot, Wansoft, EdicomGroup, etc.)
 
 Responde ÚNICAMENTE con JSON válido, sin backticks ni texto adicional:
 {
