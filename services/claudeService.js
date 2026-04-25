@@ -68,6 +68,31 @@ Responde ÚNICAMENTE con JSON válido, sin backticks ni texto adicional:
   "confianza": 0.95
 }`;
 
+  // Pre-procesamiento: extraer texto raw para regex
+  const textResponse = await axios.post(CLAUDE_API, {
+    model: MODEL,
+    max_tokens: 500,
+    messages: [{
+      role: 'user',
+      content: [{
+        type: 'image',
+        source: { type: 'base64', media_type: mimeType, data: base64Image }
+      }, {
+        type: 'text',
+        text: 'Transcribe EXACTAMENTE el texto de la sección "FACTURACIÓN EN LÍNEA" de este ticket, incluyendo la URL y el número de código de facturación. Solo el texto, sin explicaciones.'
+      }]
+    }]
+  });
+  const rawText = textResponse.data?.content?.[0]?.text || '';
+  
+  // Extraer codigo_facturacion con regex
+  const codigoMatch = rawText.match(/c[oó]digo de facturaci[oó]n[:\s]+([0-9]{10,20})/i);
+  const urlMatch = rawText.match(/https?:\/\/[\w\./\-]+/i);
+  const codigoFromText = codigoMatch ? codigoMatch[1] : null;
+  const urlFromText = urlMatch ? urlMatch[0] : null;
+  console.log('[TICKET] Codigo extraido por regex:', codigoFromText);
+  console.log('[TICKET] URL extraida por regex:', urlFromText);
+
   const response = await axios.post(CLAUDE_API, {
     model: MODEL,
     max_tokens: 1000,
@@ -108,6 +133,31 @@ Responde ÚNICAMENTE con JSON válido sin backticks:
   "instrucciones": "pasos específicos en 2-3 líneas",
   "campos_necesarios": ["folio", "total", "fecha", "rfc", "email"]
 }`;
+
+  // Pre-procesamiento: extraer texto raw para regex
+  const textResponse = await axios.post(CLAUDE_API, {
+    model: MODEL,
+    max_tokens: 500,
+    messages: [{
+      role: 'user',
+      content: [{
+        type: 'image',
+        source: { type: 'base64', media_type: mimeType, data: base64Image }
+      }, {
+        type: 'text',
+        text: 'Transcribe EXACTAMENTE el texto de la sección "FACTURACIÓN EN LÍNEA" de este ticket, incluyendo la URL y el número de código de facturación. Solo el texto, sin explicaciones.'
+      }]
+    }]
+  });
+  const rawText = textResponse.data?.content?.[0]?.text || '';
+  
+  // Extraer codigo_facturacion con regex
+  const codigoMatch = rawText.match(/c[oó]digo de facturaci[oó]n[:\s]+([0-9]{10,20})/i);
+  const urlMatch = rawText.match(/https?:\/\/[\w\./\-]+/i);
+  const codigoFromText = codigoMatch ? codigoMatch[1] : null;
+  const urlFromText = urlMatch ? urlMatch[0] : null;
+  console.log('[TICKET] Codigo extraido por regex:', codigoFromText);
+  console.log('[TICKET] URL extraida por regex:', urlFromText);
 
   const response = await axios.post(CLAUDE_API, {
     model: MODEL,
