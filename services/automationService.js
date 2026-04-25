@@ -228,4 +228,40 @@ class PortalAutomationService {
   }
 }
 
+
+async function procesarWansoftAutoInvoicing(page, portalUrl, ticketData, perfil) {
+  // Navegar a la URL del QR directamente
+  await page.goto(portalUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.waitForTimeout(2000);
+  
+  // Hacer clic en buscar
+  await page.click('.btn-search-inv');
+  await page.waitForTimeout(3000);
+  
+  // Llenar datos del receptor
+  await page.fill('#rfc', perfil.rfc);
+  await page.fill('#legalName', perfil.nombre);
+  await page.fill('#email', perfil.email);
+  await page.fill('#CP', perfil.cp);
+  
+  // Seleccionar régimen
+  await page.selectOption('#receiverFiscalRegime', perfil.regimen || '612');
+  await page.selectOption('#ReceiverCfdiUse', perfil.uso_cfdi || 'G03');
+  
+  // Emitir factura
+  await page.click('input[id="btnIssueInvoice"]');
+  await page.waitForTimeout(5000);
+  
+  // Verificar éxito
+  const mensaje = await page.$('.ui-dialog-content, #mensaje, .alert');
+  const texto = await mensaje?.textContent() || '';
+  
+  if (texto.includes('exitosamente') || texto.includes('generó')) {
+    const folio = await page.$eval('#FolioFiscal, td:contains("Folio")', el => el.textContent).catch(() => '');
+    return { exito: true, folio: folio.trim() };
+  }
+  
+  return { exito: false, error: texto };
+}
+
 module.exports = new PortalAutomationService();
