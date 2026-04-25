@@ -44,7 +44,7 @@ para solicitar una factura electrónica.
 
 IMPORTANTE:
 - Si el ticket incluye una URL de facturación, extráela EXACTAMENTE como aparece
-- IMPORTANTE: El campo "codigo_facturacion" debe ser el número largo que aparece después del texto "tu código de facturación:" o "código de facturación:" cerca del QR. NO uses el número de "Movimiento" ni el de "Orden". En tickets Wansoft el código tiene ~17 dígitos y aparece debajo del QR.
+- CRÍTICO: El campo "codigo_facturacion" es el número que aparece en el texto "con tu código de facturación: XXXXXXXXX" debajo del QR. Este número tiene ~17 dígitos. Es DIFERENTE al Movimiento y a la Orden. Búscalo específicamente en la sección de FACTURACIÓN EN LÍNEA del ticket.
 - El campo "folio" debe ser el número de Orden o Movimiento del ticket
 - Si el ticket dice "Powered by Wansoft", el sistema_facturacion es "wansoft"
 - Detecta el sistema de facturación si es posible (Parrot, Wansoft, EdicomGroup, etc.)
