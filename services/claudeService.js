@@ -141,3 +141,14 @@ function decodificarURL(url) {
 }
 
 module.exports.decodificarURL = decodificarURL;
+
+// Post-proceso automatico para tickets Wansoft
+function fixCodigoFacturacion(ticketData, rawResponse) {
+  const texto = JSON.stringify(ticketData) + ' ' + (rawResponse || '');
+  const match = texto.match(/\b26\d{14,17}\b/);
+  if (match && (!ticketData.codigo_facturacion || ticketData.codigo_facturacion.length < 12)) {
+    ticketData.codigo_facturacion = match[0];
+  }
+  return ticketData;
+}
+module.exports.fixCodigoFacturacion = fixCodigoFacturacion;

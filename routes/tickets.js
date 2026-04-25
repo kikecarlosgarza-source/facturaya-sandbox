@@ -1,7 +1,7 @@
 const express       = require('express');
 const router        = express.Router();
 const authMiddleware = require('../middleware/auth');
-const { analizarTicket, buscarPortal, decodificarURL } = require('../services/claudeService');
+const { analizarTicket, buscarPortal, decodificarURL, fixCodigoFacturacion } = require('../services/claudeService');
 const { leerQRdeImagen } = require('../services/qrService');
 const automation    = require('../services/automationService');
 
@@ -13,7 +13,8 @@ router.post('/analizar', authMiddleware, async (req, res) => {
     if (!imagen) return res.status(400).json({ error: 'Imagen requerida (base64)' });
 
     // 1. Analizar ticket con Claude
-    const ticketData = await analizarTicket(imagen, mimeType);
+    let ticketData = await analizarTicket(imagen, mimeType);
+    ticketData = fixCodigoFacturacion(ticketData);
 
     // 2. Detectar portal en base de datos local
     const portalLocal = automation.detectarPortal(ticketData);
