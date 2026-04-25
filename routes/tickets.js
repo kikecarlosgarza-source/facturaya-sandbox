@@ -53,12 +53,14 @@ router.post('/analizar', authMiddleware, async (req, res) => {
     }
 
     } else if (ticketData.url_facturacion) {
+      const urlFac = decodificarURL(ticketData.url_facturacion);
       portalInfo = {
         encontrado: true,
-        portal_url: decodificarURL(ticketData.url_facturacion),
+        portal_url: urlFac,
         url_directa: true,
         automatizable: true,
-        portal_nombre: 'Portal directo del ticket'
+        portal_nombre: urlFac.includes('wansoft') ? 'Wansoft' : 'Portal directo del ticket',
+        sistema: urlFac.includes('autoInvoicing') ? 'wansoft_auto' : 'directo'
       };
     } else {
       // Buscar con IA
