@@ -23,6 +23,7 @@
     "nodemailer": "^6.9.7",
     "playwright": "^1.40.0",
     "sharp": "^0.34.5",
+    "tesseract.js": "^7.0.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

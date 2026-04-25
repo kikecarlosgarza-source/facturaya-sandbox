@@ -2,6 +2,7 @@ const express       = require('express');
 const router        = express.Router();
 const authMiddleware = require('../middleware/auth');
 const { analizarTicket, buscarPortal, decodificarURL, fixCodigoFacturacion } = require('../services/claudeService');
+const { extraerCodigoFacturacion } = require('../services/ocrService');
 const { leerQRdeImagen } = require('../services/qrService');
 const automation    = require('../services/automationService');
 
@@ -15,6 +16,14 @@ router.post('/analizar', authMiddleware, async (req, res) => {
     // 1. Analizar ticket con Claude
     let ticketData = await analizarTicket(imagen, mimeType);
     ticketData = fixCodigoFacturacion(ticketData);
+    // Si el codigo sigue siendo corto, usar OCR directamente
+    if (!ticketData.codigo_facturacion || String(ticketData.codigo_facturacion).length < 12) {
+      const codigoOCR = await extraerCodigoFacturacion(imagen);
+      if (codigoOCR) {
+        ticketData.codigo_facturacion = codigoOCR;
+        console.log('[OCR] codigo_facturacion corregido a:', codigoOCR);
+      }
+    }
 
     // 2. Detectar portal en base de datos local
     const portalLocal = automation.detectarPortal(ticketData);
