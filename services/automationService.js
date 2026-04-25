@@ -74,7 +74,7 @@ class PortalAutomationService {
       page.setDefaultTimeout(60000);
 
       const url = url_directa || portal.automation.base_url;
-      await page.goto(url, { waitUntil: 'networkidle' });
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
 
       const resultado = await this._ejecutarFlujo(page, portal.automation.flow, ticketData, perfilFiscal);
       const screenshot = await page.screenshot({ type: 'jpeg', quality: 80 });
@@ -125,7 +125,7 @@ class PortalAutomationService {
           const navUrl = step.target === 'ticket_url'
             ? ticketData.url_facturacion
             : resolver(step.target);
-          await page.goto(navUrl, { waitUntil: 'networkidle' });
+          await page.goto(navUrl, { waitUntil: 'domcontentloaded' });
 
         } else if (step.action === 'fill') {
           await page.waitForSelector(step.selector, { timeout: 10000 });
@@ -176,7 +176,7 @@ class PortalAutomationService {
       const page = await (await browser.newContext()).newPage();
       page.setDefaultTimeout(60000);
 
-      await page.goto(url, { waitUntil: 'networkidle' });
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
 
       const camposRFC    = ['input[name*="rfc" i]', 'input[id*="rfc" i]', 'input[placeholder*="RFC" i]'];
       const camposEmail  = ['input[type="email"]', 'input[name*="email" i]', 'input[id*="email" i]', 'input[name*="correo" i]'];
