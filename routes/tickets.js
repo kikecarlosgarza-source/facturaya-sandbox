@@ -2,6 +2,7 @@ const express       = require('express');
 const router        = express.Router();
 const authMiddleware = require('../middleware/auth');
 const { analizarTicket, buscarPortal, decodificarURL } = require('../services/claudeService');
+const { leerQRdeImagen } = require('../services/qrService');
 const automation    = require('../services/automationService');
 
 // POST /api/tickets/analizar
@@ -29,6 +30,18 @@ router.post('/analizar', authMiddleware, async (req, res) => {
         requiere_cuenta: !!portalLocal.portal.automation.requires_account,
         automatizable: !portalLocal.portal.automation.requires_account
       };
+    // Intentar leer QR de la imagen para obtener URL exacta
+    if (imagen && (ticketData.sistema_facturacion === 'wansoft' || ticketData.portal_url?.includes('wansoft'))) {
+      try {
+        const qrUrl = await leerQRdeImagen(imagen, mimeType || 'image/jpeg');
+        if (qrUrl && qrUrl.startsWith('http')) {
+          ticketData.url_facturacion = qrUrl;
+          ticketData.codigo_facturacion = qrUrl.split('code=')[1] || ticketData.codigo_facturacion;
+          console.log('[QR] URL extraída del QR:', qrUrl);
+        }
+      } catch(e) { console.error('[QR] Error leyendo QR:', e.message); }
+    }
+
     } else if (ticketData.url_facturacion) {
       portalInfo = {
         encontrado: true,
