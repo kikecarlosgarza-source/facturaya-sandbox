@@ -60,7 +60,7 @@ class PortalAutomationService {
     }
 
     // Flujo directo para URLs de Wansoft autoInvoicing (vienen del QR)
-    if (ticketData.portal_url && ticketData.portal_url.includes('autoInvoicing')) {
+    const _qrUrl = ticketData.portal_url || ticketData.url_facturacion || ticketData.codigo_facturacion || ''; if (_qrUrl.includes('autoInvoicing')) {
       let browser2;
       try {
         browser2 = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
@@ -68,8 +68,8 @@ class PortalAutomationService {
         const page2 = await ctx2.newPage();
         page2.setDefaultTimeout(60000);
         const resultado = ticketData.portal_url.includes('autoInvoicing') 
-        ? await procesarWansoftAutoInvoicing(page2, ticketData.portal_url, ticketData, perfil)
-        : await procesarConIA(page2, ticketData.portal_url, perfil);
+        ? await procesarWansoftAutoInvoicing(page2, _qrUrl, ticketData, perfil)
+        : await procesarConIA(page2, _qrUrl, perfil);
         await browser2.close();
         if (resultado.exito) return { success: true, folio: resultado.folio, cfdi_uuid: resultado.folio };
         return { success: false, mensaje: resultado.error || 'Error en portal Wansoft' };
