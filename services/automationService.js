@@ -4,7 +4,7 @@ const portalsData  = require('../portals/portals.json');
 class PortalAutomationService {
 
   detectarPortal(ticketData) {
-  if (ticketData.url_facturacion && (ticketData.url_facturacion.includes('autoInvoicing') || ticketData.sistema_facturacion === 'qr')) {
+  if ((ticketData.url_facturacion || ticketData.portal_url || ticketData.codigo_facturacion || '').includes('autoInvoicing') || ticketData.sistema_facturacion === 'qr' {
     return { portal: { name: 'Portal QR', automation: { flow: [], base_url: ticketData.url_facturacion, requires_account: false } }, url_directa: ticketData.url_facturacion };
   }
   if (ticketData.url_facturacion && ticketData.url_facturacion.includes('autoInvoicing')) {
