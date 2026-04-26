@@ -67,7 +67,9 @@ class PortalAutomationService {
         const ctx2 = await browser2.newContext({ userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' });
         const page2 = await ctx2.newPage();
         page2.setDefaultTimeout(60000);
-        const resultado = await procesarWansoftAutoInvoicing(page2, ticketData.portal_url, ticketData, perfil);
+        const resultado = ticketData.portal_url.includes('autoInvoicing') 
+        ? await procesarWansoftAutoInvoicing(page2, ticketData.portal_url, ticketData, perfil)
+        : await procesarConIA(page2, ticketData.portal_url, perfil);
         await browser2.close();
         if (resultado.exito) return { success: true, folio: resultado.folio, cfdi_uuid: resultado.folio };
         return { success: false, mensaje: resultado.error || 'Error en portal Wansoft' };
