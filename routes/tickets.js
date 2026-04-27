@@ -94,7 +94,7 @@ router.post('/procesar-webview', authMiddleware, async (req, res) => {
       'Content-Type': 'application/json'
     };
 
-    const prompt = `Eres un agente que factura tickets en Mexico. Analiza este HTML de un portal de facturacion.
+    const prompt = `Eres un agente que factura tickets en Mexico. Analiza los campos de este portal de facturacion.
 Datos del receptor: RFC=${perfil?.rfc}, Nombre=${perfil?.nombre}, CP=${perfil?.cp}, Email=${perfil?.email}, Regimen=${perfil?.regimen||'612'}, UsoCFDI=${perfil?.uso_cfdi||'G03'}
 URL actual: ${url}
 Titulo: ${titulo}
@@ -106,8 +106,11 @@ Analiza el HTML y responde SOLO con JSON:
 - Si la factura ya se generó exitosamente: {"accion":"done","descripcion":"Factura generada"}
 - Si hay error: {"accion":"error","descripcion":"descripcion del error"}
 
-HTML del portal:
-${html.slice(0,6000)}`;
+Campos del formulario (inputs/selects/buttons):
+${JSON.stringify(req.body.inputs || [], null, 2).slice(0,3000)}
+
+Texto visible en la pagina:
+${html?.slice(0,2000)}`;
 
     const resp = await axios.post('https://api.anthropic.com/v1/messages', {
       model: 'claude-sonnet-4-5-20250929',
