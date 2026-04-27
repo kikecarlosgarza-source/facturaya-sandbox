@@ -66,7 +66,7 @@ Responde ÚNICAMENTE con JSON válido, sin backticks ni texto adicional:
   "descripcion": "descripción breve de los productos/servicios",
   "url_facturacion": "URL exacta del portal de facturación si aparece",
   "codigo_facturacion": "código o número de ticket para facturar",
-  "portal_facturacion": "URL del portal de facturación si aparece en el ticket (ej: www.homedepot.com.mx/facturas)",
+  "portal_facturacion": "URL COMPLETA del portal de facturación que aparece en el ticket. BUSCA texto como: www., http, .com.mx, factura, facturacion, electronica. Si dice homedepot.com.mx pon https://www.homedepot.com.mx/facturas",
   "instrucciones_facturacion": "instrucciones de facturación que aparecen en el ticket",
   "sistema_facturacion": "parrot|edicom|propio|desconocido",
   "requiere_cuenta": false,
