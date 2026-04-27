@@ -106,11 +106,11 @@ Analiza el HTML y responde SOLO con JSON:
 - Si la factura ya se generó exitosamente: {"accion":"done","descripcion":"Factura generada"}
 - Si hay error: {"accion":"error","descripcion":"descripcion del error"}
 
-Campos del formulario (inputs/selects/buttons):
-${JSON.stringify(req.body.inputs || [], null, 2).slice(0,3000)}
+Campos del formulario:
+${JSON.stringify(req.body.inputs || [], null, 2).slice(0,2000)}
 
-Texto visible en la pagina:
-${html?.slice(0,2000)}`;
+HTML del portal (sin scripts):
+${html?.slice(0,10000)}`;
 
     const resp = await axios.post('https://api.anthropic.com/v1/messages', {
       model: 'claude-sonnet-4-5-20250929',
