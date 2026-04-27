@@ -121,6 +121,7 @@ HTML: ${html?.slice(0,8000)}`
     try { instruccion = JSON.parse(texto.replace(/```json|```/g, '').trim()); }
     catch(e) { instruccion = { accion: 'error', descripcion: 'No pude analizar la pagina' }; }
 
+    if(instruccion.accion==="done" && intento<=2){instruccion={accion:"js",js:"true",descripcion:"verificando portal"};}
     res.json(instruccion);
   } catch(e) {
     res.status(500).json({ accion: 'error', descripcion: e.message });
