@@ -96,7 +96,7 @@ router.post('/procesar-webview', authMiddleware, async (req, res) => {
 
     const prompt = `Eres un agente experto en portales de facturacion electronica de Mexico. Analiza la pagina actual y ejecuta el siguiente paso para generar una factura CFDI.
 
-Datos del receptor: RFC=${perfil?.rfc}, Nombre=${perfil?.nombre}, CP=${perfil?.cp}, Email=${perfil?.email}, Regimen=${perfil?.regimen||'612'}, UsoCFDI=${perfil?.uso_cfdi||'G03'}
+DATOS REALES DEL RECEPTOR (USA ESTOS EXACTAMENTE, NO LOS PLACEHOLDERS): RFC=${perfil?.rfc}, Nombre=${perfil?.nombre}, CP=${perfil?.cp}, Email=${perfil?.email}, Regimen=${perfil?.regimen||'612'}, UsoCFDI=${perfil?.uso_cfdi||'G03'}
 URL: ${url} | Intento: ${intento}/10
 
 Analiza los campos del formulario y el HTML. Genera JavaScript que llene los campos con los datos del receptor usando los IDs REALES que ves en el HTML. Luego haz click en buscar o emitir.
