@@ -103,7 +103,7 @@ Analiza los campos del formulario y el HTML. Genera JavaScript que llene los cam
 
 RESPONDE SOLO JSON:
 - Llenar campos: {"accion":"js","js":"JS_CON_IDS_REALES","descripcion":"que hace"}
-- Exito (ves: facturado/folio fiscal/PDF/XML/exitosamente/descarga): {"accion":"done","descripcion":"Factura generada"}
+- Exito (ves CUALQUIERA de estas palabras: facturado/folio fiscal/PDF/XML/exitosamente/descarga/generada/timbrada/uuid/CFDI/gracias/enviada/correo/éxito/boton deshabilitado despues de generar): {"accion":"done","descripcion":"Factura generada"}
 - Pide cuenta: {"accion":"preguntar","descripcion":"pide crear cuenta","js":"js_crear_cuenta"}
 - Error: {"accion":"error","descripcion":"descripcion"}
 
