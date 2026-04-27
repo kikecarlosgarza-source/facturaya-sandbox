@@ -54,7 +54,7 @@ NUNCA uses Movimiento ni Orden como codigo_facturacion.
 
 Responde ÚNICAMENTE con JSON válido, sin backticks ni texto adicional:
 {
-  "establecimiento": "nombre del negocio",
+  "establecimiento": "nombre REAL: Home Depot/McDonalds/OXXO/Walmart/Kali/Farmacia del Ahorro/etc. NUNCA escribas Portal de facturacion",
   "rfc_emisor": "RFC si aparece en el ticket",
   "folio": "número de folio/orden completo",
   "fecha": "DD/MM/YYYY",
