@@ -65,7 +65,9 @@ Responde ÚNICAMENTE con JSON válido, sin backticks ni texto adicional:
   "forma_pago": "efectivo|tarjeta|otro",
   "descripcion": "descripción breve de los productos/servicios",
   "url_facturacion": "URL exacta del portal de facturación si aparece",
-  "codigo_facturacion": "código de facturación si aparece",
+  "codigo_facturacion": "código o número de ticket para facturar",
+  "portal_facturacion": "URL del portal de facturación si aparece en el ticket (ej: www.homedepot.com.mx/facturas)",
+  "instrucciones_facturacion": "instrucciones de facturación que aparecen en el ticket",
   "sistema_facturacion": "parrot|edicom|propio|desconocido",
   "requiere_cuenta": false,
   "confianza": 0.95
