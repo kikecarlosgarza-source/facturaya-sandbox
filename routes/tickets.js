@@ -83,4 +83,46 @@ router.post('/analizar', authMiddleware, async (req, res) => {
   }
 });
 
+
+router.post('/procesar-webview', authMiddleware, async (req, res) => {
+  try {
+    const { html, url, titulo, perfil, ticket, intento } = req.body;
+    const axios = require('axios');
+    const HEADERS = {
+      'x-api-key': process.env.ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+      'Content-Type': 'application/json'
+    };
+
+    const prompt = `Eres un agente que factura tickets en Mexico. Analiza este HTML de un portal de facturacion.
+Datos del receptor: RFC=${perfil?.rfc}, Nombre=${perfil?.nombre}, CP=${perfil?.cp}, Email=${perfil?.email}, Regimen=${perfil?.regimen||'612'}, UsoCFDI=${perfil?.uso_cfdi||'G03'}
+URL actual: ${url}
+Titulo: ${titulo}
+Intento: ${intento}
+
+Analiza el HTML y responde SOLO con JSON:
+- Si hay formulario para llenar: {"accion":"js","js":"document.getElementById('rfc').value='GAME860412CY6'","descripcion":"llenando RFC"}
+- Si pide crear cuenta: {"accion":"preguntar","descripcion":"El portal pide crear una cuenta para facturar. ¿La creo?","js":"...js para crear cuenta..."}  
+- Si la factura ya se generó exitosamente: {"accion":"done","descripcion":"Factura generada"}
+- Si hay error: {"accion":"error","descripcion":"descripcion del error"}
+
+HTML del portal:
+${html.slice(0,6000)}`;
+
+    const resp = await axios.post('https://api.anthropic.com/v1/messages', {
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }]
+    }, { headers: HEADERS });
+
+    const texto = resp.data.content[0].text;
+    let instruccion;
+    try { instruccion = JSON.parse(texto.replace(/```json|```/g, '').trim()); }
+    catch(e) { instruccion = { accion: 'error', descripcion: 'No pude analizar la pagina' }; }
+
+    res.json(instruccion);
+  } catch(e) {
+    res.status(500).json({ accion: 'error', descripcion: e.message });
+  }
+});
 module.exports = router;
