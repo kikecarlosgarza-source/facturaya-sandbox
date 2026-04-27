@@ -94,23 +94,21 @@ router.post('/procesar-webview', authMiddleware, async (req, res) => {
       'Content-Type': 'application/json'
     };
 
-    const prompt = `Eres un agente que factura tickets en Mexico. Analiza los campos de este portal de facturacion.
+    const prompt = `Eres un agente experto en portales de facturacion electronica de Mexico. Analiza la pagina actual y ejecuta el siguiente paso para generar una factura CFDI.
+
 Datos del receptor: RFC=${perfil?.rfc}, Nombre=${perfil?.nombre}, CP=${perfil?.cp}, Email=${perfil?.email}, Regimen=${perfil?.regimen||'612'}, UsoCFDI=${perfil?.uso_cfdi||'G03'}
-URL actual: ${url}
-Titulo: ${titulo}
-Intento: ${intento}
+URL: ${url} | Intento: ${intento}/10
 
-Analiza el HTML y responde SOLO con JSON:
-- Si hay formulario para llenar: {"accion":"js","js":"(function(){function sv(id,v){var e=document.getElementById(id);if(e){e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}}sv('rfc','GAME860412CY6');sv('legalName','ENRIQUE CARLOS GARZA MONTEMAYOR');sv('email','kikecarlosgarza@gmail.com');sv('CP','66230');var reg=document.getElementById('receiverFiscalRegime');if(reg)reg.value='612';var uso=document.getElementById('ReceiverCfdiUse');if(uso)uso.value='G03';[reg,uso].forEach(function(e){if(e){e.dispatchEvent(new Event('change',{bubbles:true}));}});setTimeout(function(){var btn=document.getElementById('btnIssueInvoice')||document.querySelector('.btn-search-inv');if(btn)btn.click();},1500);})()","descripcion":"llenando RFC"}
-- Si pide crear cuenta: {"accion":"preguntar","descripcion":"El portal pide crear una cuenta para facturar. ¿La creo?","js":"...js para crear cuenta..."}  
-- Si el texto contiene "facturado", "exitosamente", "folio fiscal", "PDF", "XML", "ya se encuentra", "descarga": {"accion":"done","descripcion":"Factura generada"}
-- Si hay error: {"accion":"error","descripcion":"descripcion del error"}
+Analiza los campos del formulario y el HTML. Genera JavaScript que llene los campos con los datos del receptor usando los IDs REALES que ves en el HTML. Luego haz click en buscar o emitir.
 
-Campos del formulario:
-${JSON.stringify(req.body.inputs || [], null, 2).slice(0,2000)}
+RESPONDE SOLO JSON:
+- Llenar campos: {"accion":"js","js":"JS_CON_IDS_REALES","descripcion":"que hace"}
+- Exito (ves: facturado/folio fiscal/PDF/XML/exitosamente/descarga): {"accion":"done","descripcion":"Factura generada"}
+- Pide cuenta: {"accion":"preguntar","descripcion":"pide crear cuenta","js":"js_crear_cuenta"}
+- Error: {"accion":"error","descripcion":"descripcion"}
 
-HTML del portal (sin scripts):
-${html?.slice(0,10000)}`;
+Campos: ${JSON.stringify(req.body.inputs||[],null,2).slice(0,2000)}
+HTML: ${html?.slice(0,8000)}`
 
     const resp = await axios.post('https://api.anthropic.com/v1/messages', {
       model: 'claude-sonnet-4-5-20250929',
