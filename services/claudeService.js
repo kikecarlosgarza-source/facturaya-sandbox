@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const CLAUDE_API = 'https://api.anthropic.com/v1/messages';
 // FIX: modelo actualizado a claude-sonnet-4-5-20250929 (release estable actual)
-const MODEL = 'claude-sonnet-4-5-20250929';
+const MODEL = 'claude-sonnet-4-6';
 
 const HEADERS = {
   'Content-Type': 'application/json',
