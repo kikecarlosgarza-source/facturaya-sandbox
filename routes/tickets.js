@@ -103,7 +103,7 @@ Analiza los campos del formulario y el HTML. Genera JavaScript que llene los cam
 
 RESPONDE SOLO JSON. En el PRIMER intento genera UN SOLO JS que haga TODO: llene TODOS los campos visibles, seleccione dropdowns y haga click en el boton de siguiente/emitir/generar. No hagas un campo a la vez.
 - Todo de una vez: {"accion":"js","js":"JS_QUE_LLENA_TODO_Y_HACE_CLICK","descripcion":"llenando todo y emitiendo"}
-- Exito (ves CUALQUIERA de estas palabras: facturado/folio fiscal/PDF/XML/exitosamente/descarga/generada/timbrada/uuid/CFDI/gracias/enviada/correo/éxito/boton deshabilitado despues de generar): {"accion":"done","descripcion":"Factura generada"}
+- Exito SOLO si el intento es mayor a 2 Y ves confirmacion clara (folio fiscal UUID, descarga PDF exitosa, mensaje de exito explicito): {"accion":"done","descripcion":"Factura generada"}. NO declares exito en intento 1 ni por ver palabras como factura/generar/PDF en el menu
 - Pide cuenta: {"accion":"preguntar","descripcion":"pide crear cuenta","js":"js_crear_cuenta"}
 - Error: {"accion":"error","descripcion":"descripcion"}
 
