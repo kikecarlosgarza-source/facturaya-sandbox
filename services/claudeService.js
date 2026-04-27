@@ -38,40 +38,15 @@ function parsearRespuestaJSON(content) {
  * para solicitar una factura electrónica en México.
  */
 async function analizarTicket(base64Image, mimeType = 'image/jpeg') {
-  const systemPrompt = `Eres un experto en facturación electrónica México CFDI 4.0.
-Analiza tickets, recibos y comprobantes de compra y extrae los datos necesarios
-para solicitar una factura electrónica.
+  const systemPrompt = `Eres un experto en facturación electrónica México CFDI 4.0. Analiza la imagen del ticket CON MUCHO CUIDADO y extrae TODOS los datos visibles.
 
-IMPORTANTE:
-- Si el ticket incluye una URL de facturación, extráela EXACTAMENTE como aparece
-- CRÍTICO: El campo "codigo_facturacion" es el número de ~17 dígitos que aparece en la frase "con tu código de facturación: XXXXXXXXXXXXXXXXX" en la sección FACTURACIÓN EN LÍNEA. Ese número empieza con la fecha en formato AAMMDD (ej: 260422...). NUNCA uses el Movimiento (6 dígitos) ni la Orden (2-3 dígitos) como codigo_facturacion.
-- El campo "folio" debe ser el número de Orden o Movimiento del ticket
-- Si el ticket dice "Powered by Wansoft", el sistema_facturacion es "wansoft"
-- Detecta el sistema de facturación si es posible (Parrot, Wansoft, EdicomGroup, etc.)
-
-EJEMPLO Wansoft: Movimiento:229482 Orden:47 codigo_facturacion:26042229462116685
-NUNCA uses Movimiento ni Orden como codigo_facturacion.
-
-Responde ÚNICAMENTE con JSON válido, sin backticks ni texto adicional:
-{
-  "establecimiento": "nombre REAL: Home Depot/McDonalds/OXXO/Walmart/Kali/Farmacia del Ahorro/etc. NUNCA escribas Portal de facturacion",
-  "rfc_emisor": "RFC si aparece en el ticket",
-  "folio": "número de folio/orden completo",
-  "fecha": "DD/MM/YYYY",
-  "hora": "HH:MM",
-  "total": 0.00,
-  "subtotal": 0.00,
-  "iva": 0.00,
-  "forma_pago": "efectivo|tarjeta|otro",
-  "descripcion": "descripción breve de los productos/servicios",
-  "url_facturacion": "URL exacta del portal de facturación si aparece",
-  "codigo_facturacion": "código o número de ticket para facturar",
-  "portal_facturacion": "URL COMPLETA del portal de facturación que aparece en el ticket. BUSCA texto como: www., http, .com.mx, factura, facturacion, electronica. Si dice homedepot.com.mx pon https://www.homedepot.com.mx/facturas",
-  "instrucciones_facturacion": "instrucciones de facturación que aparecen en el ticket",
-  "sistema_facturacion": "parrot|edicom|propio|desconocido",
-  "requiere_cuenta": false,
-  "confianza": 0.95
-}`;
+INSTRUCCIONES CRÍTICAS:
+1. ESTABLECIMIENTO: Lee el nombre del negocio en la parte superior del ticket. Ejemplos: Home Depot, McDonald's, OXXO, Walmart, Kali, Farmacia del Ahorro. NUNCA escribas 'Portal de facturacion'.
+2. TOTAL: Busca el monto final a pagar. Puede decir: Total, TOTAL, Importe Total, Grand Total, Suma. SIEMPRE extrae este número.
+3. FECHA: Busca la fecha en el ticket en cualquier formato.
+4. FOLIO/CODIGO: Busca el número de ticket, folio, orden, movimiento o código de facturación.
+5. PORTAL: Si el ticket menciona una URL o instrucciones de facturación como 'facture en www.homedepot.com.mx', extrae esa URL completa. Si es Home Depot usa https://www.homedepot.com.mx/facturacion. Si es McDonald's usa https://facturacion.mcdonalds.com.mx.
+6. Si no puedes leer algún dato claramente, ponlo vacío, NO inventes datos.`
 
   const response = await axios.post(CLAUDE_API, {
     model: MODEL,
