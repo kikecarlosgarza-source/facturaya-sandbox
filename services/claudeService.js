@@ -48,15 +48,15 @@ INSTRUCCIONES CRÍTICAS:
 5. PORTAL: Si el ticket menciona una URL o instrucciones de facturación como 'facture en www.homedepot.com.mx', extrae esa URL completa. Si es Home Depot usa https://www.homedepot.com.mx/facturacion. Si es McDonald's usa https://facturacion.mcdonalds.com.mx.
 6. Si no puedes leer algún dato claramente, ponlo vacío, NO inventes datos.
 
-Responde ÚNICAMENTE con JSON válido:
+Responde SOLO con JSON sin backticks:
 {
-  "establecimiento": "nombre real del negocio",
-  "folio": "número de ticket",
+  "establecimiento": "nombre real del negocio (ej: Home Depot, McDonald's, OXXO)",
+  "folio": "numero de ticket/folio/orden",
   "fecha": "fecha del ticket",
   "total": 0,
-  "codigo_facturacion": "código si aparece",
-  "portal_facturacion": "URL del portal",
-  "rfc_emisor": "RFC si aparece",
+  "codigo_facturacion": "codigo de facturacion o numero de barras largo",
+  "portal_facturacion": "URL del portal (homedepot.com.mx = https://www.homedepot.com.mx/facturacion)",
+  "rfc_emisor": "RFC del emisor si aparece",
   "sistema_facturacion": "wansoft/otro"
 }`
 
