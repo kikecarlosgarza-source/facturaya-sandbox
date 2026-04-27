@@ -101,8 +101,8 @@ URL: ${url} | Intento: ${intento}/10
 
 Analiza los campos del formulario y el HTML. Genera JavaScript que llene los campos con los datos del receptor usando los IDs REALES que ves en el HTML. Para dropdowns usa: el.value="612" y luego el.dispatchEvent(new Event("change",{bubbles:true})). Para inputs de texto y email usa .value y dispatchEvent input+change. Para campos de tipo email busca input[type=email] o input[name*=email] o input[id*=mail] o input[placeholder*=correo i]. Luego haz click en el boton siguiente o emitir. Si no encuentras el campo email por ID, usa: var emailField = document.querySelector("input[type=email],input[name*=email],input[id*=mail],input[placeholder*=orreo]"); if(emailField){emailField.value="kikecarlosgarza@gmail.com";emailField.dispatchEvent(new Event("input",{bubbles:true}))}
 
-RESPONDE SOLO JSON:
-- Llenar campos: {"accion":"js","js":"JS_CON_IDS_REALES","descripcion":"que hace"}
+RESPONDE SOLO JSON. En el PRIMER intento genera UN SOLO JS que haga TODO: llene TODOS los campos visibles, seleccione dropdowns y haga click en el boton de siguiente/emitir/generar. No hagas un campo a la vez.
+- Todo de una vez: {"accion":"js","js":"JS_QUE_LLENA_TODO_Y_HACE_CLICK","descripcion":"llenando todo y emitiendo"}
 - Exito (ves CUALQUIERA de estas palabras: facturado/folio fiscal/PDF/XML/exitosamente/descarga/generada/timbrada/uuid/CFDI/gracias/enviada/correo/éxito/boton deshabilitado despues de generar): {"accion":"done","descripcion":"Factura generada"}
 - Pide cuenta: {"accion":"preguntar","descripcion":"pide crear cuenta","js":"js_crear_cuenta"}
 - Error: {"accion":"error","descripcion":"descripcion"}
