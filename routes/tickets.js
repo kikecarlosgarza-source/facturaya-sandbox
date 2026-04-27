@@ -101,7 +101,7 @@ Titulo: ${titulo}
 Intento: ${intento}
 
 Analiza el HTML y responde SOLO con JSON:
-- Si hay formulario para llenar: {"accion":"js","js":"(function(){function sv(id,v){var e=document.getElementById(id);if(e){e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}}sv('rfc','GAME860412CY6');sv('legalName','ENRIQUE CARLOS GARZA MONTEMAYOR');sv('email','kikecarlosgarza@gmail.com');sv('CP','66230');})()","descripcion":"llenando RFC"}
+- Si hay formulario para llenar: {"accion":"js","js":"(function(){function sv(id,v){var e=document.getElementById(id);if(e){e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}}sv('rfc','GAME860412CY6');sv('legalName','ENRIQUE CARLOS GARZA MONTEMAYOR');sv('email','kikecarlosgarza@gmail.com');sv('CP','66230');var reg=document.getElementById('receiverFiscalRegime');if(reg)reg.value='612';var uso=document.getElementById('ReceiverCfdiUse');if(uso)uso.value='G03';[reg,uso].forEach(function(e){if(e){e.dispatchEvent(new Event('change',{bubbles:true}));}});})()","descripcion":"llenando RFC"}
 - Si pide crear cuenta: {"accion":"preguntar","descripcion":"El portal pide crear una cuenta para facturar. ¿La creo?","js":"...js para crear cuenta..."}  
 - Si la factura ya se generó exitosamente: {"accion":"done","descripcion":"Factura generada"}
 - Si hay error: {"accion":"error","descripcion":"descripcion del error"}
