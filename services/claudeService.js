@@ -46,19 +46,7 @@ INSTRUCCIONES CRÍTICAS:
 3. FECHA: Busca la fecha en el ticket en cualquier formato.
 4. FOLIO/CODIGO: Busca el número de ticket, folio, orden, movimiento o código de facturación.
 5. PORTAL: Si el ticket menciona una URL o instrucciones de facturación como 'facture en www.homedepot.com.mx', extrae esa URL completa. Si es Home Depot usa https://www.homedepot.com.mx/facturacion. Si es McDonald's usa https://facturacion.mcdonalds.com.mx.
-6. Si no puedes leer algún dato claramente, ponlo vacío, NO inventes datos.
-
-Responde ÚNICAMENTE con este JSON:
-{
-  "establecimiento": "nombre del negocio",
-  "folio": "número de ticket/orden/folio",
-  "fecha": "fecha del ticket",
-  "total": 0,
-  "codigo_facturacion": "código de facturación si aparece",
-  "portal_facturacion": "URL del portal de facturación",
-  "rfc_emisor": "RFC del emisor si aparece",
-  "sistema_facturacion": "wansoft/otro"
-}
+6. Si no puedes leer algún dato claramente, ponlo vacío, NO inventes datos.`
 
   const response = await axios.post(CLAUDE_API, {
     model: MODEL,
