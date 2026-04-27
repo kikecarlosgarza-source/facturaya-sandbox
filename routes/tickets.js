@@ -99,7 +99,7 @@ router.post('/procesar-webview', authMiddleware, async (req, res) => {
 DATOS REALES DEL RECEPTOR (USA ESTOS EXACTAMENTE, NO LOS PLACEHOLDERS): RFC=${perfil?.rfc}, Nombre=${perfil?.nombre}, CP=${perfil?.cp}, Email=${perfil?.email}, Regimen=${perfil?.regimen||'612'}, UsoCFDI=${perfil?.uso_cfdi||'G03'}
 URL: ${url} | Intento: ${intento}/10
 
-Analiza los campos del formulario y el HTML. Genera JavaScript que llene los campos con los datos del receptor usando los IDs REALES que ves en el HTML. Luego haz click en buscar o emitir.
+Analiza los campos del formulario y el HTML. Genera JavaScript que llene los campos con los datos del receptor usando los IDs REALES que ves en el HTML. Para dropdowns usa: el.value="612" y luego el.dispatchEvent(new Event("change",{bubbles:true})). Para inputs de texto usa .value y dispatchEvent input+change. Luego haz click en el boton siguiente o emitir.
 
 RESPONDE SOLO JSON:
 - Llenar campos: {"accion":"js","js":"JS_CON_IDS_REALES","descripcion":"que hace"}
