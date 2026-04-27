@@ -929,6 +929,21 @@
           }
         ]
       }
+    },
+    {
+      "name": "Home Depot México",
+      "url_pattern": "homedepot.com.mx",
+      "keywords": [
+        "home depot",
+        "homedepot",
+        "the home depot"
+      ],
+      "rfc_emisor": "HDM021023RH4",
+      "automation": {
+        "base_url": "https://www.homedepot.com.mx/facturacion",
+        "requires_account": false,
+        "flow": []
+      }
     }
   ]
 }
