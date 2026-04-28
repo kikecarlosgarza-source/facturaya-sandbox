@@ -14,7 +14,7 @@ router.post('/analizar', authMiddleware, async (req, res) => {
     if (!imagen) return res.status(400).json({ error: 'Imagen requerida (base64)' });
 
     // 1. Analizar ticket con Claude
-    let ticketData = await analizarTicket(imagen, mimeType);
+    console.log("[IMG] tamaño base64:", imagen?.length, "mimeType:", mimeType); let ticketData = await analizarTicket(imagen, mimeType);
     ticketData = fixCodigoFacturacion(ticketData);
     // Si el codigo sigue siendo corto, usar OCR directamente
     if (!ticketData.codigo_facturacion || String(ticketData.codigo_facturacion).length < 12) {
