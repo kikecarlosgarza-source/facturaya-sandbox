@@ -14,7 +14,7 @@ const HEADERS = {
  * Extrae el texto de la respuesta y lo parsea como JSON.
  * FIX: maneja el caso donde Claude devuelve texto antes/después del JSON.
  */
-function parsearRespuestaJSON(content) {
+function parsearRespuestaJSON(content) 
   const text = content
     .filter(b => b.type === 'text')
     .map(b => b.text)
@@ -51,7 +51,7 @@ INSTRUCCIONES CRÍTICAS:
 Responde SOLO con JSON sin backticks:
 {
   "establecimiento": "nombre real del negocio (ej: Home Depot, McDonald's, OXXO)",
-  "folio": "numero de ticket/folio/orden",
+      "folio": "numero CORTO de ticket impreso DEBAJO del codigo de barras (NO el numero largo del codigo de barras). En Home Depot es el numero en formato 'SSSS NNN NNNNNN NNNN' impreso en texto bajo el barcode. Busca el numero mas corto y legible, NO el numero de 20+ digitos del codigo de barras",
   "fecha": "fecha del ticket",
   "total": 0,
   "codigo_facturacion": "codigo de facturacion o numero de barras largo",
