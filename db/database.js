@@ -71,3 +71,5 @@ db.exec(`
 `);
 
 module.exports = db;
+module.exports.db = db;
+module.exports.uuid = require('uuid').v4;
