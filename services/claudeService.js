@@ -39,7 +39,7 @@ function parsearRespuestaJSON(content)
  */
 async function analizarTicket(base64Image, mimeType = 'image/jpeg') {
   const systemPrompt = `Eres un experto en facturación electrónica México CFDI 4.0. Analiza la imagen del ticket CON MUCHO CUIDADO y extrae TODOS los datos visibles.
-
+ // v2
 INSTRUCCIONES CRÍTICAS:
 1. ESTABLECIMIENTO: Lee el nombre del negocio en la parte superior del ticket. Ejemplos: Home Depot, McDonald's, OXXO, Walmart, Kali, Farmacia del Ahorro. NUNCA escribas 'Portal de facturacion'.
 2. TOTAL: Busca el monto final a pagar. Puede decir: Total, TOTAL, Importe Total, Grand Total, Suma. SIEMPRE extrae este número.
