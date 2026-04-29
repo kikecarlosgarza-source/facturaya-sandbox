@@ -34,7 +34,8 @@ db.exec(`
     uso_cfdi    TEXT NOT NULL DEFAULT 'G03',
     email       TEXT NOT NULL,
     creado_en   TEXT DEFAULT (datetime('now')),
-    UNIQUE(usuario_id)
+          password_portales TEXT,
+          UNIQUE(usuario_id)
   );
 `);
 
@@ -66,6 +67,9 @@ db.exec(`
     portal_nombre   TEXT,
     portal_url      TEXT,
     requiere_cuenta INTEGER DEFAULT 0,
+    // Migracion: agregar password_portales si no existe
+    try { db.exec('ALTER TABLE perfiles_fiscales ADD COLUMN password_portales TEXT'); } catch(e) {}
+    
     ultimo_ok       TEXT
   );
 `);
