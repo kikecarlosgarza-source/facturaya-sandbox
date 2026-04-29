@@ -1,4 +1,4 @@
-const { chromium } = require('playwright');
+óíconst { chromium } = require('playwright');
 const db = require('../db/database');
 
 const PORTALES = {
