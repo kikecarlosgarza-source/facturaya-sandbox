@@ -99,7 +99,7 @@ async function procesarFactura(solicitudId) {
         const page = await context.newPage();
 
       console.log('[AUTO] Navegando a:', portal.url);
-        await page.goto(portal.url, { waitUntil: 'networkidle', timeout: 30000 });
+              await page.goto(portal.url, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
       const ticketData = {
               folio: solicitud.folio,
