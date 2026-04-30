@@ -16,11 +16,14 @@ const PORTALES = {
                               await page.fill('#ticket', ticketData.folio);
                               console.log('[AUTO] RFC y ticket llenados');
                               await page.waitForTimeout(4000);
-                                                  // Cerrar SweetAlert2 si aparece verificación de seguridad
-                                                  try { await page.evaluate(() => { if (window.Swal) Swal.close(); }); } catch(e) {}
-                                                  await page.waitForTimeout(500);
-                              await page.click('button.btn-primary', { timeout: 15000 });
-                              console.log('[AUTO] Click Continuar');
+                                                                          // Si hay SweetAlert2 de verificación, notificar captcha_required
+                                                  const swalVisible = await page.$('.swal2-container');
+                                                  if (swalVisible) {
+                                                                                      console.log('[AUTO] SweetAlert2 detectado - requiere verificación manual');
+                                                                                      return { success: false, captcha_required: true, mensaje: 'Verificación de seguridad requerida en Home Depot' };
+                                                  }
+                                                  await page.click('button.btn-primary', { timeout: 15000 });
+                          console.log('[AUTO] Click Continuar');
                               await page.waitForTimeout(4000);
                               try {
                                             const inputs = await page.$$('input:not([type="hidden"])');
