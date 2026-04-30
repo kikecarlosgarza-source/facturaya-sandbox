@@ -288,5 +288,8 @@ async function enviarCaptcha(solicitudId, captchaTexto) {
                                                                 throw new Error(timbre.message || 'Error en timbrado');
                                 }
         }
+}
+
+module.exports = { procesarFactura, enviarCaptcha, detectarPortal, facturarHomedepotAPI };
 
 module.exports = { procesarFactura, enviarCaptcha, detectarPortal, facturarHomedepotAPI };
