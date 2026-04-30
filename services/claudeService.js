@@ -31,7 +31,7 @@ async function analizarTicket(base64Image, mimeType = 'image/jpeg') {
         1. ESTABLECIMIENTO: nombre del negocio.
         2. TOTAL: monto final a pagar.
         3. FECHA: fecha de la compra (formato DD/MM/YYYY o como aparezca).
-        4. FOLIO: El numero que se usa para solicitar la factura en el portal. Para Home Depot es el numero largo impreso sobre el codigo de barras (15-25 digitos como 08652005008590402226295). Para Petro 7/Petromax es el numero de folio del ticket.
+            4. FOLIO: El numero que se usa para solicitar la factura en el portal. Para Home Depot es el numero largo impreso SOBRE el codigo de barras (15-25 digitos, ejemplo: 08652005008590402226295). IMPORTANTE: devuelvelo SIN espacios, como un solo numero continuo sin separaciones.
         5. PORTAL: URL del portal de facturacion si aparece en el ticket.
         6. NO_ESTACION: Para gasolineras (Petro 7, Petromax, OXXO Gas), el numero de estacion o sucursal que aparece en el ticket.
         7. WEB_ID: Para Petro 7/Petromax, el Web ID que aparece en el ticket (numero corto, generalmente 4-6 digitos).
