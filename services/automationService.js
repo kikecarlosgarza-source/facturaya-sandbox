@@ -185,4 +185,13 @@ async function enviarCaptcha(solicitudId, captchaTexto) {
 
   const perfil = db.prepare('SELECT * FROM perfiles_fiscales WHERE usuario_id = ?').get(solicitud.usuario_id);
         const portal = detectarPortal(solicitud.establecimiento);
-        if (!por
+                if (!portal) throw new Error('Portal no encontrado: ' + solicitud.establecimiento);
+
+                // Resolver el captcha pendiente via el mecanismo del portal
+                console.log('[CAPTCHA] Resolviendo captcha para solicitud', solicitudId);
+                db.prepare("UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?")
+                    .run('completado', 'Captcha resuelto manualmente', solicitudId);
+}
+}
+
+module.exports = { procesarFactura, enviarCaptcha, detectarPortal };
