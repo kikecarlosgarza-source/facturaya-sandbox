@@ -13,7 +13,7 @@ const PORTALES = {
                   async ejecutar(page, perfil, ticketData) {
                               await page.waitForSelector('#rfc', { timeout: 20000 });
                               await page.fill('#rfc', perfil.rfc);
-                              await page.fill('#ticket', ticketData.folio);
+                                                      await page.fill('#ticket', (ticketData.folio || '').replace(/\s/g, ''));
                               console.log('[AUTO] RFC y ticket llenados');
                               await page.waitForTimeout(4000);
                                                                           // Si hay SweetAlert2 de verificación, notificar captcha_required
