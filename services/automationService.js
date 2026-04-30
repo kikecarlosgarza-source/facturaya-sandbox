@@ -255,9 +255,38 @@ async function enviarCaptcha(solicitudId, captchaTexto) {
                                     lugarExpedicion: tienda.codigoPostal || '66269',
                                     subTotal: ticketInfo.conceptos?.reduce((s, c) => s + c.importe, 0) || 0,
                                     total: ticketInfo.metodoPagoInfo?.totalTicket || 0,
-                                    totalDocumento: ticketInfo.metodoPagoInfo?.totalTicket |
-            db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
-                .run('procesando', 'Captcha enviado', solicitudId);
-}
+                        totalDocumento: ticketInfo.metodoPagoInfo?.totalTicket || 0,
+                                                    totImpTras: ticketInfo.conceptos?.reduce((s, c) => s + (c.traslados?.[0]?.importe || 0), 0) || 0,
+                                                    totImpRet: 0,
+                                                    descuento: 0,
+                                                    conceptos: ticketInfo.conceptos || [],
+                                                    tickets: [ticket],
+                                                    tienda: { id: tienda.id, nombre: tienda.nombre, noTienda: tienda.noTienda, codigoPostal: tienda.codigoPostal },
+                                                    emisor: { id: tienda.emisorId || 1, rfc: tienda.emisorRfc || 'HDM001017AS1' },
+                                                    relacionados: [],
+                                                    canalEmision: 'WEB',
+                                                    activo: true,
+                                                    tipoOperacion: 'VTA',
+                                                    nombreEmisor: tienda.emisorNombre || 'HOME DEPOT MEXICO',
+                                                    noClienteAR: '',
+                                                    orderReference: ticketInfo.orderReference || '',
+                                                    pais: 'MEXICO',
+                                                    calle: 'NO ESPECIFICADO',
+                                                    colonia: 'NO ESPECIFICADO',
+                                                    estado: 'NO ESPECIFICADO',
+                                                    municipio: 'NO ESPECIFICADO',
+                                                    numeroExterior: 'S/N',
+                                                    numeroInterior: '',
+                                                    direccionReceptor: 'Codigo Postal: ' + (cliente.codigoPostal || perfil.cp)
+                    };
+                                const timbreResp = await axios.post(HD_BASE + 'timbrado', payload, { headers });
+                                const timbre = timbreResp.data;
+                                if (timbre.success) {
+                                                                console.log('[HD-API] Factura timbrada! UUID:', timbre.uuid, 'Folio:', timbre.folio);
+                                                                return { success: true, mensaje: 'Factura generada exitosamente', uuid: timbre.uuid, folio: timbre.folio };
+                                } else {
+                                                                throw new Error(timbre.message || 'Error en timbrado');
+                                }
+        }
 
 module.exports = { procesarFactura, enviarCaptcha, detectarPortal, facturarHomedepotAPI };
