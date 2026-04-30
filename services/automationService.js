@@ -10,51 +10,10 @@ try { fs.mkdirSync(CAPTCHA_DIR, { recursive: true }); } catch(e) {}
 const PORTALES = {
         'home depot': {
                   url: 'https://facturacion.homedepot.com.mx:2053/FacturacionWeb/#/portalweb',
-                  async ejecutar(page, perfil, ticketData) {
-                              await page.waitForSelector('#rfc', { timeout: 20000 });
-                              await page.fill('#rfc', perfil.rfc);
-                                                      await page.fill('#ticket', (ticketData.folio || '').replace(/\s/g, ''));
-                              console.log('[AUTO] RFC y ticket llenados');
-                              await page.waitForTimeout(4000);
-                                                                          // Si hay SweetAlert2 de verificación, notificar captcha_required
-                                                  const swalVisible = await page.$('.swal2-container');
-                                                  if (swalVisible) {
-                                                                                      console.log('[AUTO] SweetAlert2 detectado - requiere verificación manual');
-                                                                                      return { success: false, captcha_required: true, mensaje: 'Verificación de seguridad requerida en Home Depot' };
-                                                  }
-                                                  await page.click('button.btn-primary', { timeout: 15000 });
-                          console.log('[AUTO] Click Continuar');
-                              await page.waitForTimeout(4000);
-                              try {
-                                            const inputs = await page.$$('input:not([type="hidden"])');
-                                            console.log('[AUTO] Inputs en paso 2:', inputs.length);
-                                            const campoEmail = await page.$('input[type="email"], input[placeholder*="correo"], input[placeholder*="Correo"]');
-                                            if (campoEmail) await campoEmail.fill(perfil.email);
-                                            const campoNombre = await page.$('input[placeholder*="Nombre"], input[placeholder*="nombre"]');
-                                            if (campoNombre) await campoNombre.fill(perfil.nombre);
-                                            const campoCP = await page.$('input[placeholder*="Postal"], input[placeholder*="postal"]');
-                                            if (campoCP) await campoCP.fill(perfil.cp);
-                                            const selects = await page.$$('select');
-                                            if (selects.length >= 1) await selects[0].selectOption({ value: perfil.regimen || '612' }).catch(() => {});
-                                            if (selects.length >= 2) await selects[1].selectOption({ value: perfil.uso_cfdi || 'G03' }).catch(() => {});
-                                                                                      // Esperar a que desaparezca el Swal si está visible
-                                                              const swalPaso2 = await page.$('.swal2-container');
-                                                              if (swalPaso2) {
-                                                                                                  console.log('[AUTO] Swal en paso 2, esperando que desaparezca...');
-                                                                                                  await page.waitForSelector('.swal2-container', { state: 'hidden', timeout: 30000 }).catch(() => {});
-                                                                                                  await page.waitForTimeout(1000);
-                                                              }
-                                      await page.click('button.btn-primary', { timeout: 15000 });
-                                            await page.waitForTimeout(5000);
-                                            const texto = await page.textContent('body');
-                                            if (texto.includes('exitosa') || texto.includes('generada') || texto.includes('correo')) {
-                                                            return { success: true, mensaje: 'Factura generada exitosamente' };
-                                            }
-                              } catch (e) {
-                                            console.log('[AUTO] Error paso 2:', e.message);
-                              }
-                              return { success: false, mensaje: 'Proceso parcial - verifica en portal' };
-                  }
+        async ejecutar(page, perfil, ticketData) {
+                                        return await facturarHomedepotAPI(perfil, ticketData);
+        }
+
         },
 
         'petro': {
