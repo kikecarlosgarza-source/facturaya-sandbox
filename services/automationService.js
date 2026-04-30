@@ -139,9 +139,9 @@ async function procesarFactura(solicitudId) {
 
   db.prepare('UPDATE solicitudes SET status=? WHERE id=?').run('procesando', solicitudId);
 
-  const browser = await chromium.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+          const browser = await chromium.launch({
+                        headless: true,
+                        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-blink-features=AutomationControlled']
   });
 
   try {
@@ -150,6 +150,11 @@ async function procesarFactura(solicitudId) {
                         viewport: { width: 1280, height: 800 }
             });
             const page = await context.newPage();
+                          // Ocultar que es Playwright para evitar detección de Cloudflare
+                          await page.addInitScript(() => {
+                                                      Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+                                                      window.chrome = { runtime: {} };
+                          });
             console.log('[AUTO] Navegando a:', portal.url);
             await page.goto(portal.url, { waitUntil: 'domcontentloaded', timeout: 60000 });
             await page.waitForTimeout(3000);
