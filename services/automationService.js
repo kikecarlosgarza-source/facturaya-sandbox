@@ -178,18 +178,16 @@ async function procesarFactura(solicitudId) {
 
 // Enviar captcha resuelto por el usuario
 async function enviarCaptcha(solicitudId, captchaTexto) {
-        const solicitud = db.prepare('SELECT * FROM solicitudes WHERE id = ?').get(solicitudId);
-        if (!solicitud || solicitud.status !== 'captcha_required') {
-                  throw new Error('Solicitud no en espera de captcha');
-        }
-
-  const perfil = db.prepare('SELECT * FROM perfiles_fiscales WHERE usuario_id = ?').get(solicitud.usuario_id);
-        const portal = detectarPortal(solicitud.establecimiento);
-                if (!portal) throw new Error('Portal no encontrado: ' + solicitud.establecimiento);
-
-                // Resolver el captcha pendiente via el mecanismo del portal
-                console.log('[CAPTCHA] Resolviendo captcha para solicitud', solicitudId);
-                db.prepare("UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?")
-                    }
+            const solicitud = db.prepare('SELECT * FROM solicitudes WHERE id = ?').get(solicitudId);
+            if (!solicitud || solicitud.status !== 'captcha_required') {
+                            throw new Error('Solicitud no en espera de captcha');
+            }
+            const perfil = db.prepare('SELECT * FROM perfiles_fiscales WHERE usuario_id = ?').get(solicitud.usuario_id);
+            const portal = detectarPortal(solicitud.establecimiento);
+            if (!portal) throw new Error('Portal no encontrado: ' + solicitud.establecimiento);
+            console.log('[CAPTCHA] Captcha recibido para solicitud', solicitudId);
+            db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
+                .run('procesando', 'Captcha enviado', solicitudId);
+}
 
 module.exports = { procesarFactura, enviarCaptcha, detectarPortal };
