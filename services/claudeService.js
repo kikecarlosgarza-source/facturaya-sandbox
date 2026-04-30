@@ -68,7 +68,9 @@ async function analizarTicket(base64Image, mimeType = 'image/jpeg') {
             }]
   }, { headers: HEADERS });
 
-  return parsearRespuestaJSON(response.data.content);
+      const datos = parsearRespuestaJSON(response.data.content);
+            if (datos.folio) datos.folio = datos.folio.replace(/\s/g, '');
+            return datos;
 }
 
 module.exports = { analizarTicket };
