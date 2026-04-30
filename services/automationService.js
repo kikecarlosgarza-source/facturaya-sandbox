@@ -203,8 +203,102 @@ async function enviarCaptcha(solicitudId, captchaTexto) {
             const portal = detectarPortal(solicitud.establecimiento);
             if (!portal) throw new Error('Portal no encontrado: ' + solicitud.establecimiento);
             console.log('[CAPTCHA] Captcha recibido para solicitud', solicitudId);
+
+        // ============ HOME DEPOT API DIRECTO (sin Playwright) ============
+        const axios = require('axios');
+        const HD_BASE = 'https://facturacion.homedepot.com.mx:2053/CFDiConnectFacturacion/facturacion/';
+        const HD_SITEKEY = '0x4AAAAAAB6nsteTRVZ39dGq';
+        const CAPSOLVER_KEY = process.env.CAPSOLVER_API_KEY || '';
+
+        async function resolverTurnstileHD() {
+                    if (!CAPSOLVER_KEY) throw new Error('CAPSOLVER_API_KEY no configurado');
+                    console.log('[HD-API] Resolviendo Turnstile con CapSolver...');
+                    // Crear tarea
+                    const crear = await axios.post('https://api.capsolver.com/createTask', {
+                                    clientKey: CAPSOLVER_KEY,
+                                    task: {
+                                                        type: 'AntiTurnstileTaskProxyLess',
+                                                        websiteURL: 'https://facturacion.homedepot.com.mx:2053/FacturacionWeb/',
+                                                        websiteKey: HD_SITEKEY
+                                    }
+                    });
+                    const taskId = crear.data.taskId;
+                    if (!taskId) throw new Error('CapSolver no retorno taskId: ' + JSON.stringify(crear.data));
+                    // Esperar resultado
+                    for (let i = 0; i < 30; i++) {
+                                    await new Promise(r => setTimeout(r, 2000));
+                                    const resultado = await axios.post('https://api.capsolver.com/getTaskResult', {
+                                                        clientKey: CAPSOLVER_KEY,
+                                                        taskId
+                                    });
+                                    if (resultado.data.status === 'ready') {
+                                                        console.log('[HD-API] Turnstile resuelto!');
+                                                        return resultado.data.solution.token;
+                                    }
+                    }
+                    throw new Error('CapSolver timeout - no resolvio el Turnstile');
+        }
+
+        async function facturarHomedepotAPI(perfil, ticketData) {
+                    const headers = {
+                                    'Content-Type': 'application/json',
+                                    'Origin': 'https://facturacion.homedepot.com.mx:2053',
+                                    'Referer': 'https://facturacion.homedepot.com.mx:2053/FacturacionWeb/',
+                                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    };
+                    const rfc = perfil.rfc;
+                    const ticket = (ticketData.folio || '').replace(/\s/g, '');
+                    console.log('[HD-API] Iniciando flujo API para RFC:', rfc, 'Ticket:', ticket);
+                    // 1. Validar estado cliente
+                    await axios.get(HD_BASE + 'validarEstadoCliente?rfcCliente=' + rfc, { headers });
+                    console.log('[HD-API] Cliente valido');
+                    // 2. Resolver Turnstile y validar
+                    const token = await resolverTurnstileHD();
+                    await axios.post(HD_BASE + 'validarRecaptcha', { recaptchaToken: token }, { headers });
+                    console.log('[HD-API] Turnstile validado');
+                    // 3. Agregar ticket
+                    const ticketResp = await axios.get(HD_BASE + 'agregarTicket?noTicket=' + ticket, { headers });
+                    const ticketInfo = ticketResp.data;
+                    console.log('[HD-API] Ticket encontrado, tienda:', ticketInfo.tienda);
+                    // 4. Verificar comprobante previo
+                    await axios.get(HD_BASE + 'verificarComprobantePrevio?rfcReceptor=' + rfc + '&noTicket=' + ticket, { headers });
+                    // 5. Obtener cliente por RFC
+                    const clienteResp = await axios.get(HD_BASE + 'getClientePorRFC?rfcCliente=' + rfc, { headers });
+                    const cliente = clienteResp.data;
+                    console.log('[HD-API] Cliente ID:', cliente.id);
+                    // 6. Obtener tienda
+                    const tiendaResp = await axios.get(HD_BASE + 'obtenerTiendaPorNumero?noTienda=' + ticketInfo.tienda, { headers });
+                    const tienda = tiendaResp.data;
+                    // 7. Obtener serie
+                    const serieResp = await axios.get(HD_BASE + 'indexSerieTienda?idTienda=' + tienda.id + '&tipoDocumento=FACTURA', { headers });
+                    const serie = serieResp.data[0];
+                    console.log('[HD-API] Serie:', serie.nombre, 'ID:', serie.id);
+                    // 8. Timbrar
+                    const payload = {
+                                    tipoComprobante: serie.nombre,
+                                    tipoDocumento: 'I',
+                                    serieId: '1',
+                                    serieTiendaId: String(serie.id),
+                                    fechaEmision: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                                    rfcEmisor: tienda.emisorRfc || 'HDM001017AS1',
+                                    rfcReceptor: rfc,
+                                    nombreReceptor: cliente.nombre,
+                                    regimenReceptor: cliente.claveRegimenFiscal || perfil.regimen || '612',
+                                    domicilioReceptor: cliente.codigoPostal || perfil.cp,
+                                    usoCFDI: cliente.claveUsoCfdi || perfil.uso_cfdi || 'G03',
+                                    correo: cliente.correo || perfil.email,
+                                    metodoPago: ticketInfo.metodoPagoInfo?.metodoPago || 'PUE',
+                                    formaPago: ticketInfo.metodoPagoInfo?.tipoPago?.formaPago || '28',
+                                    condicionesPago: 'PAGADO',
+                                    moneda: 'MXN',
+                                    tipoCambio: 1,
+                                    exportacion: '01',
+                                    lugarExpedicion: tienda.codigoPostal || '66269',
+                                    subTotal: ticketInfo.conceptos?.reduce((s, c) => s + c.importe, 0) || 0,
+                                    total: ticketInfo.metodoPagoInfo?.totalTicket || 0,
+                                    totalDocumento: ticketInfo.metodoPagoInfo?.totalTicket |
             db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
                 .run('procesando', 'Captcha enviado', solicitudId);
 }
 
-module.exports = { procesarFactura, enviarCaptcha, detectarPortal };
+module.exports = { procesarFactura, enviarCaptcha, detectarPortal, facturarHomedepotAPI };
