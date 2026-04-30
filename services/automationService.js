@@ -190,8 +190,6 @@ async function enviarCaptcha(solicitudId, captchaTexto) {
                 // Resolver el captcha pendiente via el mecanismo del portal
                 console.log('[CAPTCHA] Resolviendo captcha para solicitud', solicitudId);
                 db.prepare("UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?")
-                    .run('completado', 'Captcha resuelto manualmente', solicitudId);
-}
-}
+                    }
 
 module.exports = { procesarFactura, enviarCaptcha, detectarPortal };
