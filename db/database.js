@@ -69,15 +69,14 @@ db.exec(`
     portal_nombre   TEXT,
     portal_url      TEXT,
     requiere_cuenta INTEGER DEFAULT 0,
-    try { db.exec('ALTER TABLE solicitudes ADD COLUMN estacion TEXT'); } catch(e) {}
-    try { db.exec('ALTER TABLE solicitudes ADD COLUMN web_id TEXT'); } catch(e) {}
-    // Migracion: agregar password_portales si no existe
-    try { db.exec('ALTER TABLE perfiles_fiscales ADD COLUMN password_portales TEXT'); } catch(e) {}
-    
     ultimo_ok       TEXT
-  );
-`);
+        );
+      `);  
 
+// Migraciones
+try { db.exec('ALTER TABLE solicitudes ADD COLUMN estacion TEXT'); } catch(e) {}
+try { db.exec('ALTER TABLE solicitudes ADD COLUMN web_id TEXT'); } catch(e) {}
+try { db.exec('ALTER TABLE perfiles_fiscales ADD COLUMN password_portales TEXT'); } catch(e) {}
 module.exports = db;
 module.exports.db = db;
 module.exports.uuid = require('uuid').v4;
