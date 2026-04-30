@@ -37,7 +37,9 @@ const PORTALES = {
                                             const selects = await page.$$('select');
                                             if (selects.length >= 1) await selects[0].selectOption({ value: perfil.regimen || '612' }).catch(() => {});
                                             if (selects.length >= 2) await selects[1].selectOption({ value: perfil.uso_cfdi || 'G03' }).catch(() => {});
-                                            await page.waitForTimeout(1000);
+                                                              const swalPaso2 = await page.$('.swal2-container');
+                                                              if (swalPaso2) return { success: false, captcha_required: true, mensaje: 'Verificación de seguridad en paso 2 de Home Depot' };
+                                      await page.waitForTimeout(1000);
                                             await page.click('button.btn-primary', { timeout: 15000 });
                                             await page.waitForTimeout(5000);
                                             const texto = await page.textContent('body');
