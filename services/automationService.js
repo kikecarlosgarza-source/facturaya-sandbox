@@ -260,6 +260,73 @@ const PORTALES = {
       await page.click('button[type="submit"], button:has-text("INICIAR"), button:has-text("Iniciar")');
       await page.waitForTimeout(4000);
 
+      // ── REGISTRAR DATOS FISCALES (si no hay RFC registrado) ────────────
+      console.log('[AUTO] OXXO Gas - registrando datos fiscales');
+      await page.evaluate(() => {
+        const links = Array.from(document.querySelectorAll('a.navAsAjax'));
+        const datosFiscales = links.find(l => l.textContent.includes('Registrar Datos Fiscales') || l.textContent.includes('Datos Fiscales'));
+        if (datosFiscales) datosFiscales.click();
+        else {
+          // Click en tarjeta "Acceder a Datos Fiscales"
+          const card = Array.from(document.querySelectorAll('a')).find(a => a.textContent.includes('ACCEDER A DATOS FISCALES'));
+          if (card) card.click();
+        }
+      });
+      await page.waitForTimeout(2000);
+
+      // Verificar si ya hay RFC registrado — si la tabla de datos fiscales tiene filas, skip registro
+      const tieneRFC = await page.evaluate(() => {
+        const tabla = document.querySelector('#datosfiscales tbody tr');
+        return tabla && !tabla.textContent.includes('Ningún Registro');
+      }).catch(() => false);
+
+      if (!tieneRFC) {
+        console.log('[AUTO] OXXO Gas - no hay RFC registrado, registrando ahora');
+        // Tipo contribuyente: 1=Persona Física, 2=Moral
+        const tipoVal = (perfil.regimen === '601' || perfil.regimen === '626') ? '2' : '1';
+        await page.evaluate((tipo, regimen, uso, rfc, email) => {
+          // Tipo contribuyente
+          const selTipo = document.querySelector('select#regimen');
+          if (selTipo) { selTipo.value = tipo; selTipo.dispatchEvent(new Event('change', {bubbles:true})); }
+        }, tipoVal, perfil.regimen, perfil.uso_cfdi, perfil.rfc, perfil.email);
+        await page.waitForTimeout(1000);
+
+        // Régimen fiscal y Uso CFDI
+        await page.evaluate((regimen, uso) => {
+          const selReg = document.querySelector('select#regimen_fiscal');
+          if (selReg) {
+            const opt = Array.from(selReg.options).find(o => o.value === regimen);
+            if (opt) { selReg.value = opt.value; selReg.dispatchEvent(new Event('change', {bubbles:true})); }
+          }
+          setTimeout(() => {
+            const selUso = document.querySelector('select#usocfdi');
+            if (selUso) {
+              const opt = Array.from(selUso.options).find(o => o.value === uso);
+              if (opt) { selUso.value = opt.value; selUso.dispatchEvent(new Event('change', {bubbles:true})); }
+            }
+          }, 500);
+        }, perfil.regimen || '612', perfil.uso_cfdi || 'G03');
+        await page.waitForTimeout(1500);
+
+        // RFC, Email, CP
+        await page.$eval('input#rfc', (el, v) => { el.value = v; el.dispatchEvent(new Event('input', {bubbles:true})); el.dispatchEvent(new Event('change', {bubbles:true})); }, perfil.rfc).catch(() => {});
+        await page.$eval('input#email', (el, v) => { el.value = v; el.dispatchEvent(new Event('input', {bubbles:true})); }, perfil.email).catch(() => {});
+        await page.$eval('input#cp', (el, v) => { el.value = v; el.dispatchEvent(new Event('input', {bubbles:true})); }, perfil.cp).catch(() => {});
+        await page.waitForTimeout(500);
+
+        // Click REGISTRAR DATOS FISCALES
+        await page.evaluate(() => {
+          const btn = Array.from(document.querySelectorAll('button, input[type="submit"], a.btn')).find(b =>
+            (b.textContent || b.value || '').includes('REGISTRAR') || (b.textContent || b.value || '').includes('Registrar')
+          );
+          if (btn) btn.click();
+        });
+        await page.waitForTimeout(3000);
+        console.log('[AUTO] OXXO Gas - datos fiscales registrados');
+      } else {
+        console.log('[AUTO] OXXO Gas - RFC ya registrado, saltando');
+      }
+
       // ── FACTURAR ───────────────────────────────────────────────────────
       console.log('[AUTO] OXXO Gas - navegando a facturar');
       // Click en link "Facturar" del sidebar (navAsAjax)
