@@ -159,6 +159,137 @@ const PORTALES = {
     }
   },
 
+  'oxxo gas': {
+    url: 'https://facturacion.oxxogas.com',
+    requiereCuenta: true,
+    async ejecutar(page, perfil, ticketData, solicitudId) {
+      // Parsear credenciales del portal
+      let creds = {};
+      try { creds = JSON.parse(perfil.password_portales || '{}')?.oxxo_gas || {}; } catch {}
+      if (!creds.email || !creds.password) {
+        db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
+          .run('manual', 'Configura tus credenciales de OXXO Gas en Perfil > Portales', solicitudId);
+        return { success: false, manual: true, mensaje: 'Credenciales OXXO Gas no configuradas. Ve a Perfil > Portales.' };
+      }
+
+      // Cerrar popup de aviso si aparece
+      await page.waitForTimeout(2000);
+      const popup = await page.$('.swal2-container, .modal, [class*="aviso"]');
+      if (popup) {
+        await page.evaluate(() => {
+          const closeBtn = document.querySelector('.swal2-close, .close, [aria-label="Close"], .btn-close');
+          if (closeBtn) closeBtn.click();
+          const overlay = document.querySelector('.swal2-container');
+          if (overlay) overlay.remove();
+        });
+        await page.waitForTimeout(500);
+      }
+
+      // ── LOGIN ──────────────────────────────────────────────────────────
+      console.log('[AUTO] OXXO Gas - iniciando login');
+      await page.waitForSelector('input[type="email"], input[name="email"], input[placeholder*="Correo"]', { timeout: 15000 });
+      await page.fill('input[type="email"], input[name="email"], input[placeholder*="Correo"]', creds.email);
+      await page.fill('input[type="password"], input[name="password"], input[placeholder*="Contrase"]', creds.password);
+
+      // Resolver reCAPTCHA con CapSolver
+      const capsolver_key = process.env.CAPSOLVER_API_KEY;
+      if (capsolver_key) {
+        console.log('[AUTO] OXXO Gas - resolviendo reCAPTCHA con CapSolver');
+        try {
+          const axios = require('axios');
+          // Obtener sitekey del reCAPTCHA
+          const sitekey = await page.evaluate(() => {
+            const el = document.querySelector('.g-recaptcha, [data-sitekey]');
+            return el?.dataset?.sitekey || null;
+          });
+          if (sitekey) {
+            // Crear tarea en CapSolver
+            const createRes = await axios.post('https://api.capsolver.com/createTask', {
+              clientKey: capsolver_key,
+              task: { type: 'ReCaptchaV2Task', websiteURL: 'https://facturacion.oxxogas.com', websiteKey: sitekey }
+            });
+            const taskId = createRes.data.taskId;
+            // Esperar resultado (max 90s)
+            let token = null;
+            for (let i = 0; i < 18; i++) {
+              await page.waitForTimeout(5000);
+              const result = await axios.post('https://api.capsolver.com/getTaskResult', { clientKey: capsolver_key, taskId });
+              if (result.data.status === 'ready') { token = result.data.solution.gRecaptchaResponse; break; }
+            }
+            if (token) {
+              await page.evaluate((t) => {
+                document.querySelector('#g-recaptcha-response, textarea[name="g-recaptcha-response"]').value = t;
+                if (window.captchaCallback) window.captchaCallback(t);
+                if (typeof ___grecaptcha_cfg !== 'undefined') {
+                  const id = Object.keys(___grecaptcha_cfg.clients || {})[0];
+                  if (id !== undefined) grecaptcha.execute(id);
+                }
+              }, token);
+              console.log('[AUTO] OXXO Gas - reCAPTCHA resuelto');
+            }
+          }
+        } catch (e) { console.log('[AUTO] OXXO Gas - CapSolver error:', e.message); }
+      }
+
+      // Click login
+      await page.click('button[type="submit"], button:has-text("INICIAR"), button:has-text("Iniciar")');
+      await page.waitForTimeout(4000);
+
+      // ── FACTURAR ───────────────────────────────────────────────────────
+      console.log('[AUTO] OXXO Gas - navegando a facturar');
+      // Buscar menu Facturar
+      const menuFacturar = await page.$('a:has-text("Facturar"), button:has-text("Facturar"), a[href*="factura"]');
+      if (menuFacturar) { await menuFacturar.click(); await page.waitForTimeout(2000); }
+
+      // Llenar datos del ticket
+      const fecha = ticketData.fecha_compra || '';
+      const folio = ticketData.folio || '';
+
+      const campoFolio = await page.$('input[placeholder*="folio"], input[placeholder*="Folio"], input[name*="folio"]');
+      if (campoFolio) await campoFolio.fill(folio);
+
+      const campoFecha = await page.$('input[type="date"], input[placeholder*="fecha"], input[name*="fecha"]');
+      if (campoFecha) await campoFecha.fill(fecha);
+
+      const campoTotal = await page.$('input[placeholder*="total"], input[placeholder*="Total"], input[name*="total"], input[name*="importe"]');
+      if (campoTotal) await campoTotal.fill(String(ticketData.total || ''));
+
+      // Continuar
+      await page.click('button:has-text("Continuar"), button:has-text("CONTINUAR"), button[type="submit"]');
+      await page.waitForTimeout(3000);
+
+      // Llenar datos fiscales si los pide
+      const rfcInput = await page.$('input[placeholder*="RFC"], input[name*="rfc"]');
+      if (rfcInput) {
+        await rfcInput.fill(perfil.rfc);
+        const nombreInput = await page.$('input[placeholder*="Nombre"], input[placeholder*="Razón"], input[name*="nombre"]');
+        if (nombreInput) await nombreInput.fill(perfil.nombre);
+        const cpInput = await page.$('input[placeholder*="Postal"], input[placeholder*="C.P"], input[name*="cp"]');
+        if (cpInput) await cpInput.fill(perfil.cp);
+        const emailInput = await page.$('input[type="email"], input[placeholder*="correo"]');
+        if (emailInput) await emailInput.fill(perfil.email);
+
+        // Régimen y CFDI via select
+        await page.evaluate((regimen, uso) => {
+          document.querySelectorAll('select').forEach((sel, i) => {
+            if (i === 0) { const opt = Array.from(sel.options).find(o => o.value === regimen || o.text.includes(regimen)); if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); } }
+            if (i === 1) { const opt = Array.from(sel.options).find(o => o.value === uso || o.text.includes(uso)); if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); } }
+          });
+        }, perfil.regimen || '612', perfil.uso_cfdi || 'G03');
+      }
+
+      // Generar factura
+      await page.click('button:has-text("Generar"), button:has-text("GENERAR"), button:has-text("Solicitar")').catch(() => {});
+      await page.waitForTimeout(5000);
+
+      const texto = await page.textContent('body');
+      if (texto.includes('exitosa') || texto.includes('generada') || texto.includes('generado') || texto.includes('enviada') || texto.includes('correo')) {
+        return { success: true, mensaje: 'Factura OXXO Gas generada exitosamente' };
+      }
+      return { success: false, mensaje: 'Proceso parcial OXXO Gas - verifica en portal' };
+    }
+  },
+
   'petro': {
     url: 'https://tarjetapetro-7.com.mx:8443/KPortalExterno/',
     async ejecutar(page, perfil, ticketData, solicitudId) {
