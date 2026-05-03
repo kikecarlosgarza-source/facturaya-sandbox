@@ -187,9 +187,20 @@ const PORTALES = {
 
       // ── LOGIN ──────────────────────────────────────────────────────────
       console.log('[AUTO] OXXO Gas - iniciando login');
-      await page.waitForSelector('input[type="email"], input[name="email"], input[placeholder*="Correo"]', { timeout: 15000 });
-      await page.fill('input[type="email"], input[name="email"], input[placeholder*="Correo"]', creds.email);
-      await page.fill('input[type="password"], input[name="password"], input[placeholder*="Contrase"]', creds.password);
+      // Cerrar popup de aviso si aparece (bloquea el form)
+      await page.evaluate(() => {
+        const modal = document.querySelector('.modal.show, .modal-backdrop, [class*="aviso"], [class*="popup"]');
+        if (modal) modal.remove();
+        // Remover backdrop si quedó
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+      });
+      await page.waitForTimeout(500);
+      // Selectores reales: input#username y input[name="password"]
+      await page.waitForSelector('input#username, input.username', { timeout: 15000 });
+      await page.fill('input#username, input.username', creds.email);
+      await page.fill('input[name="password"]', creds.password);
 
       // Resolver reCAPTCHA con CapSolver
       const capsolver_key = process.env.CAPSOLVER_API_KEY;
