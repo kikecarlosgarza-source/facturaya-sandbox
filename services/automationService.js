@@ -202,25 +202,26 @@ const PORTALES = {
       await page.fill('input#username, input.username', creds.email);
       await page.fill('input[name="password"]', creds.password);
 
-      // Resolver reCAPTCHA con CapSolver
+      // Resolver reCAPTCHA v2 visible con CapSolver (ReCaptchaV2TaskProxyLess)
       const capsolver_key = process.env.CAPSOLVER_API_KEY;
       if (capsolver_key) {
         console.log('[AUTO] OXXO Gas - resolviendo reCAPTCHA con CapSolver');
         try {
           const axios = require('axios');
-          // Obtener sitekey del reCAPTCHA
           const sitekey = await page.evaluate(() => {
             const el = document.querySelector('.g-recaptcha, [data-sitekey]');
             return el?.dataset?.sitekey || null;
           });
           if (sitekey) {
-            // Crear tarea en CapSolver
             const createRes = await axios.post('https://api.capsolver.com/createTask', {
               clientKey: capsolver_key,
-              task: { type: 'ReCaptchaV2Task', websiteURL: 'https://facturacion.oxxogas.com', websiteKey: sitekey }
+              task: {
+                type: 'ReCaptchaV2TaskProxyLess',
+                websiteURL: 'https://facturacion.oxxogas.com',
+                websiteKey: sitekey
+              }
             });
             const taskId = createRes.data.taskId;
-            // Esperar resultado (max 90s)
             let token = null;
             for (let i = 0; i < 18; i++) {
               await page.waitForTimeout(5000);
@@ -228,15 +229,28 @@ const PORTALES = {
               if (result.data.status === 'ready') { token = result.data.solution.gRecaptchaResponse; break; }
             }
             if (token) {
+              // Inyectar token en el textarea oculto y disparar callback del widget
               await page.evaluate((t) => {
-                document.querySelector('#g-recaptcha-response, textarea[name="g-recaptcha-response"]').value = t;
-                if (window.captchaCallback) window.captchaCallback(t);
-                if (typeof ___grecaptcha_cfg !== 'undefined') {
-                  const id = Object.keys(___grecaptcha_cfg.clients || {})[0];
-                  if (id !== undefined) grecaptcha.execute(id);
-                }
+                // Poner token en todos los textareas de recaptcha
+                document.querySelectorAll('textarea[name="g-recaptcha-response"]').forEach(el => { el.value = t; });
+                // Buscar y llamar el callback del widget
+                try {
+                  if (typeof ___grecaptcha_cfg !== 'undefined') {
+                    const clients = ___grecaptcha_cfg.clients;
+                    for (const key of Object.keys(clients || {})) {
+                      const client = clients[key];
+                      for (const k2 of Object.keys(client || {})) {
+                        if (client[k2] && typeof client[k2].callback === 'function') {
+                          client[k2].callback(t);
+                          break;
+                        }
+                      }
+                    }
+                  }
+                } catch(e) {}
               }, token);
               console.log('[AUTO] OXXO Gas - reCAPTCHA resuelto');
+              await page.waitForTimeout(1000);
             }
           }
         } catch (e) { console.log('[AUTO] OXXO Gas - CapSolver error:', e.message); }
