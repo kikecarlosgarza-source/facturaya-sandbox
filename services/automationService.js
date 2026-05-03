@@ -262,53 +262,94 @@ const PORTALES = {
 
       // ── FACTURAR ───────────────────────────────────────────────────────
       console.log('[AUTO] OXXO Gas - navegando a facturar');
-      // Buscar menu Facturar
-      const menuFacturar = await page.$('a:has-text("Facturar"), button:has-text("Facturar"), a[href*="factura"]');
-      if (menuFacturar) { await menuFacturar.click(); await page.waitForTimeout(2000); }
-
-      // Llenar datos del ticket
-      const fecha = ticketData.fecha_compra || '';
-      const folio = ticketData.folio || '';
-
-      const campoFolio = await page.$('input[placeholder*="folio"], input[placeholder*="Folio"], input[name*="folio"]');
-      if (campoFolio) await campoFolio.fill(folio);
-
-      const campoFecha = await page.$('input[type="date"], input[placeholder*="fecha"], input[name*="fecha"]');
-      if (campoFecha) await campoFecha.fill(fecha);
-
-      const campoTotal = await page.$('input[placeholder*="total"], input[placeholder*="Total"], input[name*="total"], input[name*="importe"]');
-      if (campoTotal) await campoTotal.fill(String(ticketData.total || ''));
-
-      // Continuar
-      await page.click('button:has-text("Continuar"), button:has-text("CONTINUAR"), button[type="submit"]');
+      // Click en link "Facturar" del sidebar (navAsAjax)
+      await page.evaluate(() => {
+        const links = Array.from(document.querySelectorAll('a.navAsAjax'));
+        const facturar = links.find(l => l.textContent.includes('Facturar') && !l.textContent.includes('Mis'));
+        if (facturar) facturar.click();
+      });
       await page.waitForTimeout(3000);
 
-      // Llenar datos fiscales si los pide
-      const rfcInput = await page.$('input[placeholder*="RFC"], input[name*="rfc"]');
-      if (rfcInput) {
-        await rfcInput.fill(perfil.rfc);
-        const nombreInput = await page.$('input[placeholder*="Nombre"], input[placeholder*="Razón"], input[name*="nombre"]');
-        if (nombreInput) await nombreInput.fill(perfil.nombre);
-        const cpInput = await page.$('input[placeholder*="Postal"], input[placeholder*="C.P"], input[name*="cp"]');
-        if (cpInput) await cpInput.fill(perfil.cp);
-        const emailInput = await page.$('input[type="email"], input[placeholder*="correo"]');
-        if (emailInput) await emailInput.fill(perfil.email);
+      // ── RFC a Facturar ────────────────────────────────────────────────
+      // Seleccionar el RFC registrado en el portal
+      await page.evaluate((rfc) => {
+        const sel = document.querySelector('select#rfc');
+        if (sel) {
+          const opt = Array.from(sel.options).find(o => o.text.includes(rfc) || o.value.includes(rfc));
+          if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); }
+          else if (sel.options.length > 1) { sel.selectedIndex = 1; sel.dispatchEvent(new Event('change', {bubbles:true})); }
+        }
+      }, perfil.rfc);
+      await page.waitForTimeout(1000);
 
-        // Régimen y CFDI via select
-        await page.evaluate((regimen, uso) => {
-          document.querySelectorAll('select').forEach((sel, i) => {
-            if (i === 0) { const opt = Array.from(sel.options).find(o => o.value === regimen || o.text.includes(regimen)); if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); } }
-            if (i === 1) { const opt = Array.from(sel.options).find(o => o.value === uso || o.text.includes(uso)); if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); } }
-          });
-        }, perfil.regimen || '612', perfil.uso_cfdi || 'G03');
-      }
+      // Seleccionar régimen fiscal
+      await page.evaluate((regimen) => {
+        const sel = document.querySelector('select#regimen_fiscal');
+        if (sel) {
+          const opt = Array.from(sel.options).find(o => o.value === regimen || o.text.includes(regimen));
+          if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); }
+          else if (sel.options.length > 1) { sel.selectedIndex = 1; sel.dispatchEvent(new Event('change', {bubbles:true})); }
+        }
+      }, perfil.regimen || '612');
+      await page.waitForTimeout(500);
 
-      // Generar factura
-      await page.click('button:has-text("Generar"), button:has-text("GENERAR"), button:has-text("Solicitar")').catch(() => {});
+      // Seleccionar uso CFDI
+      await page.evaluate((uso) => {
+        const sel = document.querySelector('select#usocfdi');
+        if (sel) {
+          const opt = Array.from(sel.options).find(o => o.value === uso || o.text.includes(uso));
+          if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); }
+          else if (sel.options.length > 1) { sel.selectedIndex = 1; sel.dispatchEvent(new Event('change', {bubbles:true})); }
+        }
+      }, perfil.uso_cfdi || 'G03');
+      await page.waitForTimeout(500);
+
+      // Email
+      await page.$eval('input#rfc_email', (el, email) => { el.value = email; el.dispatchEvent(new Event('input', {bubbles:true})); }, perfil.email).catch(() => {});
+
+      // ── Agregar Ticket ────────────────────────────────────────────────
+      // Seleccionar estación por no_estacion del ticket
+      const noEstacion = ticketData.estacion || '';
+      await page.evaluate((estacion) => {
+        const sel = document.querySelector('select#estacion');
+        if (!sel) return;
+        // Buscar por texto que contenga el ID de estacion
+        const opt = Array.from(sel.options).find(o =>
+          estacion && (o.text.toLowerCase().includes(estacion.toLowerCase().substring(0,8)) || o.value === estacion)
+        );
+        if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); }
+        else if (sel.options.length > 1) { sel.selectedIndex = 1; sel.dispatchEvent(new Event('change', {bubbles:true})); }
+      }, noEstacion);
+      await page.waitForTimeout(500);
+
+      // Folio
+      await page.$eval('input#ticket', (el, folio) => { el.value = folio; el.dispatchEvent(new Event('input', {bubbles:true})); el.dispatchEvent(new Event('change', {bubbles:true})); }, ticketData.folio || '').catch(() => {});
+
+      // Monto (con 2 decimales)
+      const montoStr = parseFloat(ticketData.total || 0).toFixed(2);
+      await page.$eval('input#monto', (el, monto) => { el.value = monto; el.dispatchEvent(new Event('input', {bubbles:true})); el.dispatchEvent(new Event('change', {bubbles:true})); }, montoStr).catch(() => {});
+      await page.waitForTimeout(500);
+
+      // Click Agregar Ticket
+      console.log('[AUTO] OXXO Gas - agregando ticket');
+      await page.evaluate(() => {
+        const btn = Array.from(document.querySelectorAll('button, a.btn')).find(b => b.textContent.includes('AGREGAR TICKET') || b.textContent.includes('Agregar Ticket'));
+        if (btn) btn.click();
+      });
+      await page.waitForTimeout(3000);
+
+      // Click Facturar (botón final de generar factura)
+      console.log('[AUTO] OXXO Gas - generando factura');
+      await page.evaluate(() => {
+        const btn = Array.from(document.querySelectorAll('button, a.btn, input[type="submit"]')).find(b =>
+          b.textContent.includes('Facturar') || b.textContent.includes('FACTURAR') || b.textContent.includes('Generar') || b.value?.includes('Facturar')
+        );
+        if (btn) btn.click();
+      });
       await page.waitForTimeout(5000);
 
       const texto = await page.textContent('body');
-      if (texto.includes('exitosa') || texto.includes('generada') || texto.includes('generado') || texto.includes('enviada') || texto.includes('correo')) {
+      if (texto.includes('exitosa') || texto.includes('generada') || texto.includes('generado') || texto.includes('enviada') || texto.includes('correo') || texto.includes('factura')) {
         return { success: true, mensaje: 'Factura OXXO Gas generada exitosamente' };
       }
       return { success: false, mensaje: 'Proceso parcial OXXO Gas - verifica en portal' };
