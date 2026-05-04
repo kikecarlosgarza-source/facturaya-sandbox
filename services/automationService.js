@@ -170,7 +170,7 @@ const PORTALES = {
 
       // Llenar numero de orden - selector confirmado: input#orderNumber
       await page.waitForSelector('input#orderNumber', { timeout: 15000 });
-      await page.fill('input#orderNumber', ticketData.folio || '');
+      const folioFormateado = (ticketData.folio||'').replace(/^(\d{2})(\d+)$/, '$1-$2'); await page.fill('input#orderNumber', folioFormateado);
       console.log('[AUTO] Bandeja - orden llenada:', ticketData.folio);
 
       // Llenar total - selector confirmado: input#total
