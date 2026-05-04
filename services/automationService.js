@@ -22,8 +22,11 @@ const PORTALES = {
       };
       const opts = { headers, validateStatus: () => true, timeout: 30000 };
 
-      const folio = (ticketData.folio || '').trim();
-      if (!folio) return { success: false, mensaje: 'HD: folio del ticket requerido' };
+      const folioRaw = (ticketData.folio || '').trim().replace(/\D/g, '');
+      if (!folioRaw) return { success: false, mensaje: 'HD: folio del ticket requerido' };
+      // El ticket imprime 22 dígitos, pero /agregarTicket espera 23 (la API añade un 0 al inicio).
+      // Si llega con 22 lo prefijamos; si ya viene con 23 (escaneado del barcode) lo dejamos.
+      const folio = folioRaw.length === 22 ? '0' + folioRaw : folioRaw;
 
       // 1. Resolver Turnstile via CapSolver
       const capKey = process.env.CAPSOLVER_API_KEY;

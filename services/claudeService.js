@@ -39,15 +39,14 @@ INSTRUCCIONES:
 3. FECHA: fecha de la compra (formato DD/MM/YYYY o como aparezca).
 4. FOLIO: El numero que se usa para solicitar la factura en el portal.
    - Para Home Depot: es el numero impreso DEBAJO del logo y SOBRE el codigo de barras.
-     Tiene EXACTAMENTE 23 digitos y aparece en grupos separados por espacios en el ticket
-     (formato tipico: 8 digitos + espacio + 8 digitos + espacio + 7 digitos, total 23).
-     Ejemplo: "08652006 06332050 1266014" -> devolver "08652006063320501266014" (23 digitos sin espacios).
-     CRITICO: cuenta los digitos antes de responder. Si tienes menos de 23, vuelve a leer la imagen.
-     Lee desde el PRIMER digito hasta el ULTIMO sin truncar. Pon especial atencion al digito final
-     que esta cerca del codigo de barras y a veces se ve mas pequeno o pegado al borde.
+     Tiene EXACTAMENTE 22 digitos impresos en el ticket (la API agrega un 0 al inicio internamente
+     para llegar a 23). Aparece en grupos separados por espacios, formato tipico 8+8+6.
+     Ejemplo: "08652006 06332050 126601" -> devolver "0865200606332050126601" (22 digitos sin espacios).
+     CRITICO: cuenta los digitos antes de responder. Deben ser 22 exactos. Lee desde el PRIMER digito
+     hasta el ULTIMO sin truncar.
    - Para otros comercios: el numero de folio o ticket que pide el portal.
-   Devuelve el folio EXACTAMENTE como aparece en el ticket, conservando guiones si los tiene.
-   Ejemplos: 78-1707 -> 78-1707, 08652006063320501266014 -> 08652006063320501266014 (23 digitos).
+   Devuelve el folio EXACTAMENTE como aparece impreso en el ticket, conservando guiones si los tiene.
+   Ejemplos: 78-1707 -> 78-1707, 0865200606332050126601 -> 0865200606332050126601 (22 digitos).
 5. PORTAL: URL del portal de facturacion si aparece en el ticket.
 6. NO_ESTACION: Para gasolineras (Petro 7, Petromax, OXXO Gas), el numero de estacion o sucursal.
 7. WEB_ID: Para Petro 7/Petromax, el Web ID del ticket (numero corto, generalmente 4-6 digitos).
@@ -78,7 +77,7 @@ Responde SOLO JSON sin backticks:
         },
         {
           type: 'text',
-          text: 'Extrae todos los datos de este ticket para solicitar factura electronica en Mexico. Lee el folio con cuidado: incluye TODOS los digitos sin omitir ninguno. Si es Home Depot el folio debe tener 23 digitos exactos — cuentalos antes de responder.'
+          text: 'Extrae todos los datos de este ticket para solicitar factura electronica en Mexico. Lee el folio con cuidado: incluye TODOS los digitos sin omitir ninguno. Si es Home Depot el folio debe tener 22 digitos exactos — cuentalos antes de responder.'
         }
       ]
     }]
