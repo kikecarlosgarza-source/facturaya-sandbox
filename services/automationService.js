@@ -158,7 +158,28 @@ const PORTALES = {
         } catch (e) { /* opcional */ }
       }
 
-      // 8. Construir comprobante y timbrar
+      // 8. Calcular totales desde los conceptos del ticket
+      const conceptos = datosTicket?.conceptos || [];
+      const round2 = n => Math.round((Number(n) || 0) * 100) / 100;
+      let subTotal = 0;
+      let totImpTras = 0;
+      let totDescuento = 0;
+      for (const c of conceptos) {
+        subTotal += Number(c?.importe) || 0;
+        totDescuento += Number(c?.descuento) || 0;
+        const traslados = c?.traslados || c?.impuestos?.traslados || [];
+        for (const t of traslados) totImpTras += Number(t?.importe) || 0;
+      }
+      subTotal = round2(subTotal);
+      totImpTras = round2(totImpTras);
+      totDescuento = round2(totDescuento);
+      const total = round2(subTotal - totDescuento + totImpTras);
+      console.log(`[AUTO] HD - calculados desde conceptos: subTotal=${subTotal} totImpTras=${totImpTras} descuento=${totDescuento} total=${total} (vs ticket.total=${datosTicket?.total})`);
+
+      // Régimen del emisor: probar varias keys (la API a veces usa una distinta a la del frontend)
+      const regimenEmisor = tienda?.claveRegimenFiscal || tienda?.regimenFiscal || tienda?.regimen || datosTicket?.regimenEmisor || '601';
+
+      // 9. Construir comprobante y timbrar
       const comprobante = {
         tipoComprobante: 'I',
         tipoDocumento: 'FACTURA',
@@ -172,10 +193,10 @@ const PORTALES = {
         metodoPago: datosTicket?.metodoPagoInfo?.metodoPago || 'PUE',
         lugarExpedicion: datosTicket?.codigoPostalTienda || tienda?.codigoPostal || '0',
         canalEmision: 'WEB',
-        rfcEmisor: tienda?.emisorRfc || '',
+        rfcEmisor: tienda?.emisorRfc || datosTicket?.rfcEmisor || '',
         nombreEmisor: tienda?.emisorNombre || '',
-        regimenEmisor: tienda?.claveRegimenFiscal || '',
-        emisor: tienda ? { id: tienda.emisorId || 0, rfc: tienda.emisorRfc || '', razonSocial: tienda.emisorNombre || '', regimenFiscal: tienda.claveRegimenFiscal || '' } : null,
+        regimenEmisor,
+        emisor: tienda ? { id: tienda.emisorId || 0, rfc: tienda.emisorRfc || datosTicket?.rfcEmisor || '', razonSocial: tienda.emisorNombre || '', regimenFiscal: regimenEmisor } : null,
         tienda: tienda ? { id: tienda.id || 0, noTienda: tienda.noTienda || noTienda } : null,
         rfcReceptor: perfil.rfc,
         nombreReceptor: nombreFiscal,
@@ -194,13 +215,13 @@ const PORTALES = {
         activo: true,
         relacionados: [],
         tickets: [datosTicket],
-        conceptos: datosTicket?.conceptos || [],
-        descuento: datosTicket?.descuento || 0,
+        conceptos,
+        descuento: totDescuento,
         totImpRet: 0,
-        totImpTras: datosTicket?.totImpTras || 0,
-        subTotal: datosTicket?.subTotal || 0,
-        total: datosTicket?.total || 0,
-        totalDocumento: datosTicket?.total || 0,
+        totImpTras,
+        subTotal,
+        total,
+        totalDocumento: total,
         noClienteAR: datosTicket?.cliente?.noCliente || '',
         ordenCompra: '',
         tieneDetallista: datosTicket?.tieneDetallista || false,
