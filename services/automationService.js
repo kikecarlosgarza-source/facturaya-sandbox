@@ -73,7 +73,14 @@ const PORTALES = {
 
         // ── Regimen fiscal: SweetAlert2 custom select - usar page.evaluate() ──
         const regimenTarget = perfil.regimen || '612';
+        // Intentar multiples estrategias para seleccionar regimen
         const regimenSet = await page.evaluate((regimen) => {
+          // Estrategia 0: SweetAlert2 select directo
+          var swalSel = document.querySelector('.swal2-select');
+          if(swalSel){var opt=Array.from(swalSel.options).find(function(o){return o.value===regimen||o.text.includes(regimen);});if(opt){swalSel.value=opt.value;swalSel.dispatchEvent(new Event('change',{bubbles:true}));return 'swal2-select:'+opt.value;}}
+          // Estrategia 1: ng-select o mat-select custom
+          var allSels = document.querySelectorAll('select,ng-select,[class*="select"],[class*="dropdown"]');
+          // Estrategia ORIGINAL:
           // Intentar selects nativos primero
           const selects = document.querySelectorAll('select');
           if (selects.length >= 1) {

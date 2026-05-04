@@ -56,9 +56,19 @@ async function claudeEjecutar(sc, ctx, hist, knowledge) {
     const txt = r.data.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
     const clean = txt.replace(/```[\w]*/g,'').replace(/```/g,'').trim();
     try { return JSON.parse(clean); } catch {
-      var m = clean.match(/\{[\s\S]*\}/);
-      if(m) return JSON.parse(m[0]);
-      return {estado:'error',mensaje_final:'JSON invalido de Claude'};
+      // Intentar extraer JSON aunque este truncado
+      try {
+        var start = clean.indexOf('{');
+        if(start>=0){
+          // Buscar el JSON completo progressivamente
+          for(var end=clean.length;end>start;end--){
+            try{ var candidate=clean.substring(start,end); JSON.parse(candidate); return JSON.parse(candidate); }catch{}
+          }
+        }
+      } catch {}
+      // Si el JS en el JSON esta truncado, retornar solo wait
+      console.log('[AGENT] JSON truncado de Claude, esperando...');
+      return {estado:'ejecutar',descripcion:'JSON truncado - esperando',js:'void 0;',aprendido:''};
     }
   } catch(e) {
     if(e.response&&e.response.status===429) throw new Error('RATE_LIMIT');
