@@ -14,14 +14,20 @@ function parsearRespuestaJSON(content) {
     .filter(b => b.type === 'text')
     .map(b => b.text)
     .join('');
-  const limpio = text.replace(/```[\w]*\n?/g, '').trim();
-  try {
-    return JSON.parse(limpio);
-  } catch (e) {
-    const match = limpio.match(/\{[\s\S]*\}/);
-    if (match) return JSON.parse(match[0]);
-    throw new Error('Respuesta no es JSON valido: ' + limpio.substring(0, 200));
+  const limpio = text.replace(/```[\w]*\n?/g, '').replace(/```/g, '').trim();
+  // Intentar parsear directo
+  try { return JSON.parse(limpio); } catch(e) {}
+  // Buscar primer { hasta ultimo }
+  const start = limpio.indexOf('{');
+  const end = limpio.lastIndexOf('}');
+  if(start >= 0 && end > start) {
+    try { return JSON.parse(limpio.substring(start, end+1)); } catch(e) {}
+    // Intentar desde el final progresivamente
+    for(let i = end; i > start; i--) {
+      try { return JSON.parse(limpio.substring(start, i+1)); } catch(e) {}
+    }
   }
+  throw new Error('Respuesta no es JSON valido: ' + limpio.substring(0, 200));
 }
 
 async function analizarTicket(base64Image, mimeType = 'image/jpeg') {
