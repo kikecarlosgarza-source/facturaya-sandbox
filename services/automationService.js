@@ -29,133 +29,96 @@ const PORTALES = {
       console.log('[AUTO] Click Continuar paso 1');
       await page.waitForTimeout(4000);
 
-      // ── PASO 2: Datos fiscales ────────────────────────────────────────────
+      // ── PASO 2: Datos fiscales (Angular form, selects nativos #regimenFiscal y #usoCfdi) ──
       try {
-        // Esperar a que cargue el formulario del paso 2
-        await page.waitForSelector('input[type="email"], input[placeholder*="correo"], input[placeholder*="Correo"], input[placeholder*="nombre"], input[placeholder*="Nombre"]', { timeout: 15000 }).catch(() => {});
+        // Esperar a que cargue alguno de los inputs específicos del paso 2
+        await page.waitForSelector('#nombre, #correo, #codigoPostal, #regimenFiscal', { timeout: 15000 }).catch(() => {});
         await page.waitForTimeout(1000);
 
-        // Cerrar cualquier Swal que bloquee el formulario via JS
-        const swalPaso2 = await page.$('.swal2-container');
-        if (swalPaso2) {
-          console.log('[AUTO] Swal en paso 2 detectado - cerrando via JS');
+        // Cerrar cualquier Swal que bloquee el formulario
+        if (await page.$('.swal2-container')) {
+          console.log('[AUTO] Swal en paso 2, cerrando');
           await page.evaluate(() => {
-            // Forzar cierre del SweetAlert2
-            const swalContainer = document.querySelector('.swal2-container');
-            if (swalContainer) swalContainer.remove();
-            // Quitar el overflow:hidden del body que bloquea interaccion
+            document.querySelectorAll('.swal2-container').forEach(e => e.remove());
             document.body.style.overflow = '';
             document.body.classList.remove('swal2-shown', 'swal2-height-auto');
           });
           await page.waitForTimeout(500);
         }
 
-        // Llenar email
-        const campoEmail = await page.$('input[type="email"], input[placeholder*="correo"], input[placeholder*="Correo"]');
-        if (campoEmail) {
-          await campoEmail.click();
-          await campoEmail.fill(perfil.email);
-        }
+        // Llenar inputs por id (Angular form ngModel)
+        const setInput = async (sel, val) => {
+          if (!val) return;
+          const el = await page.$(sel);
+          if (el) await el.fill(String(val));
+        };
+        await setInput('#nombre', perfil.nombre_sat || perfil.nombre);
+        await setInput('#correo', perfil.email);
+        await setInput('#codigoPostal', perfil.cp);
+        console.log('[AUTO] HD - inputs llenados (nombre/correo/cp)');
 
-        // Llenar nombre
-        const campoNombre = await page.$('input[placeholder*="Nombre"], input[placeholder*="nombre"]');
-        if (campoNombre) {
-          await campoNombre.click();
-          await campoNombre.fill(perfil.nombre);
-        }
+        // Esperar a que las opciones del régimen se carguen async
+        await page.waitForFunction(
+          () => { const s = document.querySelector('#regimenFiscal'); return s && s.options.length > 1; },
+          { timeout: 15000 }
+        ).catch(() => {});
 
-        // Llenar CP
-        const campoCP = await page.$('input[placeholder*="Postal"], input[placeholder*="postal"], input[placeholder*="CP"], input[placeholder*="C.P"]');
-        if (campoCP) {
-          await campoCP.click();
-          await campoCP.fill(perfil.cp);
-        }
-
-        // ── Regimen fiscal: SweetAlert2 custom select - usar page.evaluate() ──
+        // Régimen fiscal — select nativo Angular ngModel
         const regimenTarget = perfil.regimen || '612';
-        // Intentar multiples estrategias para seleccionar regimen
-        const regimenSet = await page.evaluate((regimen) => {
-          // Estrategia 0: SweetAlert2 select directo
-          var swalSel = document.querySelector('.swal2-select');
-          if(swalSel){var opt=Array.from(swalSel.options).find(function(o){return o.value===regimen||o.text.includes(regimen);});if(opt){swalSel.value=opt.value;swalSel.dispatchEvent(new Event('change',{bubbles:true}));return 'swal2-select:'+opt.value;}}
-          // Estrategia 1: ng-select o mat-select custom
-          var allSels = document.querySelectorAll('select,ng-select,[class*="select"],[class*="dropdown"]');
-          // Estrategia ORIGINAL:
-          // Intentar selects nativos primero
-          const selects = document.querySelectorAll('select');
-          if (selects.length >= 1) {
-            const sel = selects[0];
-            const opt = Array.from(sel.options).find(o => o.value === regimen || o.text.includes(regimen));
-            if (opt) {
-              sel.value = opt.value;
-              sel.dispatchEvent(new Event('change', { bubbles: true }));
-              sel.dispatchEvent(new Event('input', { bubbles: true }));
-              return 'select-native:' + opt.value;
-            }
-          }
-          // Buscar el trigger del Swal2 select de regimen y hacer click
-          const triggers = Array.from(document.querySelectorAll('button, .swal2-select, [class*="select"], [class*="Select"]'));
-          const regimenTrigger = triggers.find(el => {
-            const txt = el.textContent || '';
-            return txt.includes('Regimen') || txt.includes('régimen') || txt.includes('612') || txt.includes('Persona');
-          });
-          if (regimenTrigger) {
-            regimenTrigger.click();
-            return 'trigger-clicked:' + regimenTrigger.className;
-          }
-          return 'not-found';
+        const regimenResult = await page.evaluate((regimen) => {
+          const sel = document.querySelector('#regimenFiscal');
+          if (!sel) return 'no-select';
+          if (sel.disabled) return 'disabled:opts=' + sel.options.length;
+          const opt = Array.from(sel.options).find(o =>
+            o.value === regimen || o.value.endsWith(regimen) || o.text.startsWith(regimen) || o.text.includes(regimen)
+          );
+          if (!opt) return 'opt-not-found:' + Array.from(sel.options).map(o=>o.value).join(',').substring(0,200);
+          sel.value = opt.value;
+          // Angular ngModel necesita 'input' + 'change'
+          sel.dispatchEvent(new Event('input', { bubbles: true }));
+          sel.dispatchEvent(new Event('change', { bubbles: true }));
+          return 'ok:' + opt.value;
         }, regimenTarget);
-        console.log('[AUTO] Regimen result:', regimenSet);
+        console.log('[AUTO] HD - régimen:', regimenResult);
 
-        // Si el Swal se abrió para seleccionar regimen, seleccionar la opcion
-        await page.waitForTimeout(800);
-        const swalRegimenOpen = await page.$('.swal2-container .swal2-input, .swal2-container select, .swal2-container .swal2-radio');
-        if (swalRegimenOpen) {
-          console.log('[AUTO] Swal de regimen abierto, seleccionando opcion via evaluate');
-          await page.evaluate((regimen) => {
-            // Intentar input/select dentro del Swal
-            const swalInput = document.querySelector('.swal2-input');
-            if (swalInput) { swalInput.value = regimen; swalInput.dispatchEvent(new Event('input', { bubbles: true })); }
-            const swalSelect = document.querySelector('.swal2-select');
-            if (swalSelect) {
-              const opt = Array.from(swalSelect.options).find(o => o.value === regimen || o.text.includes(regimen));
-              if (opt) { swalSelect.value = opt.value; swalSelect.dispatchEvent(new Event('change', { bubbles: true })); }
-            }
-            // Confirmar el Swal
-            const confirmBtn = document.querySelector('.swal2-confirm');
-            if (confirmBtn) confirmBtn.click();
-          }, regimenTarget);
-          await page.waitForTimeout(800);
-        }
+        // Esperar a que usoCfdi se habilite y se filtren las opciones según el régimen
+        await page.waitForFunction(
+          () => { const s = document.querySelector('#usoCfdi'); return s && !s.disabled && s.options.length > 1; },
+          { timeout: 8000 }
+        ).catch(() => {});
 
-        // ── Uso CFDI ──────────────────────────────────────────────────────────
+        // Uso CFDI — select nativo
         const usoTarget = perfil.uso_cfdi || 'G03';
-        await page.evaluate((uso) => {
-          const selects = document.querySelectorAll('select');
-          if (selects.length >= 2) {
-            const sel = selects[1];
-            const opt = Array.from(sel.options).find(o => o.value === uso || o.text.includes(uso));
-            if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', { bubbles: true })); }
-          }
+        const usoResult = await page.evaluate((uso) => {
+          const sel = document.querySelector('#usoCfdi');
+          if (!sel) return 'no-select';
+          if (sel.disabled) return 'disabled';
+          const opt = Array.from(sel.options).find(o =>
+            o.value === uso || o.value.endsWith(uso) || o.text.startsWith(uso) || o.text.includes(uso)
+          );
+          if (!opt) return 'opt-not-found:' + Array.from(sel.options).map(o=>o.value).join(',').substring(0,200);
+          sel.value = opt.value;
+          sel.dispatchEvent(new Event('input', { bubbles: true }));
+          sel.dispatchEvent(new Event('change', { bubbles: true }));
+          return 'ok:' + opt.value;
         }, usoTarget);
+        console.log('[AUTO] HD - usoCFDI:', usoResult);
 
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(800);
 
-        // Asegurarse de que no hay Swal bloqueando antes de submit
+        // Limpiar swal residual antes de submit
         await page.evaluate(() => {
-          const swal = document.querySelector('.swal2-container');
-          if (swal) { swal.remove(); }
+          document.querySelectorAll('.swal2-container').forEach(e => e.remove());
           document.body.style.overflow = '';
           document.body.classList.remove('swal2-shown', 'swal2-height-auto');
         });
-        await page.waitForTimeout(500);
 
         await page.click('button.btn-primary', { timeout: 15000 });
-        console.log('[AUTO] Click submit paso 2');
-        await page.waitForTimeout(5000);
+        console.log('[AUTO] HD - submit paso 2');
+        await page.waitForTimeout(6000);
 
         const texto = await page.textContent('body');
-        if (texto.includes('exitosa') || texto.includes('generada') || texto.includes('correo')) {
+        if (texto.includes('exitosa') || texto.includes('generada') || texto.includes('correo') || texto.includes('Descargar')) {
           return { success: true, mensaje: 'Factura generada exitosamente' };
         }
       } catch (e) {
