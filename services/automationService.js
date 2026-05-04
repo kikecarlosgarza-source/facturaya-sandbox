@@ -835,9 +835,21 @@ async function ejecutarFacturamaShopify(perfil, ticketData, shopName) {
 }
 
 function detectarPortal(establecimiento, sistemaFacturacion) {
-  // Prioridad: si Claude detectó Facturama-Shopify, usar el flujo genérico
-  if (sistemaFacturacion === 'facturama_shopify') {
-    return { key: 'facturama-shopify', ...PORTALES['facturama-shopify'] };
+  // Prioridad: enrutar por sistema_facturacion si Claude lo identificó
+  switch (sistemaFacturacion) {
+    case 'facturama_shopify':
+      return { key: 'facturama-shopify', ...PORTALES['facturama-shopify'] };
+    case 'facturama_hd':
+      return { key: 'home depot', ...PORTALES['home depot'] };
+    case 'konesh':
+      return { key: 'petro', ...PORTALES['petro'] };
+    case 'oxxo_gas':
+      return { key: 'oxxo gas', ...PORTALES['oxxo gas'] };
+    case 'wansoft':
+      // Wansoft no tiene implementación HTTP genérica todavía. Cada cliente
+      // tiene su propio subdominio (factura.{empresa}.com.mx) y necesita
+      // captura específica de su API. Marcamos manual para intervención.
+      return null;
   }
   if (!establecimiento) return null;
   const n = establecimiento.toLowerCase();
@@ -857,9 +869,12 @@ async function procesarFactura(solicitudId) {
 
   const portal = detectarPortal(solicitud.establecimiento, solicitud.sistema_facturacion);
   if (!portal) {
+    const detalle = solicitud.sistema_facturacion === 'wansoft'
+      ? 'Portal Wansoft aún no soportado automáticamente — factura manualmente en el portal del comercio'
+      : 'Portal no soportado aun';
     db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
-      .run('manual', 'Portal no soportado aun', solicitudId);
-    return { success: false, manual: true };
+      .run('manual', detalle, solicitudId);
+    return { success: false, manual: true, mensaje: detalle };
   }
   console.log(`[AUTO] Portal seleccionado: ${portal.key} (sistema=${solicitud.sistema_facturacion || 'N/A'} shop=${solicitud.shop_name || 'N/A'})`);
 

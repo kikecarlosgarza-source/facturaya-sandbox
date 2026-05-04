@@ -50,15 +50,22 @@ INSTRUCCIONES:
 5. PORTAL: URL del portal de facturacion si aparece en el ticket.
 6. NO_ESTACION: Para gasolineras (Petro 7, Petromax, OXXO Gas), el numero de estacion o sucursal.
 7. WEB_ID: Para Petro 7/Petromax, el Web ID del ticket (numero corto, generalmente 4-6 digitos).
-8. SISTEMA_FACTURACION: identifica el backend usado para emitir CFDI:
+8. SISTEMA_FACTURACION: identifica el backend usado para emitir CFDI. Pistas:
+   pie de página o "Powered by" en el ticket, dominio del portal, marca del proveedor.
    - "facturama_shopify": tiendas online en Shopify que usan Facturama. Indicios:
-     URL del portal contiene "*.myshopify.com", o el ticket viene de una tienda
-     online (ej: bandeja.mx, moft.mx, gymshark.mx, etc). El portal suele ser de
-     la forma "shopname.com/pages/facturacion" o redirige a app.facturama.mx.
-   - "facturama_hd": Home Depot Mexico (facturacion.homedepot.com.mx).
-   - "konesh": Petro 7, Petromax (tarjetapetro-7.com.mx, petro7.mx).
-   - "wansoft": OXXO Gas y similares.
-   - "otro": cualquier otro sistema.
+     URL del portal contiene "*.myshopify.com", o pertenece a una tienda online
+     (ej: bandeja.mx, moft.mx). El portal suele ser "shopname.com/pages/facturacion"
+     o redirige a app.facturama.mx.
+   - "facturama_hd": Home Depot México únicamente (facturacion.homedepot.com.mx).
+   - "konesh": K Portal Externo de Konesh. Lo usan Petro 7 y Petromax. Indicios:
+     URL contiene "tarjetapetro-7.com.mx", "petro7.mx", "/KPortalExterno/" o
+     "/KJServices/", o el footer dice "Powered by Konesh".
+   - "wansoft": software Wansoft. Cada cliente despliega su propio subdominio
+     (ej: factura.{empresa}.com.mx, autofactura.{empresa}.com.mx). Indicios:
+     footer/copyright menciona "Wansoft" o "wansoft.mx", URL contiene "wansoft",
+     o el portal pide RFC + ticket + un campo "Pin/Clave/Folio Web" típico.
+   - "oxxo_gas": OXXO Gas (facturacion.oxxogas.com). Requiere cuenta con login.
+   - "otro": cualquier otro sistema o si no estás seguro.
 9. SHOP_NAME: SOLO si sistema_facturacion = "facturama_shopify". Es el handle de
    Shopify (parte antes de ".myshopify.com"). Si el dominio en el ticket es
    "bandeja.mx" responde "bandeja-mx". Si es "moft.mx" responde "moft". Si es
@@ -74,7 +81,7 @@ Responde SOLO JSON sin backticks:
   "rfc_emisor": "RFC del emisor si aparece",
   "no_estacion": "numero de estacion para gasolineras o null",
   "web_id": "Web ID para Petro 7 o null",
-  "sistema_facturacion": "facturama_shopify/facturama_hd/konesh/wansoft/otro",
+  "sistema_facturacion": "facturama_shopify/facturama_hd/konesh/wansoft/oxxo_gas/otro",
   "shop_name": "handle de Shopify si aplica, null si no"
 }`;
 
