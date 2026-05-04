@@ -171,9 +171,9 @@ const PORTALES = {
     async ejecutar(perfil, ticketData) {
       const axios = require('axios');
 
-      const transformarRespuesta = [(data) => {
-        if (typeof data !== 'string') return data;
-        try { return JSON.parse(data.replace(/^\(|\)$/g, '')); } catch { return data; }
+      const tr = [(d) => {
+        if (typeof d !== 'string') return d;
+        try { return JSON.parse(d.replace(/^\(|\)$/g, '')); } catch { return d; }
       }];
 
       const headers = {
@@ -195,7 +195,7 @@ const PORTALES = {
       try {
         const { data: searchData } = await axios.get(
           `https://app.facturama.mx/Shopify/Clients/SearchOrder?info=${searchInfo}`,
-          { headers, transformResponse: transformarRespuesta }
+          { headers, transformResponse: tr }
         );
         if (!searchData.success || !searchData.orderId) {
           return { success: false, mensaje: 'Bandeja: orden no encontrada - verifica folio y total' };
@@ -207,42 +207,91 @@ const PORTALES = {
 
       console.log('[AUTO] Bandeja HTTP - orderId:', orderId);
 
-      // Paso 2: SaveClient — genera la factura via Facturama
-      const params = new URLSearchParams({
-        ShopName: 'bandeja-mx',
-        OrderId: String(orderId),
-        'Client.Id': '',
-        'Client.Name': perfil.nombre,
-        'Client.Rfc': perfil.rfc,
-        'Client.FiscalRegime': perfil.regimen || '612',
-        'Client.CfdiUse': perfil.uso_cfdi || 'G03',
-        'Client.PaymentForm': '04',
-        'Client.Email': perfil.email,
-        'Client.Address.ZipCode': perfil.cp,
-        'Client.Address.Street': '',
-        'Client.Address.ExteriorNumber': '',
-        'Client.Address.InteriorNumber': '',
-        'Client.Address.Neighborhood': '',
-        'Client.Address.Locality': '',
-        'Client.Address.Municipality': '',
-        'Client.Address.State': '',
-        State: ''
-      });
+      // Paso 2: SaveClient (GET con Base64 JSON) — registra datos fiscales y obtiene shopInvoiceId
+      const dataClient = {
+        Id: '',
+        Rfc: perfil.rfc,
+        Name: perfil.nombre,
+        Email: perfil.email,
+        Address: {
+          Street: null,
+          ExteriorNumber: null,
+          InteriorNumber: '',
+          Neighborhood: null,
+          ZipCode: perfil.cp,
+          Locality: '',
+          Municipality: null,
+          State: null,
+          Country: 'Mexico'
+        },
+        PaymentMethod: '04',
+        CfdiUse: perfil.uso_cfdi || 'G03',
+        IvaPercentage: null,
+        ShowIeps: null,
+        PaymentForm: null,
+        FiscalRegime: perfil.regimen || '612'
+      };
 
+      const checkout = { Shop: 'bandeja-mx', order_id: String(orderId) };
+
+      let shopInvoiceId, version, creditNoteId;
       try {
-        const { data: saveData } = await axios.post(
+        const { data: saveData } = await axios.get(
           'https://app.facturama.mx/Shopify/Clients/SaveClient',
-          params.toString(),
-          { headers: { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' }, transformResponse: transformarRespuesta }
+          {
+            params: {
+              dataClient: Buffer.from(JSON.stringify(dataClient)).toString('base64'),
+              checkout: Buffer.from(JSON.stringify(checkout)).toString('base64')
+            },
+            headers,
+            transformResponse: tr
+          }
         );
         console.log('[AUTO] Bandeja HTTP - SaveClient:', JSON.stringify(saveData));
 
-        if (saveData.success || saveData.shopInvoiceId > 0) {
-          return { success: true, mensaje: 'Factura Bandeja generada exitosamente' };
+        if (!saveData.success || !saveData.shopInvoiceId) {
+          const errores = saveData.errors ? saveData.errors.join('; ') : 'RFC inválido o límite alcanzado';
+          return { success: false, mensaje: 'Bandeja: ' + errores };
         }
-        return { success: false, mensaje: 'Bandeja: factura no generada - RFC inválido o límite alcanzado' };
+
+        if (saveData.createdByLimit === false) {
+          return { success: false, mensaje: 'Bandeja: plazo de facturación vencido para esta orden' };
+        }
+
+        if (!saveData.orderStatus) {
+          return { success: false, mensaje: 'Bandeja: orden pendiente de pago, factura se generará al acreditarse' };
+        }
+
+        shopInvoiceId = saveData.shopInvoiceId;
+        creditNoteId = saveData.creditNoteId || 0;
+        version = saveData.version || '40';
       } catch (e) {
-        return { success: false, mensaje: 'Bandeja: error generando factura - ' + e.message };
+        return { success: false, mensaje: 'Bandeja: error en SaveClient - ' + e.message };
+      }
+
+      // Paso 3: CreateCfdiStoreFront — genera el XML CFDI y envía por email
+      try {
+        const invoiceId = creditNoteId > 0 ? creditNoteId : shopInvoiceId;
+        const { data: cfdiData } = await axios.get(
+          `https://app.facturama.mx/Shopify/Invoice${version}/CreateCfdiStoreFront`,
+          {
+            params: { ShopName: 'bandeja-mx', idShopifyInvoice: invoiceId, exchangeRate: '' },
+            headers,
+            transformResponse: tr
+          }
+        );
+        console.log('[AUTO] Bandeja HTTP - CreateCfdi:', JSON.stringify(cfdiData));
+
+        if (cfdiData.existInvoice) {
+          return { success: true, mensaje: 'Bandeja: factura ya generada previamente, consulta tu correo' };
+        }
+        if (cfdiData.success) {
+          const enviada = cfdiData.send ? ' y enviada al correo' : '';
+          return { success: true, mensaje: `Factura Bandeja generada exitosamente${enviada}` };
+        }
+        return { success: false, mensaje: 'Bandeja: ' + (cfdiData.message || 'error al generar CFDI') };
+      } catch (e) {
+        return { success: false, mensaje: 'Bandeja: error en CreateCfdi - ' + e.message };
       }
     }
   },
