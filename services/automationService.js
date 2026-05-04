@@ -9,149 +9,201 @@ try { fs.mkdirSync(CAPTCHA_DIR, { recursive: true }); } catch(e) {}
 
 const PORTALES = {
   'home depot': {
-    url: 'https://facturacion.homedepot.com.mx:2053/FacturacionWeb/#/portalweb',
-    async ejecutar(page, perfil, ticketData) {
-      // ── PASO 1: RFC + ticket ──────────────────────────────────────────────
-      await page.waitForSelector('#rfc', { timeout: 20000 });
-      await page.fill('#rfc', perfil.rfc);
-      await page.fill('#ticket', (ticketData.folio || '').replace(/[^0-9]/g, ''));
-      console.log('[AUTO] RFC y ticket llenados');
-      await page.waitForTimeout(4000);
+    httpOnly: true,
+    async ejecutar(perfil, ticketData) {
+      const axios = require('axios');
+      const BASE = 'https://facturacion.homedepot.com.mx:2053/CFDiConnectFacturacion/facturacion';
+      const TURNSTILE_SITEKEY = '0x4AAAAAAB6nsteTRVZ39dGq';
+      const headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
+        'Origin': 'https://facturacion.homedepot.com.mx:2053',
+        'Referer': 'https://facturacion.homedepot.com.mx:2053/FacturacionWeb/'
+      };
+      const opts = { headers, validateStatus: () => true, timeout: 30000 };
 
-      // Si hay SweetAlert2 de verificacion (captcha), notificar
-      const swalVisible = await page.$('.swal2-container');
-      if (swalVisible) {
-        console.log('[AUTO] SweetAlert2 detectado - requiere verificacion manual');
-        return { success: false, captcha_required: true, mensaje: 'Verificacion de seguridad requerida en Home Depot' };
+      const folio = (ticketData.folio || '').trim();
+      if (!folio) return { success: false, mensaje: 'HD: folio del ticket requerido' };
+
+      // 1. Resolver Turnstile via CapSolver
+      const capKey = process.env.CAPSOLVER_API_KEY;
+      if (!capKey) return { success: false, mensaje: 'HD: CAPSOLVER_API_KEY no configurada' };
+
+      let turnstileToken;
+      try {
+        console.log('[AUTO] HD - resolviendo Turnstile via CapSolver');
+        const create = await axios.post('https://api.capsolver.com/createTask', {
+          clientKey: capKey,
+          task: { type: 'AntiTurnstileTaskProxyLess', websiteURL: 'https://facturacion.homedepot.com.mx/FacturacionWeb/', websiteKey: TURNSTILE_SITEKEY }
+        }, { timeout: 15000 });
+        if (create.data.errorId) return { success: false, mensaje: 'HD: CapSolver error - ' + create.data.errorDescription };
+        const taskId = create.data.taskId;
+        for (let i = 0; i < 30; i++) {
+          await new Promise(r => setTimeout(r, 4000));
+          const res = await axios.post('https://api.capsolver.com/getTaskResult', { clientKey: capKey, taskId }, { timeout: 15000 });
+          if (res.data.status === 'ready') { turnstileToken = res.data.solution.token; break; }
+          if (res.data.errorId) return { success: false, mensaje: 'HD: CapSolver - ' + res.data.errorDescription };
+        }
+        if (!turnstileToken) return { success: false, mensaje: 'HD: CapSolver timeout' };
+        console.log('[AUTO] HD - Turnstile token obtenido');
+      } catch (e) {
+        return { success: false, mensaje: 'HD: error CapSolver - ' + e.message };
       }
 
-      await page.click('button.btn-primary', { timeout: 15000 });
-      console.log('[AUTO] Click Continuar paso 1');
-      await page.waitForTimeout(4000);
-
-      // ── PASO 2: Datos fiscales (Angular form, selects nativos #regimenFiscal y #usoCfdi) ──
+      // 2. Validar Turnstile en el backend HD
       try {
-        // Cerrar cualquier Swal residual (post-captcha o post-submit)
-        if (await page.$('.swal2-container')) {
-          console.log('[AUTO] HD - Swal en paso 2, cerrando');
-          await page.evaluate(() => {
-            document.querySelectorAll('.swal2-container').forEach(e => e.remove());
-            document.body.style.overflow = '';
-            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-          });
-          await page.waitForTimeout(800);
-        }
-
-        // Esperar a que el select de régimen aparezca en el DOM (Angular lo renderiza async después del Turnstile)
-        let regimenAparecio = false;
-        try {
-          await page.waitForSelector('#regimenFiscal', { timeout: 15000 });
-          regimenAparecio = true;
-          console.log('[AUTO] HD - #regimenFiscal apareció en DOM');
-        } catch (e) {
-          console.log('[AUTO] HD - #regimenFiscal NO apareció en 15s, dump del body para diagnóstico:');
-          const dump = await page.evaluate(() => ({
-            url: location.href,
-            bodyText: (document.body.innerText || '').substring(0, 2000),
-            swalText: (document.querySelector('.swal2-container')?.textContent || '').substring(0, 500),
-            swalHTML: (document.querySelector('.swal2-container')?.innerHTML || '').substring(0, 2000),
-            visibleInputs: Array.from(document.querySelectorAll('input,select,textarea'))
-              .filter(el => el.offsetParent !== null)
-              .map(el => ({ tag: el.tagName, id: el.id, name: el.name, type: el.type, placeholder: el.placeholder, classes: el.className.substring(0, 60) })),
-            allSelects: Array.from(document.querySelectorAll('select')).map(s => ({ id: s.id, name: s.name, visible: s.offsetParent !== null, opts: s.options.length })),
-            visibleButtons: Array.from(document.querySelectorAll('button')).filter(b => b.offsetParent !== null).map(b => ({ text: (b.textContent || '').trim().substring(0, 40), disabled: b.disabled })),
-            bodyHTMLSample: document.body.outerHTML.substring(0, 5000)
-          }));
-          console.log('[AUTO] HD DIAG url=' + dump.url);
-          console.log('[AUTO] HD DIAG swalText=' + dump.swalText);
-          console.log('[AUTO] HD DIAG visibleInputs=' + JSON.stringify(dump.visibleInputs));
-          console.log('[AUTO] HD DIAG allSelects=' + JSON.stringify(dump.allSelects));
-          console.log('[AUTO] HD DIAG buttons=' + JSON.stringify(dump.visibleButtons));
-          console.log('[AUTO] HD DIAG bodyText=' + dump.bodyText);
-          console.log('[AUTO] HD DIAG swalHTML=' + dump.swalHTML);
-          console.log('[AUTO] HD DIAG bodyHTML=' + dump.bodyHTMLSample);
-          return { success: false, mensaje: 'HD: paso 2 no cargó (#regimenFiscal ausente) — ver logs' };
-        }
-
-        // Llenar inputs por id (Angular form ngModel)
-        const setInput = async (sel, val) => {
-          if (!val) return;
-          const el = await page.$(sel);
-          if (el) await el.fill(String(val));
-        };
-        await setInput('#nombre', perfil.nombre_sat || perfil.nombre);
-        await setInput('#correo', perfil.email);
-        await setInput('#codigoPostal', perfil.cp);
-        console.log('[AUTO] HD - inputs llenados (nombre/correo/cp)');
-
-        // Esperar a que las opciones del régimen se carguen async (getCatRegimenfiscal)
-        await page.waitForFunction(
-          () => { const s = document.querySelector('#regimenFiscal'); return s && s.options.length > 1; },
-          { timeout: 15000 }
-        ).catch(() => {});
-
-        // Régimen fiscal — select nativo Angular ngModel
-        const regimenTarget = perfil.regimen || '612';
-        const regimenResult = await page.evaluate((regimen) => {
-          const sel = document.querySelector('#regimenFiscal');
-          if (!sel) return 'no-select';
-          if (sel.disabled) return 'disabled:opts=' + sel.options.length;
-          const opt = Array.from(sel.options).find(o =>
-            o.value === regimen || o.value.endsWith(regimen) || o.text.startsWith(regimen) || o.text.includes(regimen)
-          );
-          if (!opt) return 'opt-not-found:' + Array.from(sel.options).map(o=>o.value).join(',').substring(0,200);
-          sel.value = opt.value;
-          sel.dispatchEvent(new Event('input', { bubbles: true }));
-          sel.dispatchEvent(new Event('change', { bubbles: true }));
-          return 'ok:' + opt.value;
-        }, regimenTarget);
-        console.log('[AUTO] HD - régimen:', regimenResult);
-
-        // Esperar a que usoCfdi se habilite y se filtren las opciones según el régimen
-        await page.waitForFunction(
-          () => { const s = document.querySelector('#usoCfdi'); return s && !s.disabled && s.options.length > 1; },
-          { timeout: 8000 }
-        ).catch(() => {});
-
-        // Uso CFDI — select nativo
-        const usoTarget = perfil.uso_cfdi || 'G03';
-        const usoResult = await page.evaluate((uso) => {
-          const sel = document.querySelector('#usoCfdi');
-          if (!sel) return 'no-select';
-          if (sel.disabled) return 'disabled';
-          const opt = Array.from(sel.options).find(o =>
-            o.value === uso || o.value.endsWith(uso) || o.text.startsWith(uso) || o.text.includes(uso)
-          );
-          if (!opt) return 'opt-not-found:' + Array.from(sel.options).map(o=>o.value).join(',').substring(0,200);
-          sel.value = opt.value;
-          sel.dispatchEvent(new Event('input', { bubbles: true }));
-          sel.dispatchEvent(new Event('change', { bubbles: true }));
-          return 'ok:' + opt.value;
-        }, usoTarget);
-        console.log('[AUTO] HD - usoCFDI:', usoResult);
-
-        await page.waitForTimeout(800);
-
-        // Limpiar swal residual antes de submit
-        await page.evaluate(() => {
-          document.querySelectorAll('.swal2-container').forEach(e => e.remove());
-          document.body.style.overflow = '';
-          document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-        });
-
-        await page.click('button.btn-primary', { timeout: 15000 });
-        console.log('[AUTO] HD - submit paso 2');
-        await page.waitForTimeout(6000);
-
-        const texto = await page.textContent('body');
-        if (texto.includes('exitosa') || texto.includes('generada') || texto.includes('correo') || texto.includes('Descargar')) {
-          return { success: true, mensaje: 'Factura generada exitosamente' };
+        const r = await axios.post(`${BASE}/validarRecaptcha`, { recaptchaToken: turnstileToken }, opts);
+        console.log('[AUTO] HD - validarRecaptcha:', JSON.stringify(r.data));
+        if (!r.data?.validado || r.data?.codigo !== 200) {
+          return { success: false, mensaje: 'HD: Turnstile rechazado por backend - ' + (r.data?.mensaje || 'inválido') };
         }
       } catch (e) {
-        console.log('[AUTO] Error paso 2:', e.message);
+        return { success: false, mensaje: 'HD: error validarRecaptcha - ' + e.message };
       }
 
-      return { success: false, mensaje: 'Proceso parcial - verifica en portal' };
+      // 3. Buscar ticket (devuelve datos completos: tienda, conceptos, métodos de pago, montos)
+      let datosTicket;
+      try {
+        const r = await axios.get(`${BASE}/agregarTicket`, { ...opts, params: { noTicket: folio } });
+        console.log('[AUTO] HD - agregarTicket codigo:', r.data?.codigo, 'mensaje:', r.data?.mensaje);
+        if (r.data?.codigo !== 200) {
+          return { success: false, mensaje: 'HD: ticket no encontrado - ' + (r.data?.mensaje || 'inválido') };
+        }
+        datosTicket = r.data.ticket || r.data.datosTicket || r.data;
+      } catch (e) {
+        return { success: false, mensaje: 'HD: error agregarTicket - ' + e.message };
+      }
+
+      // 4. Validar estado del cliente (RFC)
+      try {
+        const r = await axios.get(`${BASE}/validarEstadoCliente`, { ...opts, params: { rfcCliente: perfil.rfc } });
+        if (r.data?.codigo === 403) {
+          return { success: false, mensaje: 'HD: RFC bloqueado - ' + (r.data?.mensaje || '') };
+        }
+      } catch (e) {
+        return { success: false, mensaje: 'HD: error validarEstadoCliente - ' + e.message };
+      }
+
+      // 5. Verificar si el ticket ya fue facturado
+      try {
+        const r = await axios.get(`${BASE}/verificarComprobantePrevio`, { ...opts, params: { rfcReceptor: perfil.rfc, noTicket: folio } });
+        if (r.data?.codigo === 200 && (r.data?.uuid || r.data?.uuidExistente)) {
+          return { success: true, mensaje: 'HD: ticket ya facturado anteriormente, UUID ' + (r.data.uuid || r.data.uuidExistente) };
+        }
+      } catch (e) { /* no crítico */ }
+
+      // 6. Buscar cliente existente por RFC; si no existe, guardar uno nuevo
+      const nombreFiscal = perfil.nombre_sat || perfil.nombre;
+      let clienteFacturama = null;
+      try {
+        const r = await axios.get(`${BASE}/getClientePorRFC`, { ...opts, params: { rfcCliente: perfil.rfc } });
+        if (r.data?.codigo === 200 && r.data.cliente) clienteFacturama = r.data.cliente;
+      } catch (e) { /* puede no existir */ }
+
+      const datosCliente = {
+        rfc: perfil.rfc,
+        nombre: nombreFiscal,
+        codigoPostal: perfil.cp,
+        regimenFiscal: perfil.regimen || '612',
+        usoCfdi: perfil.uso_cfdi || 'G03',
+        correo: perfil.email
+      };
+
+      try {
+        if (!clienteFacturama) {
+          const r = await axios.post(`${BASE}/guardarCliente`, datosCliente, opts);
+          console.log('[AUTO] HD - guardarCliente:', r.data?.codigo, r.data?.mensaje);
+          if (r.data?.codigo !== 200) {
+            return { success: false, mensaje: 'HD: error guardarCliente - ' + (r.data?.mensaje || 'falló') };
+          }
+          clienteFacturama = r.data.cliente;
+        } else if (clienteFacturama.id) {
+          // Actualizar datos por si cambiaron
+          const update = { ...clienteFacturama, ...datosCliente };
+          await axios.put(`${BASE}/actualizarCliente`, update, opts).catch(() => {});
+        }
+      } catch (e) {
+        return { success: false, mensaje: 'HD: error guardar/actualizar cliente - ' + e.message };
+      }
+
+      // 7. Obtener tienda del ticket (necesario para datos del emisor)
+      const noTienda = datosTicket?.noTienda || datosTicket?.tienda?.noTienda;
+      let tienda = null;
+      if (noTienda) {
+        try {
+          const r = await axios.get(`${BASE}/obtenerTiendaPorNumero`, { ...opts, params: { noTienda: String(noTienda) } });
+          if (r.data?.codigo === 200) tienda = r.data.tienda || r.data;
+        } catch (e) { /* opcional */ }
+      }
+
+      // 8. Construir comprobante y timbrar
+      const comprobante = {
+        tipoComprobante: 'I',
+        tipoDocumento: 'FACTURA',
+        serieId: tienda?.emisorId ? String(tienda.emisorId) : '',
+        serieTiendaId: tienda?.id ? String(tienda.id) : '',
+        moneda: 'MXN',
+        tipoCambio: 1,
+        exportacion: '01',
+        condicionesPago: datosTicket?.metodoPagoInfo?.condicionesPago || 'PAGADO',
+        formaPago: datosTicket?.metodoPagoInfo?.tipoPago?.formaPago || '01',
+        metodoPago: datosTicket?.metodoPagoInfo?.metodoPago || 'PUE',
+        lugarExpedicion: datosTicket?.codigoPostalTienda || tienda?.codigoPostal || '0',
+        canalEmision: 'WEB',
+        rfcEmisor: tienda?.emisorRfc || '',
+        nombreEmisor: tienda?.emisorNombre || '',
+        regimenEmisor: tienda?.claveRegimenFiscal || '',
+        emisor: tienda ? { id: tienda.emisorId || 0, rfc: tienda.emisorRfc || '', razonSocial: tienda.emisorNombre || '', regimenFiscal: tienda.claveRegimenFiscal || '' } : null,
+        tienda: tienda ? { id: tienda.id || 0, noTienda: tienda.noTienda || noTienda } : null,
+        rfcReceptor: perfil.rfc,
+        nombreReceptor: nombreFiscal,
+        regimenReceptor: perfil.regimen || '612',
+        usoCFDI: perfil.uso_cfdi || 'G03',
+        correo: perfil.email,
+        domicilioReceptor: perfil.cp,
+        direccionReceptor: `Código Postal: ${perfil.cp}`,
+        calle: 'NO ESPECIFICADO',
+        numeroExterior: 'S/N',
+        numeroInterior: '',
+        colonia: 'NO ESPECIFICADO',
+        municipio: 'NO ESPECIFICADO',
+        estado: 'NO ESPECIFICADO',
+        pais: 'MEXICO',
+        activo: true,
+        relacionados: [],
+        tickets: [datosTicket],
+        conceptos: datosTicket?.conceptos || [],
+        descuento: datosTicket?.descuento || 0,
+        totImpRet: 0,
+        totImpTras: datosTicket?.totImpTras || 0,
+        subTotal: datosTicket?.subTotal || 0,
+        total: datosTicket?.total || 0,
+        totalDocumento: datosTicket?.total || 0,
+        noClienteAR: datosTicket?.cliente?.noCliente || '',
+        ordenCompra: '',
+        tieneDetallista: datosTicket?.tieneDetallista || false,
+        cliente: clienteFacturama
+      };
+
+      try {
+        const r = await axios.post(`${BASE}/timbrado`, { comprobante }, opts);
+        console.log('[AUTO] HD - timbrado:', r.data?.codigo, r.data?.mensaje);
+        if (r.data?.codigo !== 200) {
+          return { success: false, mensaje: 'HD: error al timbrar - ' + (r.data?.mensaje || 'falló') };
+        }
+        const uuid = r.data?.uuid || r.data?.comprobante?.uuid;
+
+        // 9. Enviar correo con el CFDI
+        if (uuid && perfil.email) {
+          try {
+            await axios.get(`${BASE}/enviarCorreo`, { ...opts, params: { uuid, email: perfil.email, tipo: 'cfdi.vigentes' } });
+          } catch (e) { /* el CFDI ya está timbrado, fallo de correo no es bloqueante */ }
+        }
+
+        return { success: true, mensaje: `Factura HD generada exitosamente${uuid ? ' UUID ' + uuid : ''}` };
+      } catch (e) {
+        return { success: false, mensaje: 'HD: error timbrado - ' + e.message };
+      }
     }
   },
 
