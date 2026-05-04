@@ -31,19 +31,46 @@ const PORTALES = {
 
       // ── PASO 2: Datos fiscales (Angular form, selects nativos #regimenFiscal y #usoCfdi) ──
       try {
-        // Esperar a que cargue alguno de los inputs específicos del paso 2
-        await page.waitForSelector('#nombre, #correo, #codigoPostal, #regimenFiscal', { timeout: 15000 }).catch(() => {});
-        await page.waitForTimeout(1000);
-
-        // Cerrar cualquier Swal que bloquee el formulario
+        // Cerrar cualquier Swal residual (post-captcha o post-submit)
         if (await page.$('.swal2-container')) {
-          console.log('[AUTO] Swal en paso 2, cerrando');
+          console.log('[AUTO] HD - Swal en paso 2, cerrando');
           await page.evaluate(() => {
             document.querySelectorAll('.swal2-container').forEach(e => e.remove());
             document.body.style.overflow = '';
             document.body.classList.remove('swal2-shown', 'swal2-height-auto');
           });
-          await page.waitForTimeout(500);
+          await page.waitForTimeout(800);
+        }
+
+        // Esperar a que el select de régimen aparezca en el DOM (Angular lo renderiza async después del Turnstile)
+        let regimenAparecio = false;
+        try {
+          await page.waitForSelector('#regimenFiscal', { timeout: 15000 });
+          regimenAparecio = true;
+          console.log('[AUTO] HD - #regimenFiscal apareció en DOM');
+        } catch (e) {
+          console.log('[AUTO] HD - #regimenFiscal NO apareció en 15s, dump del body para diagnóstico:');
+          const dump = await page.evaluate(() => ({
+            url: location.href,
+            bodyText: (document.body.innerText || '').substring(0, 2000),
+            swalText: (document.querySelector('.swal2-container')?.textContent || '').substring(0, 500),
+            swalHTML: (document.querySelector('.swal2-container')?.innerHTML || '').substring(0, 2000),
+            visibleInputs: Array.from(document.querySelectorAll('input,select,textarea'))
+              .filter(el => el.offsetParent !== null)
+              .map(el => ({ tag: el.tagName, id: el.id, name: el.name, type: el.type, placeholder: el.placeholder, classes: el.className.substring(0, 60) })),
+            allSelects: Array.from(document.querySelectorAll('select')).map(s => ({ id: s.id, name: s.name, visible: s.offsetParent !== null, opts: s.options.length })),
+            visibleButtons: Array.from(document.querySelectorAll('button')).filter(b => b.offsetParent !== null).map(b => ({ text: (b.textContent || '').trim().substring(0, 40), disabled: b.disabled })),
+            bodyHTMLSample: document.body.outerHTML.substring(0, 5000)
+          }));
+          console.log('[AUTO] HD DIAG url=' + dump.url);
+          console.log('[AUTO] HD DIAG swalText=' + dump.swalText);
+          console.log('[AUTO] HD DIAG visibleInputs=' + JSON.stringify(dump.visibleInputs));
+          console.log('[AUTO] HD DIAG allSelects=' + JSON.stringify(dump.allSelects));
+          console.log('[AUTO] HD DIAG buttons=' + JSON.stringify(dump.visibleButtons));
+          console.log('[AUTO] HD DIAG bodyText=' + dump.bodyText);
+          console.log('[AUTO] HD DIAG swalHTML=' + dump.swalHTML);
+          console.log('[AUTO] HD DIAG bodyHTML=' + dump.bodyHTMLSample);
+          return { success: false, mensaje: 'HD: paso 2 no cargó (#regimenFiscal ausente) — ver logs' };
         }
 
         // Llenar inputs por id (Angular form ngModel)
@@ -57,7 +84,7 @@ const PORTALES = {
         await setInput('#codigoPostal', perfil.cp);
         console.log('[AUTO] HD - inputs llenados (nombre/correo/cp)');
 
-        // Esperar a que las opciones del régimen se carguen async
+        // Esperar a que las opciones del régimen se carguen async (getCatRegimenfiscal)
         await page.waitForFunction(
           () => { const s = document.querySelector('#regimenFiscal'); return s && s.options.length > 1; },
           { timeout: 15000 }
@@ -74,7 +101,6 @@ const PORTALES = {
           );
           if (!opt) return 'opt-not-found:' + Array.from(sel.options).map(o=>o.value).join(',').substring(0,200);
           sel.value = opt.value;
-          // Angular ngModel necesita 'input' + 'change'
           sel.dispatchEvent(new Event('input', { bubbles: true }));
           sel.dispatchEvent(new Event('change', { bubbles: true }));
           return 'ok:' + opt.value;
