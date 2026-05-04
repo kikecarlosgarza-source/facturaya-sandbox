@@ -596,6 +596,8 @@ const PORTALES = {
         }
 
         // Resolver con CapSolver - intentar con varios módulos si falla
+        // ImageToTextTask normalmente resuelve sincrónicamente: createTask retorna status=ready
+        // con solution.text en la misma respuesta. Si NO viene listo, hacemos polling.
         const modulosACobrar = ['common', 'queueit'];
         let createData;
         let createErr;
@@ -606,11 +608,16 @@ const PORTALES = {
               task: { type: 'ImageToTextTask', body: captchaB64, module: mod }
             }, { timeout: 15000, validateStatus: () => true });
             console.log(`[AUTO] Petro7 - CapSolver createTask(module=${mod}) status=${create.status} body=${JSON.stringify(create.data).substring(0,500)}`);
-            if (!create.data.errorId && create.data.taskId) {
+            if (create.data.errorId) {
+              createErr = create.data.errorDescription || create.data.errorCode || ('HTTP ' + create.status);
+              continue;
+            }
+            // Aceptar la respuesta si trae solución directa (status=ready) o un taskId para polling
+            if (create.data.status === 'ready' || create.data.solution?.text || create.data.taskId) {
               createData = { ...create.data, _module: mod };
               break;
             }
-            createErr = create.data.errorDescription || create.data.errorCode || ('HTTP ' + create.status);
+            createErr = 'createTask sin solution ni taskId: ' + JSON.stringify(create.data).substring(0, 200);
           } catch (e) {
             createErr = e.message;
             console.log(`[AUTO] Petro7 - CapSolver createTask(module=${mod}) EXCEPCIÓN: ${e.message} response=${JSON.stringify(e.response?.data).substring(0,300)}`);
@@ -618,21 +625,28 @@ const PORTALES = {
         }
         if (!createData) return { success: false, mensaje: 'Petro7: CapSolver createTask falló - ' + createErr };
 
-        // Polling
-        for (let i = 0; i < 20; i++) {
-          await new Promise(r => setTimeout(r, 3000));
-          const res = await axios.post('https://api.capsolver.com/getTaskResult', { clientKey: capKey, taskId: createData.taskId }, { timeout: 15000, validateStatus: () => true });
-          console.log(`[AUTO] Petro7 - CapSolver getTaskResult[${i}] status=${res.data.status} errorId=${res.data.errorId || 0} body=${JSON.stringify(res.data).substring(0,400)}`);
-          if (res.data.status === 'ready') {
-            captchaText = res.data.solution?.text || '';
-            break;
+        // Caso 1: createTask ya trae la solución (sincrónico). No llamar getTaskResult.
+        if (createData.status === 'ready' || createData.solution?.text) {
+          captchaText = createData.solution?.text || '';
+          if (!captchaText) return { success: false, mensaje: 'Petro7: CapSolver status=ready sin texto' };
+          console.log(`[AUTO] Petro7 - captcha resuelto sincrónicamente (module=${createData._module}): "${captchaText}"`);
+        } else {
+          // Caso 2: tenemos taskId, hacer polling
+          for (let i = 0; i < 20; i++) {
+            await new Promise(r => setTimeout(r, 3000));
+            const res = await axios.post('https://api.capsolver.com/getTaskResult', { clientKey: capKey, taskId: createData.taskId }, { timeout: 15000, validateStatus: () => true });
+            console.log(`[AUTO] Petro7 - CapSolver getTaskResult[${i}] status=${res.data.status} errorId=${res.data.errorId || 0} body=${JSON.stringify(res.data).substring(0,400)}`);
+            if (res.data.status === 'ready') {
+              captchaText = res.data.solution?.text || '';
+              break;
+            }
+            if (res.data.errorId) {
+              return { success: false, mensaje: `Petro7: CapSolver error - ${res.data.errorCode}: ${res.data.errorDescription}` };
+            }
           }
-          if (res.data.errorId) {
-            return { success: false, mensaje: `Petro7: CapSolver error - ${res.data.errorCode}: ${res.data.errorDescription}` };
-          }
+          if (!captchaText) return { success: false, mensaje: 'Petro7: CapSolver timeout sin solución' };
+          console.log(`[AUTO] Petro7 - captcha resuelto via polling (module=${createData._module}): "${captchaText}"`);
         }
-        if (!captchaText) return { success: false, mensaje: 'Petro7: CapSolver timeout sin solución' };
-        console.log(`[AUTO] Petro7 - captcha resuelto (module=${createData._module}): "${captchaText}"`);
       } catch (e) {
         console.log(`[AUTO] Petro7 - excepción captcha: ${e.message} status=${e.response?.status} data=${JSON.stringify(e.response?.data).substring(0,300)}`);
         return { success: false, mensaje: 'Petro7: error captcha - ' + e.message };
