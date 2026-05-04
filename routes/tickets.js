@@ -46,13 +46,17 @@ router.post('/analizar', authMiddleware, async (req, res) => {
 
         const solicitudId = uuid();
               db.prepare(`
-                    INSERT INTO solicitudes (id, usuario_id, establecimiento, folio, total, portal_url, sistema_facturacion, shop_name, status)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'analizado')
+                    INSERT INTO solicitudes (id, usuario_id, establecimiento, rfc_emisor, folio, estacion, web_id, fecha_compra, total, portal_url, sistema_facturacion, shop_name, status)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'analizado')
                               `).run(
                         solicitudId,
                         req.userId,
                         ticketData.establecimiento || '',
+                        ticketData.rfc_emisor || null,
                         ticketData.folio || ticketData.codigo_facturacion || '',
+                        ticketData.no_estacion || ticketData.estacion || null,
+                        ticketData.web_id || null,
+                        ticketData.fecha || ticketData.fecha_compra || null,
                         ticketData.total || 0,
                         ticketData.portal_facturacion || '',
                         ticketData.sistema_facturacion || null,
