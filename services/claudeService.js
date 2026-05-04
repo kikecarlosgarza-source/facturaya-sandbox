@@ -37,7 +37,7 @@ INSTRUCCIONES:
      ejemplo: "08652006 06332050126601" -> devolver "0865200606332050126601" (22 digitos sin espacios).
      CRITICO: Lee TODOS los digitos incluyendo el ultimo. No truncar ni omitir ninguno.
    - Para otros comercios: el numero de folio o ticket que pide el portal.
-   SIEMPRE devuelve el folio SIN espacios, SIN guiones, solo digitos.
+   Devuelve el folio EXACTAMENTE como aparece en el ticket, conservando guiones si los tiene. Ejemplo: 78-1707 -> 78-1707, 0865200606332050126601 -> 0865200606332050126601.
 5. PORTAL: URL del portal de facturacion si aparece en el ticket.
 6. NO_ESTACION: Para gasolineras (Petro 7, Petromax, OXXO Gas), el numero de estacion o sucursal.
 7. WEB_ID: Para Petro 7/Petromax, el Web ID del ticket (numero corto, generalmente 4-6 digitos).
@@ -76,7 +76,7 @@ Responde SOLO JSON sin backticks:
 
   const datos = parsearRespuestaJSON(response.data.content);
   // Limpiar folio: quitar todo excepto digitos
-  if (datos.folio) datos.folio = datos.folio.replace(/[^0-9]/g, '');
+  if (datos.folio) datos.folio = datos.folio.replace(/[^0-9\-]/g, '').replace(/^-+|-+$/g, '');
   return datos;
 }
 
