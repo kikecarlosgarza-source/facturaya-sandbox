@@ -208,7 +208,7 @@ const PORTALES = {
             if (i === 0) { const opt = Array.from(sel.options).find(o => o.value === reg || o.text.includes(reg)); if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); } }
             if (i === 1) { const opt = Array.from(sel.options).find(o => o.value === uso || o.text.includes(uso)); if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); } }
           });
-        }, perfil.regimen || '612', perfil.uso_cfdi || 'G03');
+        }, {r: perfil.regimen || '612', u: perfil.uso_cfdi || 'G03'});
 
         await page.waitForTimeout(500);
 
@@ -354,15 +354,15 @@ const PORTALES = {
         console.log('[AUTO] OXXO Gas - no hay RFC registrado, registrando ahora');
         // Tipo contribuyente: 1=Persona Física, 2=Moral
         const tipoVal = (perfil.regimen === '601' || perfil.regimen === '626') ? '2' : '1';
-        await page.evaluate((tipo, regimen, uso, rfc, email) => {
+        await page.evaluate(({tipo, regimen, uso, rfc, email}) => {
           // Tipo contribuyente
           const selTipo = document.querySelector('select#regimen');
           if (selTipo) { selTipo.value = tipo; selTipo.dispatchEvent(new Event('change', {bubbles:true})); }
-        }, tipoVal, perfil.regimen, perfil.uso_cfdi, perfil.rfc, perfil.email);
+        }, {tipo: tipoVal, regimen: perfil.regimen, uso: perfil.uso_cfdi, rfc: perfil.rfc, email: perfil.email});
         await page.waitForTimeout(1000);
 
         // Régimen fiscal y Uso CFDI
-        await page.evaluate((regimen, uso) => {
+        await page.evaluate(({r: regimen, u: uso}) => {
           const selReg = document.querySelector('select#regimen_fiscal');
           if (selReg) {
             const opt = Array.from(selReg.options).find(o => o.value === regimen);
@@ -375,7 +375,7 @@ const PORTALES = {
               if (opt) { selUso.value = opt.value; selUso.dispatchEvent(new Event('change', {bubbles:true})); }
             }
           }, 500);
-        }, perfil.regimen || '612', perfil.uso_cfdi || 'G03');
+        }, {r: perfil.regimen || '612', u: perfil.uso_cfdi || 'G03'});
         await page.waitForTimeout(1500);
 
         // RFC, Email, CP
