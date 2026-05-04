@@ -35,13 +35,35 @@ function determinarPortal(e,p) {
   return null;
 }
 async function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
-async function screenshot(page) { return (await page.screenshot({type:'jpeg',quality:60,fullPage:false})).toString('base64'); }
+async function screenshot(page) { return (await page.screenshot({type:'jpeg',quality:90,fullPage:false})).toString('base64'); }
 
-async function claudeDecide(sc, ctx, hist, knowledge, paso) {
+
+async function getDomInfo(page) {
+  return page.evaluate(function() {
+    var info = [];
+    // Todos los botones visibles
+    Array.from(document.querySelectorAll('button,input[type="submit"],a.btn,a.button')).forEach(function(el) {
+      if(el.offsetParent !== null) {
+        var r = el.getBoundingClientRect();
+        info.push({tipo:'BOTON', texto:(el.textContent||el.value||'').trim().substring(0,30), selector:el.tagName.toLowerCase()+(el.id?'#'+el.id:'')+(el.className?' .'+el.className.trim().split(/\s+/).join('.'):''), x:Math.round(r.x+r.width/2), y:Math.round(r.y+r.height/2)});
+      }
+    });
+    // Todos los inputs visibles
+    Array.from(document.querySelectorAll('input[type="text"],input[type="email"],input[type="number"],select,textarea')).forEach(function(el) {
+      if(el.offsetParent !== null) {
+        info.push({tipo:'INPUT', id:el.id, name:el.name, tipo_input:el.type, placeholder:el.placeholder, valor:el.value.substring(0,20)});
+      }
+    });
+    return info;
+  }).catch(function(){return [];});
+}
+
+async function claudeDecide(sc, ctx, hist, knowledge, paso, domInfo) {
   const pasosAnteriores = knowledge && knowledge.pasos_exitosos
     ? JSON.parse(knowledge.pasos_exitosos).map(function(p,i){ return (i+1)+'. '+p.descripcion+' -> '+p.accion+' '+p.selector; }).join('\n')
     : 'Primera vez en este portal';
 
+  const domTxt = domInfo && domInfo.length ? '\n\nELEMENTOS VISIBLES EN PANTALLA AHORITA:\n'+JSON.stringify(domInfo,null,1).substring(0,800) : '';
   const sys = 'Eres un operador experto navegando portales de autofacturacion de Mexico CFDI 4.0.\nOperas el browser igual que un humano — ves la pantalla y dices exactamente que accion tomar.\n\nDATOS DEL TICKET:\n- Establecimiento: '+ctx.establecimiento+'\n- Folio/Orden: '+ctx.folio+'\n- Total: '+ctx.total+'\n- Fecha: '+ctx.fecha+'\n- Portal: '+ctx.portal_url+'\n\nDATOS FISCALES:\n- RFC: '+ctx.perfil.rfc+'\n- Nombre: '+ctx.perfil.nombre+'\n- CP: '+ctx.perfil.cp+'\n- Email: '+ctx.perfil.email+'\n- Regimen: '+ctx.perfil.regimen+'\n- Uso CFDI: '+ctx.perfil.uso_cfdi+'\n\nPASOS EXITOSOS ANTERIORES:\n'+pasosAnteriores+'\n\nERRORES ESTE INTENTO: '+(ctx.errores.slice(-3).join(' | ')||'ninguno')+'\n\nACCIONES DISPONIBLES:\n- click: hacer click en un elemento (da selector CSS)\n- fill: escribir en un campo (da selector CSS y valor)\n- select: seleccionar opcion de un dropdown (da selector CSS y valor)\n- wait: esperar 2 segundos\n- completado: la factura fue generada exitosamente\n- error: hay un error que no puedes resolver\n\nREGLAS:\n1. Da selectores CSS precisos y especificos\n2. Si hay un popup/overlay bloqueando: click en el boton X para cerrarlo\n3. Para selects de regimen fiscal usa value=612, para uso CFDI usa value=G03\n4. Si ves confirmacion de factura enviada/generada: accion=completado\n5. Usa los pasos exitosos anteriores como guia exacta\n\nResponde SOLO JSON valido sin backticks:\n{"descripcion":"que ves en pantalla","accion":"click o fill o select o wait o completado o error","selector":"CSS selector","valor":"valor si fill o select","razon":"por que","mensaje_final":"solo si completado o error"}';
 
   try {
@@ -193,8 +215,9 @@ module.exports = { procesarConAgente: async function(solicitudId) {
       console.log('[AGENT] Paso',paso);
 
       const sc = await screenshot(page);
+      const domInfo = await getDomInfo(page);
       let dec;
-      try { dec = await claudeDecide(sc, ctx, hist, knowledge, paso); }
+      try { dec = await claudeDecide(sc, ctx, hist, knowledge, paso, domInfo); }
       catch(e) {
         if(e.message==='RATE_LIMIT'){console.log('[AGENT] Rate limit 30s...');await sleep(30000);continue;}
         throw e;
