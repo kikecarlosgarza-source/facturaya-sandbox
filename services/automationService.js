@@ -709,24 +709,52 @@ const PORTALES = {
         const img = await axios.get(BASE + '/KPortalExterno/Kaptcha.jpg', { ...opts(), responseType: 'arraybuffer' });
         parseCookies(img.headers);
         const captchaB64 = Buffer.from(img.data).toString('base64');
-        console.log('[AUTO] Petro7 - Kaptcha image:', img.data.length, 'bytes');
+        const contentType = img.headers['content-type'] || 'unknown';
+        console.log(`[AUTO] Petro7 - Kaptcha image: ${img.data.length} bytes, content-type=${contentType}, b64.length=${captchaB64.length}`);
+        if (img.data.length < 500) {
+          return { success: false, mensaje: 'Petro7: Kaptcha image demasiado pequeña (' + img.data.length + ' bytes), revisa cookies' };
+        }
 
-        // Resolver con CapSolver
-        const create = await axios.post('https://api.capsolver.com/createTask', {
-          clientKey: capKey,
-          task: { type: 'ImageToTextTask', body: captchaB64, module: 'common' }
-        }, { timeout: 15000 });
-        if (create.data.errorId) return { success: false, mensaje: 'Petro7: CapSolver - ' + create.data.errorDescription };
+        // Resolver con CapSolver - intentar con varios módulos si falla
+        const modulosACobrar = ['common', 'queueit'];
+        let createData;
+        let createErr;
+        for (const mod of modulosACobrar) {
+          try {
+            const create = await axios.post('https://api.capsolver.com/createTask', {
+              clientKey: capKey,
+              task: { type: 'ImageToTextTask', body: captchaB64, module: mod }
+            }, { timeout: 15000, validateStatus: () => true });
+            console.log(`[AUTO] Petro7 - CapSolver createTask(module=${mod}) status=${create.status} body=${JSON.stringify(create.data).substring(0,500)}`);
+            if (!create.data.errorId && create.data.taskId) {
+              createData = { ...create.data, _module: mod };
+              break;
+            }
+            createErr = create.data.errorDescription || create.data.errorCode || ('HTTP ' + create.status);
+          } catch (e) {
+            createErr = e.message;
+            console.log(`[AUTO] Petro7 - CapSolver createTask(module=${mod}) EXCEPCIÓN: ${e.message} response=${JSON.stringify(e.response?.data).substring(0,300)}`);
+          }
+        }
+        if (!createData) return { success: false, mensaje: 'Petro7: CapSolver createTask falló - ' + createErr };
 
+        // Polling
         for (let i = 0; i < 20; i++) {
           await new Promise(r => setTimeout(r, 3000));
-          const res = await axios.post('https://api.capsolver.com/getTaskResult', { clientKey: capKey, taskId: create.data.taskId }, { timeout: 15000 });
-          if (res.data.status === 'ready') { captchaText = res.data.solution.text; break; }
-          if (res.data.errorId) return { success: false, mensaje: 'Petro7: CapSolver - ' + res.data.errorDescription };
+          const res = await axios.post('https://api.capsolver.com/getTaskResult', { clientKey: capKey, taskId: createData.taskId }, { timeout: 15000, validateStatus: () => true });
+          console.log(`[AUTO] Petro7 - CapSolver getTaskResult[${i}] status=${res.data.status} errorId=${res.data.errorId || 0} body=${JSON.stringify(res.data).substring(0,400)}`);
+          if (res.data.status === 'ready') {
+            captchaText = res.data.solution?.text || '';
+            break;
+          }
+          if (res.data.errorId) {
+            return { success: false, mensaje: `Petro7: CapSolver error - ${res.data.errorCode}: ${res.data.errorDescription}` };
+          }
         }
-        if (!captchaText) return { success: false, mensaje: 'Petro7: CapSolver timeout' };
-        console.log('[AUTO] Petro7 - captcha resuelto:', captchaText);
+        if (!captchaText) return { success: false, mensaje: 'Petro7: CapSolver timeout sin solución' };
+        console.log(`[AUTO] Petro7 - captcha resuelto (module=${createData._module}): "${captchaText}"`);
       } catch (e) {
+        console.log(`[AUTO] Petro7 - excepción captcha: ${e.message} status=${e.response?.status} data=${JSON.stringify(e.response?.data).substring(0,300)}`);
         return { success: false, mensaje: 'Petro7: error captcha - ' + e.message };
       }
 
@@ -769,15 +797,25 @@ const PORTALES = {
         regimenFiscalReceptor: perfil.regimen || '612'
       });
 
+      // Logging del payload completo en chunks (Render trunca líneas largas)
+      const paramsStr = params.toString();
+      console.log(`[AUTO] Petro7 - FacturaExpress payload size=${paramsStr.length} bytes`);
+      for (let i = 0; i < paramsStr.length; i += 1500) {
+        console.log(`[AUTO] Petro7 - FacturaExpress payload[${i}-${Math.min(i+1500, paramsStr.length)}]: ${paramsStr.substring(i, i+1500)}`);
+      }
+
       try {
         const r = await axios.post(
           BASE + '/KJServices/webapi/FacturaExpressService',
-          params.toString(),
+          paramsStr,
           opts({ 'Content-Type': 'application/x-www-form-urlencoded' })
         );
         parseCookies(r.headers);
         const bodyStr = typeof r.data === 'object' ? JSON.stringify(r.data) : String(r.data ?? '');
-        console.log(`[AUTO] Petro7 - FacturaExpress status=${r.status} body=${bodyStr.substring(0, 1500)}`);
+        console.log(`[AUTO] Petro7 - FacturaExpress RESPONSE status=${r.status} headers=${JSON.stringify(r.headers).substring(0,400)}`);
+        for (let i = 0; i < bodyStr.length && i < 4500; i += 1500) {
+          console.log(`[AUTO] Petro7 - FacturaExpress body[${i}-${Math.min(i+1500, bodyStr.length)}]: ${bodyStr.substring(i, i+1500)}`);
+        }
 
         if (r.status >= 400) {
           return { success: false, mensaje: 'Petro7: HTTP ' + r.status + ' - ' + bodyStr.substring(0, 200) };
@@ -794,6 +832,7 @@ const PORTALES = {
         }
         return { success: false, mensaje: 'Petro7: ' + (data.respuesta || data.mensaje || 'no se generó CFDI - ' + bodyStr.substring(0, 200)) };
       } catch (e) {
+        console.log(`[AUTO] Petro7 - FacturaExpress EXCEPCIÓN: ${e.message} status=${e.response?.status} data=${JSON.stringify(e.response?.data).substring(0,500)}`);
         return { success: false, mensaje: 'Petro7: error FacturaExpress - ' + e.message };
       }
     }
