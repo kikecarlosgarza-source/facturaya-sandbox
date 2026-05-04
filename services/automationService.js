@@ -661,59 +661,141 @@ const PORTALES = {
   },
 
   'petro': {
-    url: 'https://tarjetapetro-7.com.mx:8443/KPortalExterno/',
-    async ejecutar(page, perfil, ticketData, solicitudId) {
-      // Click en Factura Express
-      await page.waitForSelector('input[value="FACTURA EXPRESS"], .btn:has-text("FACTURA EXPRESS")', { timeout: 15000 });
-      await page.click('input[value="FACTURA EXPRESS"], .btn:has-text("FACTURA EXPRESS")');
-      await page.waitForTimeout(2000);
+    httpOnly: true,
+    async ejecutar(perfil, ticketData) {
+      const axios = require('axios');
+      const https = require('https');
+      const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+      const BASE = 'https://tarjetapetro-7.com.mx:8443';
 
-      // Llenar datos del ticket
-      await page.fill('[name="noEstacion"]', ticketData.estacion || '');
-      await page.fill('[name="noTicket"]', ticketData.folio || '');
-      await page.fill('[name="wid"]', ticketData.web_id || '');
+      // Cookie jar manual
+      const jar = {};
+      const parseCookies = h => {
+        const sc = h?.['set-cookie']; if (!sc) return;
+        (Array.isArray(sc) ? sc : [sc]).forEach(c => {
+          const [nv] = c.split(';'); const [n, v] = nv.split('=');
+          if (n) jar[n.trim()] = v ? v.trim() : '';
+        });
+      };
+      const cookieStr = () => Object.entries(jar).map(([k,v]) => k+'='+v).join('; ');
 
-      // Fecha del ticket - formato MM/DD/YYYY
-      const fechaInput = await page.$('.md-datepicker-input');
-      if (fechaInput) {
-        await fechaInput.click();
-        await fechaInput.fill(ticketData.fecha_formateada || '');
+      const baseHeaders = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
+        'Origin': BASE,
+        'Referer': BASE + '/KPortalExterno/'
+      };
+      const opts = (extra = {}) => ({
+        headers: { ...baseHeaders, Cookie: cookieStr(), ...extra },
+        httpsAgent, validateStatus: () => true, timeout: 30000
+      });
+
+      // 1. Establecer sesión
+      try {
+        const r = await axios.get(BASE + '/KPortalExterno/', opts());
+        parseCookies(r.headers);
+        console.log('[AUTO] Petro7 - sesión:', Object.keys(jar).join(','));
+      } catch (e) {
+        return { success: false, mensaje: 'Petro7: error sesión - ' + e.message };
       }
 
-      // Click Agregar Ticket
-      await page.click('button:has-text("Agregar Ticket"), input[value="Agregar Ticket"]');
-      await page.waitForTimeout(2000);
+      // 2. Resolver Kaptcha (imagen JPG) — requiere CapSolver ImageToText
+      const capKey = process.env.CAPSOLVER_API_KEY;
+      if (!capKey) return { success: false, mensaje: 'Petro7: CAPSOLVER_API_KEY no configurada' };
 
-      // Datos fiscales
-      await page.fill('[name="rfc"]', perfil.rfc);
-      await page.fill('[name="nombre"]', perfil.nombre);
+      let captchaText;
+      try {
+        // GET de la imagen
+        const img = await axios.get(BASE + '/KPortalExterno/Kaptcha.jpg', { ...opts(), responseType: 'arraybuffer' });
+        parseCookies(img.headers);
+        const captchaB64 = Buffer.from(img.data).toString('base64');
+        console.log('[AUTO] Petro7 - Kaptcha image:', img.data.length, 'bytes');
 
-      // Regimen fiscal (select nativo)
-      const selectRegimen = await page.$('select[name="regimenFiscal"], select:nth-of-type(1)');
-      if (selectRegimen) await selectRegimen.selectOption({ value: perfil.regimen || '612' }).catch(() => {});
+        // Resolver con CapSolver
+        const create = await axios.post('https://api.capsolver.com/createTask', {
+          clientKey: capKey,
+          task: { type: 'ImageToTextTask', body: captchaB64, module: 'common' }
+        }, { timeout: 15000 });
+        if (create.data.errorId) return { success: false, mensaje: 'Petro7: CapSolver - ' + create.data.errorDescription };
 
-      // Uso CFDI
-      const selectUso = await page.$('select[name="usoCFDI"], select:nth-of-type(2)');
-      if (selectUso) await selectUso.selectOption({ value: perfil.uso_cfdi || 'G03' }).catch(() => {});
-
-      // CP y Correo
-      await page.fill('[name="cp"]', perfil.cp);
-      await page.fill('[name="correo"]', perfil.email);
-
-      // Tomar screenshot del captcha
-      const captchaEl = await page.$('.captcha-img, img[src*="captcha"], #captchaImg');
-      const captchaPath = path.join(CAPTCHA_DIR, `${solicitudId}.png`);
-      if (captchaEl) {
-        await captchaEl.screenshot({ path: captchaPath });
-        console.log('[AUTO] Captcha guardado:', captchaPath);
-      } else {
-        await page.screenshot({ path: captchaPath, clip: { x: 200, y: 850, width: 400, height: 120 } });
+        for (let i = 0; i < 20; i++) {
+          await new Promise(r => setTimeout(r, 3000));
+          const res = await axios.post('https://api.capsolver.com/getTaskResult', { clientKey: capKey, taskId: create.data.taskId }, { timeout: 15000 });
+          if (res.data.status === 'ready') { captchaText = res.data.solution.text; break; }
+          if (res.data.errorId) return { success: false, mensaje: 'Petro7: CapSolver - ' + res.data.errorDescription };
+        }
+        if (!captchaText) return { success: false, mensaje: 'Petro7: CapSolver timeout' };
+        console.log('[AUTO] Petro7 - captcha resuelto:', captchaText);
+      } catch (e) {
+        return { success: false, mensaje: 'Petro7: error captcha - ' + e.message };
       }
 
-      db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
-        .run('captcha_required', captchaPath, solicitudId);
+      // 3. Validar captcha contra el endpoint de Kaptcha (necesario para que la sesión lo marque como válido)
+      try {
+        const r = await axios.get(BASE + '/KPortalExterno/kaptcha', { ...opts(), params: { kaptcha: captchaText } });
+        parseCookies(r.headers);
+        console.log('[AUTO] Petro7 - kaptcha validate:', JSON.stringify(r.data));
+        if (!r.data?.esValido) {
+          return { success: false, mensaje: 'Petro7: captcha rechazado - ' + (r.data?.mensaje || captchaText) };
+        }
+      } catch (e) {
+        return { success: false, mensaje: 'Petro7: error validando captcha - ' + e.message };
+      }
 
-      return { success: false, captcha_required: true, captcha_path: captchaPath };
+      // 4. Construir ticket — fecha en formato DD/MM/YYYY (Angular md-datepicker)
+      const ticket = {
+        noEstacion: String(ticketData.estacion || ''),
+        noTicket: String(ticketData.folio || ''),
+        wid: String(ticketData.web_id || ''),
+        fechaTicket: ticketData.fecha_formateada || ticketData.fecha_compra || ''
+      };
+      console.log('[AUTO] Petro7 - ticket:', JSON.stringify(ticket));
+
+      // 5. POST FacturaExpressService
+      const params = new URLSearchParams({
+        tickets: JSON.stringify([ticket]),
+        idCliente: '',
+        rfc: perfil.rfc,
+        razon: perfil.nombre_sat || perfil.nombre,
+        usoCFDI: perfil.uso_cfdi || 'G03',
+        calle: '', noExterior: '', noInterior: '',
+        colonia: '', delegacion: '', ciudad: '',
+        cp: perfil.cp, pais: 'MEXICO',
+        email: perfil.email,
+        facturaExpress: 'true',
+        facturaRegistrado: 'true',
+        selectedFormaPago: '01',
+        medioEmision: 'AUTOFACTURACIÓN',
+        regimenFiscalReceptor: perfil.regimen || '612'
+      });
+
+      try {
+        const r = await axios.post(
+          BASE + '/KJServices/webapi/FacturaExpressService',
+          params.toString(),
+          opts({ 'Content-Type': 'application/x-www-form-urlencoded' })
+        );
+        parseCookies(r.headers);
+        const bodyStr = typeof r.data === 'object' ? JSON.stringify(r.data) : String(r.data ?? '');
+        console.log(`[AUTO] Petro7 - FacturaExpress status=${r.status} body=${bodyStr.substring(0, 1500)}`);
+
+        if (r.status >= 400) {
+          return { success: false, mensaje: 'Petro7: HTTP ' + r.status + ' - ' + bodyStr.substring(0, 200) };
+        }
+
+        // Respuestas posibles:
+        //   {cfdiDisponible: true, uuid: "...", respuesta: "OK"}
+        //   {cfdiDisponible: false, respuesta: "mensaje de error"}
+        //   array de cfdis o algún otro shape
+        const data = r.data || {};
+        const uuid = data.uuid || data.cfdis?.[0]?.uuid || (Array.isArray(data) ? data[0]?.uuid : null);
+        if (data.cfdiDisponible || uuid) {
+          return { success: true, mensaje: 'Factura Petro7 generada' + (uuid ? ' UUID ' + uuid : '') };
+        }
+        return { success: false, mensaje: 'Petro7: ' + (data.respuesta || data.mensaje || 'no se generó CFDI - ' + bodyStr.substring(0, 200)) };
+      } catch (e) {
+        return { success: false, mensaje: 'Petro7: error FacturaExpress - ' + e.message };
+      }
     }
   }
 };
