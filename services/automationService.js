@@ -493,7 +493,7 @@ const PORTALES = {
 
       // ── Agregar Ticket ────────────────────────────────────────────────
       // Seleccionar estación por no_estacion del ticket
-      const noEstacion = ticketData.estacion || '';
+      const noEstacion = ticketData.no_estacion || '';
       await page.evaluate((estacion) => {
         const sel = document.querySelector('select#estacion');
         if (!sel) return;
@@ -666,7 +666,7 @@ const PORTALES = {
 
       // 4. Construir ticket — fecha en formato DD/MM/YYYY (Angular md-datepicker)
       const ticket = {
-        noEstacion: String(ticketData.estacion || ''),
+        noEstacion: String(ticketData.no_estacion || ''),
         noTicket: String(ticketData.folio || ''),
         wid: String(ticketData.web_id || ''),
         fechaTicket: ticketData.fecha_formateada || ticketData.fecha_compra || ''
@@ -925,7 +925,7 @@ async function procesarFactura(solicitudId) {
 
   const ticketData = {
     folio: solicitud.folio,
-    estacion: solicitud.estacion || '',
+    no_estacion: solicitud.estacion || '',
     web_id: solicitud.web_id || '',
     fecha_formateada: solicitud.fecha_compra || '',
     establecimiento: solicitud.establecimiento,
