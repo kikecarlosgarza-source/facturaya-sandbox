@@ -77,6 +77,8 @@ db.exec(`
 try { db.exec('ALTER TABLE solicitudes ADD COLUMN estacion TEXT'); } catch(e) {}
 try { db.exec('ALTER TABLE solicitudes ADD COLUMN web_id TEXT'); } catch(e) {}
 try { db.exec('ALTER TABLE perfiles_fiscales ADD COLUMN password_portales TEXT'); } catch(e) {}
+// nombre_sat: nombre exacto del SAT (extraído de la Constancia de Situación Fiscal, nunca editable manualmente)
+try { db.exec('ALTER TABLE perfiles_fiscales ADD COLUMN nombre_sat TEXT'); } catch(e) {}
 module.exports = db;
 module.exports.db = db;
 module.exports.uuid = require('uuid').v4;

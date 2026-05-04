@@ -194,8 +194,8 @@ const PORTALES = {
       let orderId;
       try {
         const { data: searchData } = await axios.get(
-          `https://app.facturama.mx/Shopify/Clients/SearchOrder?info=${searchInfo}`,
-          { headers, transformResponse: tr }
+          'https://app.facturama.mx/Shopify/Clients/SearchOrder',
+          { params: { info: searchInfo }, headers, transformResponse: tr }
         );
         if (!searchData.success || !searchData.orderId) {
           return { success: false, mensaje: 'Bandeja: orden no encontrada - verifica folio y total' };
@@ -208,10 +208,12 @@ const PORTALES = {
       console.log('[AUTO] Bandeja HTTP - orderId:', orderId);
 
       // Paso 2: SaveClient (GET con Base64 JSON) — registra datos fiscales y obtiene shopInvoiceId
+      // nombre_sat: extraído de la Constancia de Situación Fiscal (exacto para SAT CFDI 4.0)
+      const nombreSAT = perfil.nombre_sat || perfil.nombre;
       const dataClient = {
         Id: '',
         Rfc: perfil.rfc,
-        Name: perfil.nombre,
+        Name: nombreSAT,
         Email: perfil.email,
         Address: {
           Street: null,
