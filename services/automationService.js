@@ -27,6 +27,7 @@ const PORTALES = {
       // El ticket imprime 22 dígitos, pero /agregarTicket espera 23 (la API añade un 0 al inicio).
       // Si llega con 22 lo prefijamos; si ya viene con 23 (escaneado del barcode) lo dejamos.
       const folio = folioRaw.length === 22 ? '0' + folioRaw : folioRaw;
+      console.log(`[AUTO] HD - folioRaw="${folioRaw}" len=${folioRaw.length} → folio API="${folio}" len=${folio.length}`);
 
       // 1. Resolver Turnstile via CapSolver
       const capKey = process.env.CAPSOLVER_API_KEY;
@@ -64,22 +65,30 @@ const PORTALES = {
         return { success: false, mensaje: 'HD: error validarRecaptcha - ' + e.message };
       }
 
-      // 3. Buscar ticket (devuelve datos completos: tienda, conceptos, métodos de pago, montos)
+      // 3. Buscar ticket — respuesta varía:
+      //   éxito: el objeto del ticket directamente (rfcEmisor, tienda, conceptos, montos…)
+      //   error: { alerta:true, codigo:500, mensaje:"ticket_longitud_invalida" | "ticket_fecha_invalida" | … }
       let datosTicket;
       try {
         const r = await axios.get(`${BASE}/agregarTicket`, { ...opts, params: { noTicket: folio } });
-        console.log('[AUTO] HD - agregarTicket codigo:', r.data?.codigo, 'mensaje:', r.data?.mensaje);
-        if (r.data?.codigo !== 200) {
-          return { success: false, mensaje: 'HD: ticket no encontrado - ' + (r.data?.mensaje || 'inválido') };
+        const bodyStr = typeof r.data === 'object' ? JSON.stringify(r.data) : String(r.data ?? '');
+        console.log(`[AUTO] HD - agregarTicket status=${r.status} body=${bodyStr.substring(0, 800)}`);
+        if (r.data && typeof r.data === 'object' && r.data.alerta === true && r.data.codigo !== 200) {
+          return { success: false, mensaje: 'HD: ticket no válido - ' + (r.data.mensaje || 'desconocido') };
         }
-        datosTicket = r.data.ticket || r.data.datosTicket || r.data;
+        if (!r.data || typeof r.data !== 'object' || (!r.data.rfcEmisor && !r.data.tienda && !r.data.conceptos)) {
+          return { success: false, mensaje: 'HD: respuesta inesperada de agregarTicket - ' + bodyStr.substring(0, 200) };
+        }
+        datosTicket = r.data;
       } catch (e) {
         return { success: false, mensaje: 'HD: error agregarTicket - ' + e.message };
       }
 
-      // 4. Validar estado del cliente (RFC)
+      // 4. Validar estado del cliente (RFC) — respuesta envuelta {codigo, mensaje}
       try {
         const r = await axios.get(`${BASE}/validarEstadoCliente`, { ...opts, params: { rfcCliente: perfil.rfc } });
+        const bs = JSON.stringify(r.data ?? '');
+        console.log(`[AUTO] HD - validarEstadoCliente status=${r.status} body=${bs.substring(0,300)}`);
         if (r.data?.codigo === 403) {
           return { success: false, mensaje: 'HD: RFC bloqueado - ' + (r.data?.mensaje || '') };
         }
@@ -90,6 +99,8 @@ const PORTALES = {
       // 5. Verificar si el ticket ya fue facturado
       try {
         const r = await axios.get(`${BASE}/verificarComprobantePrevio`, { ...opts, params: { rfcReceptor: perfil.rfc, noTicket: folio } });
+        const bs = JSON.stringify(r.data ?? '');
+        console.log(`[AUTO] HD - verificarComprobantePrevio status=${r.status} body=${bs.substring(0,400)}`);
         if (r.data?.codigo === 200 && (r.data?.uuid || r.data?.uuidExistente)) {
           return { success: true, mensaje: 'HD: ticket ya facturado anteriormente, UUID ' + (r.data.uuid || r.data.uuidExistente) };
         }
@@ -100,7 +111,11 @@ const PORTALES = {
       let clienteFacturama = null;
       try {
         const r = await axios.get(`${BASE}/getClientePorRFC`, { ...opts, params: { rfcCliente: perfil.rfc } });
+        const bs = JSON.stringify(r.data ?? '');
+        console.log(`[AUTO] HD - getClientePorRFC status=${r.status} body=${bs.substring(0,300)}`);
+        // Respuesta exitosa puede venir como {codigo:200, cliente:...} o el cliente directo
         if (r.data?.codigo === 200 && r.data.cliente) clienteFacturama = r.data.cliente;
+        else if (r.data && typeof r.data === 'object' && r.data.id && r.data.rfc) clienteFacturama = r.data;
       } catch (e) { /* puede no existir */ }
 
       const datosCliente = {
@@ -115,7 +130,8 @@ const PORTALES = {
       try {
         if (!clienteFacturama) {
           const r = await axios.post(`${BASE}/guardarCliente`, datosCliente, opts);
-          console.log('[AUTO] HD - guardarCliente:', r.data?.codigo, r.data?.mensaje);
+          const bs = JSON.stringify(r.data ?? '');
+          console.log(`[AUTO] HD - guardarCliente status=${r.status} body=${bs.substring(0,400)}`);
           if (r.data?.codigo !== 200) {
             return { success: false, mensaje: 'HD: error guardarCliente - ' + (r.data?.mensaje || 'falló') };
           }
@@ -130,12 +146,15 @@ const PORTALES = {
       }
 
       // 7. Obtener tienda del ticket (necesario para datos del emisor)
-      const noTienda = datosTicket?.noTienda || datosTicket?.tienda?.noTienda;
+      const noTienda = datosTicket?.noTienda || datosTicket?.tienda || datosTicket?.tienda?.noTienda;
       let tienda = null;
       if (noTienda) {
         try {
           const r = await axios.get(`${BASE}/obtenerTiendaPorNumero`, { ...opts, params: { noTienda: String(noTienda) } });
+          const bs = JSON.stringify(r.data ?? '');
+          console.log(`[AUTO] HD - obtenerTiendaPorNumero(${noTienda}) status=${r.status} body=${bs.substring(0,400)}`);
           if (r.data?.codigo === 200) tienda = r.data.tienda || r.data;
+          else if (r.data && typeof r.data === 'object' && (r.data.emisorRfc || r.data.id)) tienda = r.data;
         } catch (e) { /* opcional */ }
       }
 
@@ -190,9 +209,10 @@ const PORTALES = {
 
       try {
         const r = await axios.post(`${BASE}/timbrado`, { comprobante }, opts);
-        console.log('[AUTO] HD - timbrado:', r.data?.codigo, r.data?.mensaje);
-        if (r.data?.codigo !== 200) {
-          return { success: false, mensaje: 'HD: error al timbrar - ' + (r.data?.mensaje || 'falló') };
+        const bs = typeof r.data === 'object' ? JSON.stringify(r.data) : String(r.data ?? '');
+        console.log(`[AUTO] HD - timbrado status=${r.status} body=${bs.substring(0, 1500)}`);
+        if (r.data?.codigo !== 200 && !r.data?.uuid && !r.data?.comprobante?.uuid) {
+          return { success: false, mensaje: 'HD: error al timbrar - ' + (r.data?.mensaje || bs.substring(0, 200)) };
         }
         const uuid = r.data?.uuid || r.data?.comprobante?.uuid;
 
