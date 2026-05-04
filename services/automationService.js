@@ -724,22 +724,36 @@ const PORTALES = {
           return { success: false, mensaje: 'Petro7: HTTP ' + r.status + ' - ' + bodyStr.substring(0, 200) };
         }
 
-        // 204 No Content = el servicio aceptó la solicitud y la procesará async
-        // (envía el CFDI por correo). No hay body ni UUID en este caso.
-        if (r.status === 204) {
-          return { success: true, mensaje: 'Factura Petro7 procesada — el CFDI se envió al correo proporcionado' };
-        }
-
-        // Respuestas posibles:
-        //   {cfdiDisponible: true, uuid: "...", respuesta: "OK"}
-        //   {cfdiDisponible: false, respuesta: "mensaje de error"}
-        //   array de cfdis o algún otro shape
+        // Si tenemos CFDI directo en la respuesta, usarlo
         const data = r.data || {};
-        const uuid = data.uuid || data.cfdis?.[0]?.uuid || (Array.isArray(data) ? data[0]?.uuid : null);
+        let uuid = data.uuid || data.cfdis?.[0]?.uuid || (Array.isArray(data) ? data[0]?.uuid : null);
         if (data.cfdiDisponible || uuid) {
           return { success: true, mensaje: 'Factura Petro7 generada' + (uuid ? ' UUID ' + uuid : '') };
         }
-        return { success: false, mensaje: 'Petro7: ' + (data.respuesta || data.mensaje || 'no se generó CFDI - ' + bodyStr.substring(0, 200)) };
+
+        // 204 o body vacío: Petro 7 NO confirma éxito en la respuesta inmediata.
+        // Verificar consultando findLastCfdi (poll hasta 60s) que el CFDI realmente
+        // se generó. Si después del timeout sigue sin existir, marcar fallo.
+        console.log(`[AUTO] Petro7 - FacturaExpress sin uuid/cfdiDisponible (status=${r.status}). Verificando con findLastCfdi...`);
+        for (let intento = 0; intento < 12; intento++) {
+          await new Promise(r => setTimeout(r, 5000));
+          try {
+            const f = await axios.get(BASE + '/KJServices/webapi/FacturacionService/findLastCfdi', {
+              ...opts(), params: { noTicket: ticket.noTicket, estacion: ticket.noEstacion }
+            });
+            console.log(`[AUTO] Petro7 - findLastCfdi[${intento}] status=${f.status} body=${JSON.stringify(f.data).substring(0,300)}`);
+            if (f.data?.cfdiDisponible && f.data?.uuid) {
+              return { success: true, mensaje: `Factura Petro7 generada UUID ${f.data.uuid} - enviada al correo` };
+            }
+            // Si el server confirma "ticket incorrecto" no tiene caso seguir polleando
+            if (f.data?.respuesta && /incorrecto|invalido|no\s+existe/i.test(f.data.respuesta)) {
+              return { success: false, mensaje: `Petro7: ${f.data.respuesta} (estacion=${ticket.noEstacion} folio=${ticket.noTicket}) - verifica que el ticket esté correcto y no muy reciente` };
+            }
+          } catch (e) {
+            console.log(`[AUTO] Petro7 - findLastCfdi[${intento}] excepción: ${e.message}`);
+          }
+        }
+        return { success: false, mensaje: `Petro7: la solicitud fue aceptada (status=${r.status}) pero el CFDI no se generó en 60s. ${data.respuesta || data.mensaje || 'Probable rechazo silencioso por validación interna o delay del backend de Petro 7.'}` };
       } catch (e) {
         console.log(`[AUTO] Petro7 - FacturaExpress EXCEPCIÓN: ${e.message} status=${e.response?.status} data=${JSON.stringify(e.response?.data).substring(0,500)}`);
         return { success: false, mensaje: 'Petro7: error FacturaExpress - ' + e.message };
