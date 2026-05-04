@@ -169,73 +169,107 @@ const PORTALES = {
   'bandeja': {
     url: 'https://www.bandeja.mx/pages/facturacion-bandeja',
     async ejecutar(page, perfil, ticketData) {
-      // Cerrar popup Klaviyo si aparece
+      // Cerrar popups
       await page.evaluate(() => {
-        document.querySelectorAll('[class*="klaviyo"] [class*="close"], [id*="klaviyo"] [class*="close"]').forEach(el => el.click());
+        document.querySelectorAll('[class*="klaviyo"],[class*="newsletter"],[class*="popup"]').forEach(el => { if(el.style) el.style.display='none'; });
+        document.body.style.overflow = '';
       }).catch(() => {});
-      await page.waitForTimeout(1500);
+      await page.waitForTimeout(1000);
 
-      // Llenar numero de orden - selector confirmado: input#orderNumber
+      // Llenar folio - selector confirmado
       await page.waitForSelector('input#orderNumber', { timeout: 15000 });
-      const folioFormateado = (ticketData.folio||'').replace(/^(\d{2})(\d+)$/, '$1-$2'); await page.fill('input#orderNumber', folioFormateado);
-      console.log('[AUTO] Bandeja - orden llenada:', ticketData.folio);
-
-      // Llenar total - selector confirmado: input#total
+      await page.fill('input#orderNumber', ticketData.folio || '');
       await page.fill('input#total', String(ticketData.total || ''));
-      console.log('[AUTO] Bandeja - total llenado:', ticketData.total);
+      console.log('[AUTO] Bandeja - folio:', ticketData.folio, 'total:', ticketData.total);
+
+      // Click BUSCAR via Playwright directo con force
+      await page.locator('button.button.btn').click({ force: true, timeout: 8000 }).catch(async () => {
+        // Fallback: click via evaluate con TreeWalker para encontrar por texto
+        await page.evaluate(() => {
+          const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+          let node;
+          while(node = walker.nextNode()) {
+            if(node.textContent.trim() === 'BUSCAR') {
+              const btn = node.parentElement.closest('button') || node.parentElement;
+              btn.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));
+              btn.click();
+              break;
+            }
+          }
+        });
+      });
+      console.log('[AUTO] Bandeja - BUSCAR clickeado');
+      await page.waitForTimeout(4000);
+
+      // Verificar si aparecio formulario fiscal real (no solo texto RFC en navegacion)
+      const hayFormulario = await page.evaluate(() => {
+        const inputs = Array.from(document.querySelectorAll('input[type="text"],input[type="email"]'))
+          .filter(i => !i.id.includes('search') && !i.name.includes('q') && i.offsetParent !== null);
+        return inputs.length >= 2;
+      });
+
+      if (!hayFormulario) {
+        console.log('[AUTO] Bandeja - formulario fiscal no aparecio');
+        return { success: false, mensaje: 'Bandeja: orden no encontrada o plazo vencido' };
+      }
+      console.log('[AUTO] Bandeja - formulario fiscal encontrado');
+
+      // Log campos para debug
+      const campos = await page.evaluate(() =>
+        Array.from(document.querySelectorAll('input:not([type="hidden"]):not([type="search"]),select'))
+          .filter(el => el.offsetParent !== null)
+          .map(el => ({id:el.id,name:el.name,type:el.type,placeholder:el.placeholder,tag:el.tagName}))
+      );
+      console.log('[AUTO] Bandeja - campos visibles:', JSON.stringify(campos));
+
+      // Llenar campos fiscales usando Playwright fill directo
+      for(const campo of campos) {
+        try {
+          if(campo.id && campo.id.toLowerCase().includes('rfc') || campo.name && campo.name.toLowerCase().includes('rfc') || campo.placeholder && campo.placeholder.toUpperCase().includes('RFC')) {
+            await page.fill('#'+campo.id || '[name="'+campo.name+'"]', perfil.rfc);
+          } else if(campo.type === 'email' || campo.id && campo.id.includes('email') || campo.placeholder && campo.placeholder.toLowerCase().includes('correo')) {
+            await page.fill(campo.id ? '#'+campo.id : '[type="email"]', perfil.email);
+          } else if(campo.id && campo.id.toLowerCase().includes('cp') || campo.placeholder && campo.placeholder.toLowerCase().includes('postal')) {
+            await page.fill('#'+campo.id, perfil.cp);
+          }
+        } catch(e) {}
+      }
+
+      // Selects: regimen y uso CFDI
+      await page.evaluate(({r,u}) => {
+        const sels = Array.from(document.querySelectorAll('select')).filter(s => s.offsetParent !== null);
+        if(sels[0]) { const opt=Array.from(sels[0].options).find(o=>o.value===r||o.text.includes(r)); if(opt){sels[0].value=opt.value;sels[0].dispatchEvent(new Event('change',{bubbles:true}));} }
+        if(sels[1]) { const opt=Array.from(sels[1].options).find(o=>o.value===u||o.text.includes(u)); if(opt){sels[1].value=opt.value;sels[1].dispatchEvent(new Event('change',{bubbles:true}));} }
+      }, {r: perfil.regimen||'612', u: perfil.uso_cfdi||'G03'});
+
       await page.waitForTimeout(500);
 
-      // Click BUSCAR - es el button.button.btn (NO el search__submit de Shopify)
-      // Usar evaluate para hacer click en el boton correcto por posicion
-      await page.evaluate(() => {
-        const btns = Array.from(document.querySelectorAll('button[type="submit"]'));
-        // El boton de facturacion tiene class "button btn", el de busqueda tiene "search__submit"
-        const btnFactura = btns.find(b => b.className.includes('button btn') && !b.className.includes('search'));
-        if (btnFactura) {
-          btnFactura.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-          btnFactura.click();
-        }
-      });
-      console.log('[AUTO] Bandeja - click BUSCAR');
-      await page.waitForTimeout(5000);
-
-      // Ver si aparecio el formulario de datos fiscales
-      const texto = await page.textContent('body');
-      if (texto.includes('RFC') || texto.includes('rfc') || texto.includes('fiscal') || texto.includes('correo')) {
-        console.log('[AUTO] Bandeja - formulario fiscal encontrado, llenando datos');
-      // Log del HTML del formulario para diagnostico
-      const htmlForm = await page.evaluate(()=>JSON.stringify(Array.from(document.querySelectorAll('input,select,button')).map(el=>({tag:el.tagName,id:el.id,type:el.type,name:el.name,placeholder:el.placeholder,class:el.className.substring(0,30),value:el.value.substring(0,20)}))));
-      console.log('[AUTO] Bandeja - campos formulario:', htmlForm.substring(0,500));
-        
-        // Llenar datos fiscales
-        await page.fill('input[id*="rfc"], input[name*="rfc"], input[placeholder*="RFC"]', perfil.rfc).catch(() => {});
-        await page.fill('input[id*="email"], input[name*="email"], input[type="email"]', perfil.email).catch(() => {});
-        await page.fill('input[id*="cp"], input[name*="cp"], input[placeholder*="postal"]', perfil.cp).catch(() => {});
-
-        // Regimen y uso CFDI via select
-        await page.evaluate((reg, uso) => {
-          document.querySelectorAll('select').forEach((sel, i) => {
-            if (i === 0) { const opt = Array.from(sel.options).find(o => o.value === reg || o.text.includes(reg)); if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); } }
-            if (i === 1) { const opt = Array.from(sel.options).find(o => o.value === uso || o.text.includes(uso)); if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); } }
-          });
-        }, {r: perfil.regimen || '612', u: perfil.uso_cfdi || 'G03'});
-
-        await page.waitForTimeout(500);
-
-        // Submit final
-        await page.evaluate(() => {
-          const btns = Array.from(document.querySelectorAll('button[type="submit"], input[type="submit"]'));
-          const btn = btns.find(b => !b.className.includes('search'));
-          if (btn) btn.click();
-        });
-        await page.waitForTimeout(5000);
-
-        const textoFinal = await page.textContent('body');
-        if (textoFinal.includes('exitosa') || textoFinal.includes('enviada') || textoFinal.includes('correo') || textoFinal.includes('generada')) {
-          return { success: true, mensaje: 'Factura Bandeja generada exitosamente' };
-        }
+      // Submit final - usar Playwright locator con force
+      const submitSelectors = ['button.button.btn', 'button[type="submit"]:not(.search__submit)', 'input[type="submit"]'];
+      let submitted = false;
+      for(const sel of submitSelectors) {
+        try {
+          await page.locator(sel).last().click({ force: true, timeout: 5000 });
+          submitted = true;
+          console.log('[AUTO] Bandeja - submit con selector:', sel);
+          break;
+        } catch(e) {}
       }
-      return { success: false, mensaje: 'Bandeja: verificar en portal' };
+      if(!submitted) {
+        await page.evaluate(() => {
+          const btns = Array.from(document.querySelectorAll('button[type="submit"]')).filter(b => b.offsetParent !== null);
+          if(btns.length) btns[btns.length-1].click();
+        });
+      }
+
+      await page.waitForTimeout(6000);
+      const textoFinal = await page.textContent('body');
+      console.log('[AUTO] Bandeja - texto final:', textoFinal.substring(0,200));
+
+      if(textoFinal.includes('exitosa')||textoFinal.includes('enviada')||textoFinal.includes('correo')||textoFinal.includes('generada')||textoFinal.includes('CFDI')) {
+        return { success: true, mensaje: 'Factura Bandeja generada exitosamente' };
+      }
+      return { success: false, mensaje: 'Bandeja: verificar portal - ' + textoFinal.substring(0,100) };
     }
   },
 
