@@ -58,7 +58,9 @@ async function claudeDecide(sc, ctx, hist, knowledge, paso) {
     const txt = r.data.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
     const m = txt.match(/{[sS]*}/);
     if(m) { try { return JSON.parse(m[0]); } catch(e) { return {accion:'wait',descripcion:'JSON parse error'}; } }
-    return {accion:'wait', descripcion:'Sin respuesta valida'};
+    const js=txt.indexOf('{');const je=txt.lastIndexOf('}');if(js>=0&&je>js){try{return JSON.parse(txt.substring(js,je+1));}catch{}}
+    console.log('[AGENT] Sin JSON:', txt.substring(0,120));
+    return {accion:'wait', descripcion:'Esperando'};
   } catch(e) {
     if(e.response&&e.response.status===429) throw new Error('RATE_LIMIT');
     return {accion:'error', mensaje_final:'API: '+e.message};
