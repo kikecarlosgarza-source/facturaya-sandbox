@@ -7,6 +7,26 @@ const fs = require('fs');
 const CAPTCHA_DIR = '/data/captchas';
 try { fs.mkdirSync(CAPTCHA_DIR, { recursive: true }); } catch(e) {}
 
+// Petro 7: el server espera fechaTicket en formato ISO (lo que produce
+// JSON.stringify(new Date(...))). Si lo mandamos como DD/MM/YYYY o
+// "Tue Apr 30 2025..." el endpoint contesta SOAP error o "Ticket no existe".
+function toIsoFechaPetro(s) {
+  if (!s) return '';
+  s = String(s).trim();
+  // YYYY-MM-DD[Thh:mm:ss...]
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+    return s.substring(0, 10) + 'T00:00:00.000Z';
+  }
+  // DD/MM/YYYY
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (m) {
+    const dd = m[1].padStart(2, '0');
+    const mm = m[2].padStart(2, '0');
+    return `${m[3]}-${mm}-${dd}T00:00:00.000Z`;
+  }
+  return s;
+}
+
 const PORTALES = {
   'home depot': {
     httpOnly: true,
@@ -579,6 +599,33 @@ const PORTALES = {
         return { success: false, mensaje: 'Petro7: error sesión - ' + e.message };
       }
 
+      // 1.5. Pre-validar el ticket con verificaTicketWS2 (no requiere captcha).
+      // Falla rápido con mensaje claro si los datos son incorrectos antes de
+      // gastar una solución de CapSolver. status="0" = ticket correcto.
+      const fechaIso = toIsoFechaPetro(ticketData.fecha_formateada || ticketData.fecha_compra || '');
+      try {
+        const v = await axios.get(BASE + '/KJServices/webapi/FacturacionService/verificaTicketWS2', {
+          ...opts(),
+          params: {
+            noTicket: String(ticketData.folio || ''),
+            estacion: String(ticketData.no_estacion || ''),
+            fechaTicket: fechaIso,
+            webId: String(ticketData.web_id || '')
+          }
+        });
+        console.log(`[AUTO] Petro7 - verificaTicketWS2 status=${v.status} body=${JSON.stringify(v.data).substring(0,400)}`);
+        if (v.data?.status !== '0' && v.data?.status !== 0) {
+          const msg = v.data?.mensajeValidacion || v.data?.respuesta || 'sin detalle';
+          return {
+            success: false,
+            mensaje: `Petro7: ticket rechazado por verificaTicketWS2 — ${msg} (folio=${ticketData.folio} estacion=${ticketData.no_estacion} webId=${ticketData.web_id} fecha=${fechaIso})`
+          };
+        }
+      } catch (e) {
+        console.log(`[AUTO] Petro7 - verificaTicketWS2 EXCEPCIÓN: ${e.message}`);
+        // Continuar igual; el endpoint principal volverá a validar
+      }
+
       // 2. Resolver Kaptcha (imagen JPG) — requiere CapSolver ImageToText
       const capKey = process.env.CAPSOLVER_API_KEY;
       if (!capKey) return { success: false, mensaje: 'Petro7: CAPSOLVER_API_KEY no configurada' };
@@ -664,12 +711,13 @@ const PORTALES = {
         return { success: false, mensaje: 'Petro7: error validando captcha - ' + e.message };
       }
 
-      // 4. Construir ticket — fecha en formato DD/MM/YYYY (Angular md-datepicker)
+      // 4. Construir ticket — fechaTicket debe ser ISO (Date.toJSON()), el
+      // server rechaza DD/MM/YYYY y otros formatos.
       const ticket = {
         noEstacion: String(ticketData.no_estacion || ''),
         noTicket: String(ticketData.folio || ''),
         wid: String(ticketData.web_id || ''),
-        fechaTicket: ticketData.fecha_formateada || ticketData.fecha_compra || ''
+        fechaTicket: toIsoFechaPetro(ticketData.fecha_formateada || ticketData.fecha_compra || '')
       };
       // Avisar si campos clave vienen vacíos (Petro 7 los necesita para validar el ticket)
       const camposVacios = [];
