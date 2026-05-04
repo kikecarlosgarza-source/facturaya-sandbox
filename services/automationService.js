@@ -207,10 +207,23 @@ const PORTALES = {
         cliente: clienteFacturama
       };
 
+      // Loguear el payload completo en chunks (Render trunca líneas largas)
+      const payloadStr = JSON.stringify({ comprobante });
+      console.log(`[AUTO] HD - timbrado payload size=${payloadStr.length} bytes`);
+      console.log(`[AUTO] HD - timbrado tienda=${JSON.stringify(tienda)}`);
+      console.log(`[AUTO] HD - timbrado cliente=${JSON.stringify(clienteFacturama)}`);
+      console.log(`[AUTO] HD - timbrado datosTicket keys=${Object.keys(datosTicket || {}).join(',')}`);
+      console.log(`[AUTO] HD - timbrado conceptos=${JSON.stringify((datosTicket?.conceptos || []).slice(0,3)).substring(0,800)}`);
+      console.log(`[AUTO] HD - timbrado totales sub=${datosTicket?.subTotal} imp=${datosTicket?.totImpTras} total=${datosTicket?.total} desc=${datosTicket?.descuento}`);
+      // Imprimir el payload entero en chunks de 1500 chars
+      for (let i = 0; i < payloadStr.length; i += 1500) {
+        console.log(`[AUTO] HD - timbrado payload[${i}-${Math.min(i+1500, payloadStr.length)}]: ${payloadStr.substring(i, i+1500)}`);
+      }
+
       try {
         const r = await axios.post(`${BASE}/timbrado`, { comprobante }, opts);
         const bs = typeof r.data === 'object' ? JSON.stringify(r.data) : String(r.data ?? '');
-        console.log(`[AUTO] HD - timbrado status=${r.status} body=${bs.substring(0, 1500)}`);
+        console.log(`[AUTO] HD - timbrado RESPONSE status=${r.status} body=${bs.substring(0, 2000)}`);
         if (r.data?.codigo !== 200 && !r.data?.uuid && !r.data?.comprobante?.uuid) {
           return { success: false, mensaje: 'HD: error al timbrar - ' + (r.data?.mensaje || bs.substring(0, 200)) };
         }
