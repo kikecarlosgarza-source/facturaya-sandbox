@@ -671,6 +671,15 @@ const PORTALES = {
         wid: String(ticketData.web_id || ''),
         fechaTicket: ticketData.fecha_formateada || ticketData.fecha_compra || ''
       };
+      // Avisar si campos clave vienen vacíos (Petro 7 los necesita para validar el ticket)
+      const camposVacios = [];
+      if (!ticket.noEstacion) camposVacios.push('noEstacion');
+      if (!ticket.noTicket) camposVacios.push('noTicket');
+      if (!ticket.wid) camposVacios.push('wid');
+      if (!ticket.fechaTicket) camposVacios.push('fechaTicket');
+      if (camposVacios.length) {
+        console.log(`[AUTO] Petro7 - WARN campos vacíos en ticket: ${camposVacios.join(',')} (ticketData=${JSON.stringify(ticketData)})`);
+      }
       console.log('[AUTO] Petro7 - ticket:', JSON.stringify(ticket));
 
       // 5. POST FacturaExpressService
@@ -713,6 +722,12 @@ const PORTALES = {
 
         if (r.status >= 400) {
           return { success: false, mensaje: 'Petro7: HTTP ' + r.status + ' - ' + bodyStr.substring(0, 200) };
+        }
+
+        // 204 No Content = el servicio aceptó la solicitud y la procesará async
+        // (envía el CFDI por correo). No hay body ni UUID en este caso.
+        if (r.status === 204) {
+          return { success: true, mensaje: 'Factura Petro7 procesada — el CFDI se envió al correo proporcionado' };
         }
 
         // Respuestas posibles:
