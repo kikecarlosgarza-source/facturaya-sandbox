@@ -50,6 +50,19 @@ INSTRUCCIONES:
 5. PORTAL: URL del portal de facturacion si aparece en el ticket.
 6. NO_ESTACION: Para gasolineras (Petro 7, Petromax, OXXO Gas), el numero de estacion o sucursal.
 7. WEB_ID: Para Petro 7/Petromax, el Web ID del ticket (numero corto, generalmente 4-6 digitos).
+8. SISTEMA_FACTURACION: identifica el backend usado para emitir CFDI:
+   - "facturama_shopify": tiendas online en Shopify que usan Facturama. Indicios:
+     URL del portal contiene "*.myshopify.com", o el ticket viene de una tienda
+     online (ej: bandeja.mx, moft.mx, gymshark.mx, etc). El portal suele ser de
+     la forma "shopname.com/pages/facturacion" o redirige a app.facturama.mx.
+   - "facturama_hd": Home Depot Mexico (facturacion.homedepot.com.mx).
+   - "konesh": Petro 7, Petromax (tarjetapetro-7.com.mx, petro7.mx).
+   - "wansoft": OXXO Gas y similares.
+   - "otro": cualquier otro sistema.
+9. SHOP_NAME: SOLO si sistema_facturacion = "facturama_shopify". Es el handle de
+   Shopify (parte antes de ".myshopify.com"). Si el dominio en el ticket es
+   "bandeja.mx" responde "bandeja-mx". Si es "moft.mx" responde "moft". Si es
+   "tienda.com" responde "tienda". Si no estás seguro responde null.
 
 Responde SOLO JSON sin backticks:
 {
@@ -61,7 +74,8 @@ Responde SOLO JSON sin backticks:
   "rfc_emisor": "RFC del emisor si aparece",
   "no_estacion": "numero de estacion para gasolineras o null",
   "web_id": "Web ID para Petro 7 o null",
-  "sistema_facturacion": "wansoft/otro"
+  "sistema_facturacion": "facturama_shopify/facturama_hd/konesh/wansoft/otro",
+  "shop_name": "handle de Shopify si aplica, null si no"
 }`;
 
   const response = await axios.post(CLAUDE_API, {
@@ -86,7 +100,44 @@ Responde SOLO JSON sin backticks:
   const datos = parsearRespuestaJSON(response.data.content);
   // Limpiar folio: quitar todo excepto digitos
   if (datos.folio) datos.folio = datos.folio.replace(/[^0-9\-]/g, '').replace(/^-+|-+$/g, '');
+
+  // Fallback de detección Facturama-Shopify si Claude no lo detectó
+  if (datos.sistema_facturacion !== 'facturama_shopify') {
+    const det = detectarFacturamaShopify(datos.portal_facturacion, datos.establecimiento);
+    if (det) {
+      datos.sistema_facturacion = 'facturama_shopify';
+      datos.shop_name = det;
+    }
+  } else if (!datos.shop_name) {
+    datos.shop_name = detectarFacturamaShopify(datos.portal_facturacion, datos.establecimiento);
+  }
+  // Normalizar shop_name (lowercase, conservar guiones, sin espacios)
+  if (datos.shop_name) {
+    datos.shop_name = String(datos.shop_name).toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    if (!datos.shop_name) datos.shop_name = null;
+  }
+
   return datos;
+}
+
+// Tiendas online conocidas (handle Shopify ↔ patrones del establecimiento/dominio)
+const FACTURAMA_SHOPIFY_KNOWN = {
+  'bandeja-mx': ['bandeja.mx', 'bandeja'],
+  'moft': ['moft.mx', 'moft.com', 'moft '],
+};
+
+function detectarFacturamaShopify(portalUrl, establecimiento) {
+  // 1. URL con *.myshopify.com
+  if (portalUrl) {
+    const m = String(portalUrl).match(/([a-z0-9-]+)\.myshopify\.com/i);
+    if (m) return m[1].toLowerCase();
+  }
+  // 2. Tiendas conocidas por nombre del establecimiento o URL del portal
+  const haystack = ((portalUrl || '') + ' ' + (establecimiento || '')).toLowerCase();
+  for (const [slug, patterns] of Object.entries(FACTURAMA_SHOPIFY_KNOWN)) {
+    if (patterns.some(p => haystack.includes(p))) return slug;
+  }
+  return null;
 }
 
 module.exports = { analizarTicket };

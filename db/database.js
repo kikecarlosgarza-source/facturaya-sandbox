@@ -79,6 +79,10 @@ try { db.exec('ALTER TABLE solicitudes ADD COLUMN web_id TEXT'); } catch(e) {}
 try { db.exec('ALTER TABLE perfiles_fiscales ADD COLUMN password_portales TEXT'); } catch(e) {}
 // nombre_sat: nombre exacto del SAT (extraído de la Constancia de Situación Fiscal, nunca editable manualmente)
 try { db.exec('ALTER TABLE perfiles_fiscales ADD COLUMN nombre_sat TEXT'); } catch(e) {}
+// sistema_facturacion: portal/sistema usado para emitir la factura (facturama_shopify, wansoft, konesh, otro)
+try { db.exec('ALTER TABLE solicitudes ADD COLUMN sistema_facturacion TEXT'); } catch(e) {}
+// shop_name: handle de Shopify para Facturama-Shopify (ej: "bandeja-mx", "moft")
+try { db.exec('ALTER TABLE solicitudes ADD COLUMN shop_name TEXT'); } catch(e) {}
 module.exports = db;
 module.exports.db = db;
 module.exports.uuid = require('uuid').v4;

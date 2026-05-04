@@ -264,136 +264,16 @@ const PORTALES = {
     }
   },
 
+  // Bandeja se mantiene como entrada explícita para detección por nombre (legacy/fallback)
   'bandeja': {
     httpOnly: true,
-    async ejecutar(perfil, ticketData) {
-      const axios = require('axios');
+    ejecutar: (perfil, ticketData) => ejecutarFacturamaShopify(perfil, ticketData, ticketData.shop_name || 'bandeja-mx')
+  },
 
-      const tr = [(d) => {
-        if (typeof d !== 'string') return d;
-        try { return JSON.parse(d.replace(/^\(|\)$/g, '')); } catch { return d; }
-      }];
-
-      const headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json, text/javascript, */*; q=0.01',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Origin': 'https://app.facturama.mx',
-        'Referer': 'https://app.facturama.mx/Shopify/Clients'
-      };
-
-      // Paso 1: SearchOrder — obtener orderId interno de Shopify
-      const searchInfo = Buffer.from(JSON.stringify({
-        ShopName: 'bandeja-mx.myshopify.com',
-        OrderId: ticketData.folio,
-        OrdenName: String(ticketData.total)
-      })).toString('base64');
-
-      let orderId;
-      try {
-        const { data: searchData } = await axios.get(
-          'https://app.facturama.mx/Shopify/Clients/SearchOrder',
-          { params: { info: searchInfo }, headers, transformResponse: tr }
-        );
-        if (!searchData.success || !searchData.orderId) {
-          return { success: false, mensaje: 'Bandeja: orden no encontrada - verifica folio y total' };
-        }
-        orderId = searchData.orderId;
-      } catch (e) {
-        return { success: false, mensaje: 'Bandeja: error buscando orden - ' + e.message };
-      }
-
-      console.log('[AUTO] Bandeja HTTP - orderId:', orderId);
-
-      // Paso 2: SaveClient (GET con Base64 JSON) — registra datos fiscales y obtiene shopInvoiceId
-      // nombre_sat: extraído de la Constancia de Situación Fiscal (exacto para SAT CFDI 4.0)
-      const nombreSAT = perfil.nombre_sat || perfil.nombre;
-      const dataClient = {
-        Id: '',
-        Rfc: perfil.rfc,
-        Name: nombreSAT,
-        Email: perfil.email,
-        Address: {
-          Street: null,
-          ExteriorNumber: null,
-          InteriorNumber: '',
-          Neighborhood: null,
-          ZipCode: perfil.cp,
-          Locality: '',
-          Municipality: null,
-          State: null,
-          Country: 'Mexico'
-        },
-        PaymentMethod: '04',
-        CfdiUse: perfil.uso_cfdi || 'G03',
-        IvaPercentage: null,
-        ShowIeps: null,
-        PaymentForm: null,
-        FiscalRegime: perfil.regimen || '612'
-      };
-
-      const checkout = { Shop: 'bandeja-mx', order_id: String(orderId) };
-
-      let shopInvoiceId, version, creditNoteId;
-      try {
-        const { data: saveData } = await axios.get(
-          'https://app.facturama.mx/Shopify/Clients/SaveClient',
-          {
-            params: {
-              dataClient: Buffer.from(JSON.stringify(dataClient)).toString('base64'),
-              checkout: Buffer.from(JSON.stringify(checkout)).toString('base64')
-            },
-            headers,
-            transformResponse: tr
-          }
-        );
-        console.log('[AUTO] Bandeja HTTP - SaveClient:', JSON.stringify(saveData));
-
-        if (!saveData.success || !saveData.shopInvoiceId) {
-          const errores = saveData.errors ? saveData.errors.join('; ') : 'RFC inválido o límite alcanzado';
-          return { success: false, mensaje: 'Bandeja: ' + errores };
-        }
-
-        if (saveData.createdByLimit === false) {
-          return { success: false, mensaje: 'Bandeja: plazo de facturación vencido para esta orden' };
-        }
-
-        if (!saveData.orderStatus) {
-          return { success: false, mensaje: 'Bandeja: orden pendiente de pago, factura se generará al acreditarse' };
-        }
-
-        shopInvoiceId = saveData.shopInvoiceId;
-        creditNoteId = saveData.creditNoteId || 0;
-        version = saveData.version || '40';
-      } catch (e) {
-        return { success: false, mensaje: 'Bandeja: error en SaveClient - ' + e.message };
-      }
-
-      // Paso 3: CreateCfdiStoreFront — genera el XML CFDI y envía por email
-      try {
-        const invoiceId = creditNoteId > 0 ? creditNoteId : shopInvoiceId;
-        const { data: cfdiData } = await axios.get(
-          `https://app.facturama.mx/Shopify/Invoice${version}/CreateCfdiStoreFront`,
-          {
-            params: { ShopName: 'bandeja-mx', idShopifyInvoice: invoiceId, exchangeRate: '' },
-            headers,
-            transformResponse: tr
-          }
-        );
-        console.log('[AUTO] Bandeja HTTP - CreateCfdi:', JSON.stringify(cfdiData));
-
-        if (cfdiData.existInvoice) {
-          return { success: true, mensaje: 'Bandeja: factura ya generada previamente, consulta tu correo' };
-        }
-        if (cfdiData.success) {
-          const enviada = cfdiData.send ? ' y enviada al correo' : '';
-          return { success: true, mensaje: `Factura Bandeja generada exitosamente${enviada}` };
-        }
-        return { success: false, mensaje: 'Bandeja: ' + (cfdiData.message || 'error al generar CFDI') };
-      } catch (e) {
-        return { success: false, mensaje: 'Bandeja: error en CreateCfdi - ' + e.message };
-      }
-    }
+  // Portal genérico para cualquier tienda Shopify+Facturama (se selecciona por sistema_facturacion)
+  'facturama-shopify': {
+    httpOnly: true,
+    ejecutar: (perfil, ticketData) => ejecutarFacturamaShopify(perfil, ticketData, ticketData.shop_name)
   },
 
   'oxxo gas': {
@@ -839,10 +719,130 @@ const PORTALES = {
   }
 };
 
-function detectarPortal(establecimiento) {
+// Flujo HTTP genérico para tiendas Shopify que usan Facturama como sistema de facturación.
+// Acepta cualquier shop_name (handle de Shopify, ej: "bandeja-mx", "moft").
+async function ejecutarFacturamaShopify(perfil, ticketData, shopName) {
+  const axios = require('axios');
+  if (!shopName) return { success: false, mensaje: 'Facturama-Shopify: shop_name no definido' };
+
+  const tr = [(d) => {
+    if (typeof d !== 'string') return d;
+    try { return JSON.parse(d.replace(/^\(|\)$/g, '')); } catch { return d; }
+  }];
+
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept': 'application/json, text/javascript, */*; q=0.01',
+    'X-Requested-With': 'XMLHttpRequest',
+    'Origin': 'https://app.facturama.mx',
+    'Referer': 'https://app.facturama.mx/Shopify/Clients'
+  };
+
+  const tag = `Facturama-Shopify[${shopName}]`;
+
+  // 1. SearchOrder — obtener orderId interno de Shopify
+  const searchInfo = Buffer.from(JSON.stringify({
+    ShopName: shopName + '.myshopify.com',
+    OrderId: ticketData.folio,
+    OrdenName: String(ticketData.total)
+  })).toString('base64');
+
+  let orderId;
+  try {
+    const { data: searchData } = await axios.get(
+      'https://app.facturama.mx/Shopify/Clients/SearchOrder',
+      { params: { info: searchInfo }, headers, transformResponse: tr }
+    );
+    if (!searchData.success || !searchData.orderId) {
+      return { success: false, mensaje: `${tag}: orden no encontrada - verifica folio y total` };
+    }
+    orderId = searchData.orderId;
+  } catch (e) {
+    return { success: false, mensaje: `${tag}: error buscando orden - ${e.message}` };
+  }
+  console.log(`[AUTO] ${tag} - orderId: ${orderId}`);
+
+  // 2. SaveClient (GET con Base64 JSON)
+  const nombreSAT = perfil.nombre_sat || perfil.nombre;
+  const dataClient = {
+    Id: '',
+    Rfc: perfil.rfc,
+    Name: nombreSAT,
+    Email: perfil.email,
+    Address: {
+      Street: null, ExteriorNumber: null, InteriorNumber: '',
+      Neighborhood: null, ZipCode: perfil.cp, Locality: '',
+      Municipality: null, State: null, Country: 'Mexico'
+    },
+    PaymentMethod: '04',
+    CfdiUse: perfil.uso_cfdi || 'G03',
+    IvaPercentage: null, ShowIeps: null, PaymentForm: null,
+    FiscalRegime: perfil.regimen || '612'
+  };
+  const checkout = { Shop: shopName, order_id: String(orderId) };
+
+  let shopInvoiceId, version, creditNoteId;
+  try {
+    const { data: saveData } = await axios.get(
+      'https://app.facturama.mx/Shopify/Clients/SaveClient',
+      {
+        params: {
+          dataClient: Buffer.from(JSON.stringify(dataClient)).toString('base64'),
+          checkout: Buffer.from(JSON.stringify(checkout)).toString('base64')
+        },
+        headers, transformResponse: tr
+      }
+    );
+    console.log(`[AUTO] ${tag} - SaveClient: ${JSON.stringify(saveData)}`);
+
+    if (!saveData.success || !saveData.shopInvoiceId) {
+      const errores = saveData.errors ? saveData.errors.join('; ') : 'RFC inválido o límite alcanzado';
+      return { success: false, mensaje: `${tag}: ${errores}` };
+    }
+    if (saveData.createdByLimit === false) {
+      return { success: false, mensaje: `${tag}: plazo de facturación vencido para esta orden` };
+    }
+    if (!saveData.orderStatus) {
+      return { success: false, mensaje: `${tag}: orden pendiente de pago, factura se generará al acreditarse` };
+    }
+    shopInvoiceId = saveData.shopInvoiceId;
+    creditNoteId = saveData.creditNoteId || 0;
+    version = saveData.version || '40';
+  } catch (e) {
+    return { success: false, mensaje: `${tag}: error en SaveClient - ${e.message}` };
+  }
+
+  // 3. CreateCfdiStoreFront — genera el CFDI y envía por correo
+  try {
+    const invoiceId = creditNoteId > 0 ? creditNoteId : shopInvoiceId;
+    const { data: cfdiData } = await axios.get(
+      `https://app.facturama.mx/Shopify/Invoice${version}/CreateCfdiStoreFront`,
+      { params: { ShopName: shopName, idShopifyInvoice: invoiceId, exchangeRate: '' }, headers, transformResponse: tr }
+    );
+    console.log(`[AUTO] ${tag} - CreateCfdi: ${JSON.stringify(cfdiData)}`);
+
+    if (cfdiData.existInvoice) {
+      return { success: true, mensaje: `${tag}: factura ya generada previamente, consulta tu correo` };
+    }
+    if (cfdiData.success) {
+      const enviada = cfdiData.send ? ' y enviada al correo' : '';
+      return { success: true, mensaje: `Factura ${tag} generada exitosamente${enviada}` };
+    }
+    return { success: false, mensaje: `${tag}: ${cfdiData.message || 'error al generar CFDI'}` };
+  } catch (e) {
+    return { success: false, mensaje: `${tag}: error en CreateCfdi - ${e.message}` };
+  }
+}
+
+function detectarPortal(establecimiento, sistemaFacturacion) {
+  // Prioridad: si Claude detectó Facturama-Shopify, usar el flujo genérico
+  if (sistemaFacturacion === 'facturama_shopify') {
+    return { key: 'facturama-shopify', ...PORTALES['facturama-shopify'] };
+  }
   if (!establecimiento) return null;
   const n = establecimiento.toLowerCase();
   for (const [key, config] of Object.entries(PORTALES)) {
+    if (key === 'facturama-shopify') continue; // skip el genérico en match por nombre
     if (n.includes(key)) return { key, ...config };
   }
   return null;
@@ -855,12 +855,13 @@ async function procesarFactura(solicitudId) {
   const perfil = db.prepare('SELECT * FROM perfiles_fiscales WHERE usuario_id = ?').get(solicitud.usuario_id);
   if (!perfil) throw new Error('Perfil fiscal no configurado');
 
-  const portal = detectarPortal(solicitud.establecimiento);
+  const portal = detectarPortal(solicitud.establecimiento, solicitud.sistema_facturacion);
   if (!portal) {
     db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
       .run('manual', 'Portal no soportado aun', solicitudId);
     return { success: false, manual: true };
   }
+  console.log(`[AUTO] Portal seleccionado: ${portal.key} (sistema=${solicitud.sistema_facturacion || 'N/A'} shop=${solicitud.shop_name || 'N/A'})`);
 
   db.prepare('UPDATE solicitudes SET status=? WHERE id=?').run('procesando', solicitudId);
 
@@ -870,7 +871,9 @@ async function procesarFactura(solicitudId) {
     web_id: solicitud.web_id || '',
     fecha_formateada: solicitud.fecha_compra || '',
     establecimiento: solicitud.establecimiento,
-    total: solicitud.total
+    total: solicitud.total,
+    sistema_facturacion: solicitud.sistema_facturacion || null,
+    shop_name: solicitud.shop_name || null
   };
 
   // Portales HTTP directo (sin browser)
