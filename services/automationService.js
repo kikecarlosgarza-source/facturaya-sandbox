@@ -159,6 +159,76 @@ const PORTALES = {
     }
   },
 
+  'bandeja': {
+    url: 'https://www.bandeja.mx/pages/facturacion-bandeja',
+    async ejecutar(page, perfil, ticketData) {
+      // Cerrar popup Klaviyo si aparece
+      await page.evaluate(() => {
+        document.querySelectorAll('[class*="klaviyo"] [class*="close"], [id*="klaviyo"] [class*="close"]').forEach(el => el.click());
+      }).catch(() => {});
+      await page.waitForTimeout(1500);
+
+      // Llenar numero de orden - selector confirmado: input#orderNumber
+      await page.waitForSelector('input#orderNumber', { timeout: 15000 });
+      await page.fill('input#orderNumber', ticketData.folio || '');
+      console.log('[AUTO] Bandeja - orden llenada:', ticketData.folio);
+
+      // Llenar total - selector confirmado: input#total
+      await page.fill('input#total', String(ticketData.total || ''));
+      console.log('[AUTO] Bandeja - total llenado:', ticketData.total);
+      await page.waitForTimeout(500);
+
+      // Click BUSCAR - es el button.button.btn (NO el search__submit de Shopify)
+      // Usar evaluate para hacer click en el boton correcto por posicion
+      await page.evaluate(() => {
+        const btns = Array.from(document.querySelectorAll('button[type="submit"]'));
+        // El boton de facturacion tiene class "button btn", el de busqueda tiene "search__submit"
+        const btnFactura = btns.find(b => b.className.includes('button btn') && !b.className.includes('search'));
+        if (btnFactura) {
+          btnFactura.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+          btnFactura.click();
+        }
+      });
+      console.log('[AUTO] Bandeja - click BUSCAR');
+      await page.waitForTimeout(5000);
+
+      // Ver si aparecio el formulario de datos fiscales
+      const texto = await page.textContent('body');
+      if (texto.includes('RFC') || texto.includes('rfc') || texto.includes('fiscal') || texto.includes('correo')) {
+        console.log('[AUTO] Bandeja - formulario fiscal encontrado, llenando datos');
+        
+        // Llenar datos fiscales
+        await page.fill('input[id*="rfc"], input[name*="rfc"], input[placeholder*="RFC"]', perfil.rfc).catch(() => {});
+        await page.fill('input[id*="email"], input[name*="email"], input[type="email"]', perfil.email).catch(() => {});
+        await page.fill('input[id*="cp"], input[name*="cp"], input[placeholder*="postal"]', perfil.cp).catch(() => {});
+
+        // Regimen y uso CFDI via select
+        await page.evaluate((reg, uso) => {
+          document.querySelectorAll('select').forEach((sel, i) => {
+            if (i === 0) { const opt = Array.from(sel.options).find(o => o.value === reg || o.text.includes(reg)); if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); } }
+            if (i === 1) { const opt = Array.from(sel.options).find(o => o.value === uso || o.text.includes(uso)); if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', {bubbles:true})); } }
+          });
+        }, perfil.regimen || '612', perfil.uso_cfdi || 'G03');
+
+        await page.waitForTimeout(500);
+
+        // Submit final
+        await page.evaluate(() => {
+          const btns = Array.from(document.querySelectorAll('button[type="submit"], input[type="submit"]'));
+          const btn = btns.find(b => !b.className.includes('search'));
+          if (btn) btn.click();
+        });
+        await page.waitForTimeout(5000);
+
+        const textoFinal = await page.textContent('body');
+        if (textoFinal.includes('exitosa') || textoFinal.includes('enviada') || textoFinal.includes('correo') || textoFinal.includes('generada')) {
+          return { success: true, mensaje: 'Factura Bandeja generada exitosamente' };
+        }
+      }
+      return { success: false, mensaje: 'Bandeja: verificar en portal' };
+    }
+  },
+
   'oxxo gas': {
     url: 'https://facturacion.oxxogas.com',
     requiereCuenta: true,
