@@ -196,6 +196,9 @@ const PORTALES = {
       const texto = await page.textContent('body');
       if (texto.includes('RFC') || texto.includes('rfc') || texto.includes('fiscal') || texto.includes('correo')) {
         console.log('[AUTO] Bandeja - formulario fiscal encontrado, llenando datos');
+      // Log del HTML del formulario para diagnostico
+      const htmlForm = await page.evaluate(()=>JSON.stringify(Array.from(document.querySelectorAll('input,select,button')).map(el=>({tag:el.tagName,id:el.id,type:el.type,name:el.name,placeholder:el.placeholder,class:el.className.substring(0,30),value:el.value.substring(0,20)}))));
+      console.log('[AUTO] Bandeja - campos formulario:', htmlForm.substring(0,500));
         
         // Llenar datos fiscales
         await page.fill('input[id*="rfc"], input[name*="rfc"], input[placeholder*="RFC"]', perfil.rfc).catch(() => {});
