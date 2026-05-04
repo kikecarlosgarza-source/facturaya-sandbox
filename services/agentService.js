@@ -33,7 +33,7 @@ function dominioDe(url) { try { return new URL(url).hostname.replace('www.','');
 async function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
 
 async function screenshot(page) {
-  const buf = await page.screenshot({ type: 'jpeg', quality: 85, fullPage: false });
+  const buf = await page.screenshot({ type: 'jpeg', quality: 50, fullPage: false });
   return buf.toString('base64');
 }
 
@@ -147,6 +147,7 @@ module.exports = { procesarConAgente: async function(solicitudId) {
 
     while(iteraciones < MAX) {
       iteraciones++;
+      await sleep(3000); // evitar rate limit
       console.log('[CU] Iteracion', iteraciones);
 
       // Tomar screenshot actual
@@ -187,7 +188,7 @@ module.exports = { procesarConAgente: async function(solicitudId) {
           }
         });
       } catch(e) {
-        if(e.response?.status === 429) { console.log('[CU] Rate limit, 30s...'); await sleep(30000); continue; }
+        if(e.response?.status === 429) { console.log('[CU] Rate limit, esperando 60s...'); await sleep(60000); continue; }
         throw e;
       }
 
