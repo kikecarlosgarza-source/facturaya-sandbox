@@ -7,7 +7,7 @@ const { procesarConAgente } = require('../services/agentService');
 const db = require('../db/database');
 
 // Portales que tienen automation hardcodeada
-const PORTALES_HARDCODED = ['home depot', 'petro', 'bandeja', 'oxxo gas'];
+const PORTALES_HARDCODED = ['home depot', 'petro'];
 
 function usarAgente(establecimiento) {
   const n = (establecimiento || '').toLowerCase();
