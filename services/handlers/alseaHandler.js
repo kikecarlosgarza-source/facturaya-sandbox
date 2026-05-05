@@ -48,6 +48,15 @@ function logoForEstablecimiento(est) {
   return null;
 }
 
+// Angular con formControlName / ngModel necesita que el cambio dispare 'input'
+// y 'change'. Playwright.fill solo produce 'input'; sin 'change' el FormGroup
+// no marca dirty y la validación no se reactiva.
+async function fillAngular(page, selector, value) {
+  await page.fill(selector, value);
+  await page.dispatchEvent(selector, 'input');
+  await page.dispatchEvent(selector, 'change');
+}
+
 // El form pide dd/mm/aaaa. La solicitud puede traer YYYY-MM-DD o DD/MM/YYYY.
 function formatFechaDDMMYYYY(s) {
   if (!s) return '';
@@ -105,8 +114,8 @@ async function ejecutar(page, perfil, ticketData, solicitudId) {
       const visible = Array.from(document.querySelectorAll('form.billing_form'))
         .find(f => f.offsetParent !== null);
       if (!visible) return null;
-      if (visible.querySelector('#tienda')) return 'tienda_fecha';
-      if (visible.querySelector('#total'))  return 'total';
+      if (visible.querySelector('[formcontrolname="tienda"]')) return 'tienda_fecha';
+      if (visible.querySelector('[formcontrolname="monto"]'))  return 'total';
       return null;
     });
   } catch (e) {
@@ -125,19 +134,24 @@ async function ejecutar(page, perfil, ticketData, solicitudId) {
   const total  = ticketData.total != null ? String(ticketData.total) : '';
 
   try {
-    await page.fill('#rfc', perfil.rfc);
-    await page.fill('#ticket', ticket);
+    await fillAngular(page, 'input[formcontrolname="rfc"]', perfil.rfc);
+    await fillAngular(page, 'input[formcontrolname="ticket"]', ticket);
     if (formVariant === 'tienda_fecha') {
       if (!tienda) {
         return { success: false, mensaje: 'Alsea: marca requiere numero_tienda y el ticket no lo trae extraído' };
       }
-      await page.fill('#tienda', tienda);
-      await page.fill('#dtFecha', fecha);
+      await fillAngular(page, 'input[formcontrolname="tienda"]', tienda);
+      // Fecha: probar formControlName primero, fallback a la clase .txFecha
+      // que algunas marcas usan (datepicker custom de Alsea).
+      const fechaSel = (await page.$('input[formcontrolname="fecha"]'))
+        ? 'input[formcontrolname="fecha"]'
+        : 'input.txFecha';
+      await fillAngular(page, fechaSel, fecha);
     } else {
       if (!total) {
         return { success: false, mensaje: 'Alsea: marca requiere total y el ticket no lo trae' };
       }
-      await page.fill('#total', total);
+      await fillAngular(page, 'input[formcontrolname="monto"]', total);
     }
   } catch (e) {
     reportDom(page, { action: 'fill_paso1', formVariant }, e.message);
