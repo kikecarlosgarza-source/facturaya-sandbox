@@ -20,12 +20,18 @@ function saveKnowledge(portal, data, exito) {
   } catch(e) { console.log('[CU] err saving:',e.message); }
 }
 
+const ALSEA_MARCAS = [
+  'vips','starbucks','dominos',"domino's",'burger king',
+  'chilis',"chili's",'p.f. chang','pf chang','italianni','el portón','el porton'
+];
+
 function determinarPortal(e,p) {
   const n=(e||'').toLowerCase();
   if(n.includes('home depot')) return 'https://facturacion.homedepot.com.mx:2053/FacturacionWeb/#/portalweb';
   if(n.includes('oxxo gas')) return 'https://facturacion.oxxogas.com';
   if(n.includes('petro')) return 'https://tarjetapetro-7.com.mx:8443/KPortalExterno/';
   if(n.includes('bandeja')) return 'https://www.bandeja.mx/pages/facturacion-bandeja';
+  if(ALSEA_MARCAS.some(m => n.includes(m))) return 'https://alsea.interfactura.com';
   if(p&&p.startsWith('http')) return p;
   return null;
 }
@@ -197,12 +203,26 @@ module.exports = { procesarConAgente: async function(solicitudId) {
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await sleep(3000);
 
+    // Hint específico por dominio: el agente entra a ciegas, así que cuando
+    // sabemos algo del portal (multi-marca, flujo de código de autorización,
+    // etc.) se lo decimos en el prompt para que no lo descubra desde cero.
+    let hintDominio = '';
+    if (url.includes('alsea.interfactura.com')) {
+      hintDominio =
+        'IMPORTANTE: Este portal es de Alsea. Marcas: VIPS, Starbucks, Domino\'s, etc.\n' +
+        'El ticket es de ' + ctx.establecimiento + '.\n' +
+        'El portal probablemente pide primero un código de autorización o número de ticket.\n' +
+        'Usa el folio: ' + ctx.folio + '\n' +
+        'Si pide código de autorización, usa también el folio.\n\n';
+    }
+
     // Loop de Computer Use
     const messages = [{
       role: 'user',
       content: [{
         type: 'text',
         text: 'Completa la solicitud de factura electronica en este portal.\n\n' +
+          hintDominio +
           'DATOS DEL TICKET:\n' +
           '- Folio/Orden: ' + ctx.folio + '\n' +
           '- Total: $' + ctx.total + '\n' +
