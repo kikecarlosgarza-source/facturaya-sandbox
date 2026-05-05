@@ -47,11 +47,35 @@ const insertPattern = db.prepare(`
   VALUES (?, ?, ?, ?, ?, 1)
 `);
 
+// Lookup de parches activos. Matchea por brand (portal LIKE '%heb%') o por URL
+// pattern embebido en el campo step (que claudeAgent serializa como JSON).
+const findActivePatches = db.prepare(`
+  SELECT id, patch_js, descripcion, confidence
+  FROM portal_scripts
+  WHERE (portal LIKE ? OR step LIKE ?) AND active = 1
+  ORDER BY confidence DESC, id DESC
+  LIMIT 5
+`);
+
 function urlPattern(url) {
   try {
     const u = new URL(url);
     return u.host + u.pathname;
   } catch { return url; }
+}
+
+// Extrae el "brand" de una URL para hacer match contra el campo portal:
+// "facturacion.heb.com.mx" → "heb", "homedepot.com.mx" → "homedepot".
+function brandFromUrl(url) {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, '');
+    const parts = host.split('.');
+    const tlds = new Set(['com','org','net','gob','edu','mx','us','co']);
+    while (parts.length > 1 && tlds.has(parts[parts.length - 1].toLowerCase())) {
+      parts.pop();
+    }
+    return parts[parts.length - 1] || host;
+  } catch { return ''; }
 }
 
 async function withTimeout(promise, ms, label) {
@@ -357,6 +381,39 @@ async function ejecutarConPage(page, url, perfil, ticketData) {
   if (captcha.error) {
     console.log('[universal] captcha no se pudo resolver:', captcha.error);
     // continuar igual; quizá el portal acepta sin captcha
+  }
+
+  // Aplicador de parches: antes del heurístico, busca parches JS ejecutables
+  // (no JSON descriptors) activos para esta URL/brand y aplícalos. Cierra el
+  // ciclo "detectar fallo → claudeAgent genera parche → aplicar parche".
+  const urlPat = urlPattern(url);
+  const brand  = brandFromUrl(url);
+  try {
+    const patches = findActivePatches.all(`%${brand}%`, `%${urlPat}%`);
+    for (const p of patches) {
+      // patch_js que empieza con '{' es JSON descriptor (selectores serializados),
+      // no código ejecutable — saltarlo
+      const code = (p.patch_js || '').trim();
+      if (!code || code.startsWith('{')) continue;
+
+      try {
+        console.log(`[universal] aplicando parche #${p.id} (conf=${p.confidence}): ${p.descripcion}`);
+        await page.evaluate(code);
+        await page.waitForTimeout(POST_SUBMIT_WAIT_MS);
+        if (await verificarExito(page)) {
+          return {
+            success: true,
+            mensaje: `Universal: factura generada (parche #${p.id})`,
+            via: 'parche',
+            patchId: p.id
+          };
+        }
+      } catch (e) {
+        console.log(`[universal] parche #${p.id} falló:`, e.message);
+      }
+    }
+  } catch (e) {
+    console.log('[universal] error consultando parches:', e.message);
   }
 
   // Heurístico: rellenar campos detectados
