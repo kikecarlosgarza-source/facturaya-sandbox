@@ -41,6 +41,16 @@ function makeReportApi(portal) {
     }).catch(err => console.warn(`[OTA ${portal}] analyzeApiFailure falló (${endpoint}):`, err.message));
 }
 
+// OTA: factory que cada portal Playwright usa para reportar fallos DOM a Claude en background.
+// El helper internamente captura page.content() y se lo manda al diagnóstico.
+function makeReportDom(portal) {
+  return (page, step, error) =>
+    page.content()
+      .then(html => claudeAgent.analyzeAndFix({ portal, step, error, html }))
+      .then(fix => console.log(`[OTA ${portal}] sugerencia (${step}):`, fix.descripcion))
+      .catch(err => console.warn(`[OTA ${portal}] analyzeAndFix falló (${step}):`, err.message));
+}
+
 const PORTALES = {
   'home depot': {
     httpOnly: true,
@@ -341,6 +351,8 @@ const PORTALES = {
         return { success: false, manual: true, mensaje: 'Credenciales OXXO Gas no configuradas. Ve a Perfil > Portales.' };
       }
 
+      const reportDom = makeReportDom('oxxo gas');
+
       // Cerrar popup de aviso si aparece
       await page.waitForTimeout(2000);
       const popup = await page.$('.swal2-container, .modal, [class*="aviso"]');
@@ -426,22 +438,38 @@ const PORTALES = {
       }
 
       // Click login
-      await page.click('button[type="submit"], button:has-text("INICIAR"), button:has-text("Iniciar")');
-      await page.waitForTimeout(4000);
+      try {
+        await page.click('button[type="submit"], button:has-text("INICIAR"), button:has-text("Iniciar")');
+        await page.waitForTimeout(4000);
+        // Verificación: no debemos seguir viendo el campo de password
+        const sigueEnLogin = await page.$('input[name="password"]');
+        if (sigueEnLogin) throw new Error('login no avanzó (password field aún visible tras click)');
+      } catch (e) {
+        reportDom(page, 'login submit', e.message);
+        throw e;
+      }
 
       // ── REGISTRAR DATOS FISCALES (si no hay RFC registrado) ────────────
       console.log('[AUTO] OXXO Gas - registrando datos fiscales');
-      await page.evaluate(() => {
-        const links = Array.from(document.querySelectorAll('a.navAsAjax'));
-        const datosFiscales = links.find(l => l.textContent.includes('Registrar Datos Fiscales') || l.textContent.includes('Datos Fiscales'));
-        if (datosFiscales) datosFiscales.click();
-        else {
-          // Click en tarjeta "Acceder a Datos Fiscales"
-          const card = Array.from(document.querySelectorAll('a')).find(a => a.textContent.includes('ACCEDER A DATOS FISCALES'));
-          if (card) card.click();
-        }
-      });
-      await page.waitForTimeout(2000);
+      try {
+        await page.evaluate(() => {
+          const links = Array.from(document.querySelectorAll('a.navAsAjax'));
+          const datosFiscales = links.find(l => l.textContent.includes('Registrar Datos Fiscales') || l.textContent.includes('Datos Fiscales'));
+          if (datosFiscales) datosFiscales.click();
+          else {
+            // Click en tarjeta "Acceder a Datos Fiscales"
+            const card = Array.from(document.querySelectorAll('a')).find(a => a.textContent.includes('ACCEDER A DATOS FISCALES'));
+            if (card) card.click();
+          }
+        });
+        await page.waitForTimeout(2000);
+        // Verificación: aterrizamos en una vista con la tabla o el form de datos fiscales
+        const enDatosFiscales = await page.$('#datosfiscales, select#regimen_fiscal, input#rfc');
+        if (!enDatosFiscales) throw new Error('no se navegó a datos fiscales (tabla/form no encontrado)');
+      } catch (e) {
+        reportDom(page, 'click Datos Fiscales', e.message);
+        throw e;
+      }
 
       // Verificar si ya hay RFC registrado — si la tabla de datos fiscales tiene filas, skip registro
       const tieneRFC = await page.evaluate(() => {
@@ -484,13 +512,18 @@ const PORTALES = {
         await page.waitForTimeout(500);
 
         // Click REGISTRAR DATOS FISCALES
-        await page.evaluate(() => {
-          const btn = Array.from(document.querySelectorAll('button, input[type="submit"], a.btn')).find(b =>
-            (b.textContent || b.value || '').includes('REGISTRAR') || (b.textContent || b.value || '').includes('Registrar')
-          );
-          if (btn) btn.click();
-        });
-        await page.waitForTimeout(3000);
+        try {
+          await page.evaluate(() => {
+            const btn = Array.from(document.querySelectorAll('button, input[type="submit"], a.btn')).find(b =>
+              (b.textContent || b.value || '').includes('REGISTRAR') || (b.textContent || b.value || '').includes('Registrar')
+            );
+            if (btn) btn.click();
+          });
+          await page.waitForTimeout(3000);
+        } catch (e) {
+          reportDom(page, 'click REGISTRAR datos fiscales', e.message);
+          throw e;
+        }
         console.log('[AUTO] OXXO Gas - datos fiscales registrados');
       } else {
         console.log('[AUTO] OXXO Gas - RFC ya registrado, saltando');
@@ -568,26 +601,38 @@ const PORTALES = {
 
       // Click Agregar Ticket
       console.log('[AUTO] OXXO Gas - agregando ticket');
-      await page.evaluate(() => {
-        const btn = Array.from(document.querySelectorAll('button, a.btn')).find(b => b.textContent.includes('AGREGAR TICKET') || b.textContent.includes('Agregar Ticket'));
-        if (btn) btn.click();
-      });
-      await page.waitForTimeout(3000);
+      try {
+        await page.evaluate(() => {
+          const btn = Array.from(document.querySelectorAll('button, a.btn')).find(b => b.textContent.includes('AGREGAR TICKET') || b.textContent.includes('Agregar Ticket'));
+          if (btn) btn.click();
+        });
+        await page.waitForTimeout(3000);
+      } catch (e) {
+        reportDom(page, 'click AGREGAR TICKET', e.message);
+        throw e;
+      }
 
       // Click Facturar (botón final de generar factura)
       console.log('[AUTO] OXXO Gas - generando factura');
-      await page.evaluate(() => {
-        const btn = Array.from(document.querySelectorAll('button, a.btn, input[type="submit"]')).find(b =>
-          b.textContent.includes('Facturar') || b.textContent.includes('FACTURAR') || b.textContent.includes('Generar') || b.value?.includes('Facturar')
-        );
-        if (btn) btn.click();
-      });
-      await page.waitForTimeout(5000);
+      try {
+        await page.evaluate(() => {
+          const btn = Array.from(document.querySelectorAll('button, a.btn, input[type="submit"]')).find(b =>
+            b.textContent.includes('Facturar') || b.textContent.includes('FACTURAR') || b.textContent.includes('Generar') || b.value?.includes('Facturar')
+          );
+          if (btn) btn.click();
+        });
+        await page.waitForTimeout(5000);
+      } catch (e) {
+        reportDom(page, 'click Facturar (final)', e.message);
+        throw e;
+      }
 
       const texto = await page.textContent('body');
       if (texto.includes('exitosa') || texto.includes('generada') || texto.includes('generado') || texto.includes('enviada') || texto.includes('correo') || texto.includes('factura')) {
         return { success: true, mensaje: 'Factura OXXO Gas generada exitosamente' };
       }
+      // El click pasó pero ningún marcador de éxito apareció — reportar para diagnóstico
+      reportDom(page, 'verificación post-Facturar (sin marcador de éxito)', 'no se encontraron palabras de éxito en body');
       return { success: false, mensaje: 'Proceso parcial OXXO Gas - verifica en portal' };
     }
   },
