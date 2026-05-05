@@ -1070,9 +1070,10 @@ async function procesarFactura(solicitudId) {
   const perfil = db.prepare('SELECT * FROM perfiles_fiscales WHERE usuario_id = ?').get(solicitud.usuario_id);
   if (!perfil) throw new Error('Perfil fiscal no configurado');
 
+  let url;
   let portal = detectarPortal(solicitud.establecimiento, solicitud.sistema_facturacion);
   if (!portal) {
-    let url = solicitud.portal_url;
+    url = solicitud.portal_url;
     if (url && !url.startsWith('http')) url = 'https://' + url;
     // Scout: si no hay URL en el ticket, busca en internet y cachea por RFC
     if (!url || !/^https?:\/\//.test(url)) {
@@ -1111,6 +1112,8 @@ async function procesarFactura(solicitudId) {
     shop_name: solicitud.shop_name || null,
     portal_url: solicitud.portal_url || null
   };
+  // Si entramos por handlerUniversal, pasar la URL final (normalizada y/o de Scout) en ticketData
+  if (portal.key === 'universal') ticketData.portal_url = url;
 
   // Portales HTTP directo (sin browser)
   if (portal.httpOnly) {
