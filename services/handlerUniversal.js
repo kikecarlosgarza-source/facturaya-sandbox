@@ -373,7 +373,40 @@ async function ejecutarConPage(page, url, perfil, ticketData) {
     return { success: false, mensaje: 'Universal: portal requiere login (password field detectado)' };
   }
   if (sitState.visibleInputs === 0) {
-    return { success: false, mensaje: 'Universal: no se detectaron inputs visibles' };
+    // Quizá el form aún se está renderizando, o un modal/banner bloquea los
+    // inputs. Damos otros 10s, capturamos HTML y pedimos a Claude un parche
+    // que destrabe la página antes de abortar.
+    console.log('[universal] sin inputs visibles — esperando 10s y consultando Claude');
+    await page.waitForTimeout(10000);
+
+    let html = '';
+    try { html = await page.content(); } catch {}
+
+    let fix = null;
+    try {
+      fix = await claudeAgent.analyzeAndFix({
+        portal: PORTAL_LABEL,
+        step: { action: 'no_inputs_visibles', url_pattern: urlPattern(url) },
+        error: 'No se detectaron inputs visibles tras networkidle + waitForSelector',
+        html
+      });
+    } catch (e) {
+      console.log('[universal] claudeAgent falló:', e.message);
+    }
+
+    const code = (fix?.patch || '').trim();
+    if (!code || code.startsWith('{')) {
+      return { success: false, mensaje: 'Universal: no se detectaron inputs visibles (Claude no generó parche aplicable)' };
+    }
+
+    try {
+      console.log(`[universal] parche inline de Claude (conf=${fix.confidence}): ${fix.descripcion}`);
+      await page.evaluate(code);
+      await page.waitForTimeout(POST_FILL_WAIT_MS);
+    } catch (e) {
+      return { success: false, mensaje: 'Universal: parche inline falló - ' + e.message };
+    }
+    // Parche aplicado — caemos al flujo normal (captcha → patches activos → heurístico).
   }
 
   // Captcha primero — algunos portales bloquean submit hasta resolver
