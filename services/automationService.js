@@ -1059,6 +1059,7 @@ async function procesarFactura(solicitudId) {
   let portal = detectarPortal(solicitud.establecimiento, solicitud.sistema_facturacion);
   if (!portal) {
     let url = solicitud.portal_url;
+    if (url && !url.startsWith('http')) url = 'https://' + url;
     // Scout: si no hay URL en el ticket, busca en internet y cachea por RFC
     if (!url || !/^https?:\/\//.test(url)) {
       if (solicitud.rfc_emisor || solicitud.establecimiento) {
