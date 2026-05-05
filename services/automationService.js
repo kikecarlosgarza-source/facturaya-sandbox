@@ -3,6 +3,7 @@ const db = require('../db/database');
 const path = require('path');
 const fs = require('fs');
 const claudeAgent = require('./claudeAgent');
+const handlerUniversal = require('./handlerUniversal');
 
 // Directorio para guardar captchas
 const CAPTCHA_DIR = '/data/captchas';
@@ -897,6 +898,12 @@ const PORTALES = {
         return { success: false, mensaje: 'Petro7: error FacturaExpress - ' + e.message };
       }
     }
+  },
+
+  // Fallback: detección heurística + IA para portales sin handler bespoke (lee ticketData.portal_url)
+  'universal': {
+    httpOnly: true,
+    ejecutar: handlerUniversal.ejecutar
   }
 };
 
@@ -1048,14 +1055,20 @@ async function procesarFactura(solicitudId) {
   const perfil = db.prepare('SELECT * FROM perfiles_fiscales WHERE usuario_id = ?').get(solicitud.usuario_id);
   if (!perfil) throw new Error('Perfil fiscal no configurado');
 
-  const portal = detectarPortal(solicitud.establecimiento, solicitud.sistema_facturacion);
+  let portal = detectarPortal(solicitud.establecimiento, solicitud.sistema_facturacion);
   if (!portal) {
-    const detalle = solicitud.sistema_facturacion === 'wansoft'
-      ? 'Portal Wansoft aún no soportado automáticamente — factura manualmente en el portal del comercio'
-      : 'Portal no soportado aun';
-    db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
-      .run('manual', detalle, solicitudId);
-    return { success: false, manual: true, mensaje: detalle };
+    const url = solicitud.portal_url;
+    if (url && /^https?:\/\//.test(url)) {
+      console.log(`[AUTO] Sin handler bespoke (establecimiento="${solicitud.establecimiento}") — usando handlerUniversal con ${url}`);
+      portal = { key: 'universal', ...PORTALES['universal'] };
+    } else {
+      const detalle = solicitud.sistema_facturacion === 'wansoft'
+        ? 'Portal Wansoft aún no soportado automáticamente — factura manualmente en el portal del comercio'
+        : 'Portal no soportado aun';
+      db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
+        .run('manual', detalle, solicitudId);
+      return { success: false, manual: true, mensaje: detalle };
+    }
   }
   console.log(`[AUTO] Portal seleccionado: ${portal.key} (sistema=${solicitud.sistema_facturacion || 'N/A'} shop=${solicitud.shop_name || 'N/A'})`);
 
@@ -1069,7 +1082,8 @@ async function procesarFactura(solicitudId) {
     establecimiento: solicitud.establecimiento,
     total: solicitud.total,
     sistema_facturacion: solicitud.sistema_facturacion || null,
-    shop_name: solicitud.shop_name || null
+    shop_name: solicitud.shop_name || null,
+    portal_url: solicitud.portal_url || null
   };
 
   // Portales HTTP directo (sin browser)
