@@ -174,7 +174,7 @@ module.exports = { procesarConAgente: async function(solicitudId) {
   const portal = dominioDe(url);
   const knowledge = getKnowledge(portal);
   console.log('[CU]',portal,'| intentos:',knowledge?knowledge.intentos:0,'| exitosos:',knowledge?knowledge.exitosos:0);
-  db.prepare('UPDATE solicitudes SET status=? WHERE id=?').run('procesando',solicitudId);
+  db.prepare('UPDATE solicitudes SET status=? WHERE id=?').run('procesando_agente_visual',solicitudId);
 
   const ctx = {
     folio:s.folio, fecha:s.fecha_compra, total:s.total,
