@@ -61,6 +61,28 @@ async function withTimeout(promise, ms, label) {
   ]);
 }
 
+// Wrapper para page.evaluate que tolera navegaciones. Algunos portales (HEB)
+// redirigen internamente tras el load inicial, destruyendo el execution context
+// y rompiendo cualquier evaluate en vuelo. Si detectamos ese error, esperamos a
+// que la nueva navegación termine y reintentamos una vez; si vuelve a fallar
+// devolvemos defaultValue para que el caller pueda decidir qué hacer.
+async function safeEvaluate(page, fn, arg, defaultValue = null) {
+  try {
+    return await page.evaluate(fn, arg);
+  } catch (e) {
+    if (!/Execution context was destroyed|context was destroyed/i.test(e.message || '')) {
+      throw e;
+    }
+    try {
+      await page.waitForLoadState('networkidle', { timeout: 10000 });
+      return await page.evaluate(fn, arg);
+    } catch (e2) {
+      console.log('[universal] safeEvaluate fallback tras navegación:', e2.message);
+      return defaultValue;
+    }
+  }
+}
+
 async function findFirstSelector(page, selectors) {
   for (const s of selectors) {
     try {
@@ -107,7 +129,7 @@ async function rellenarHeuristico(page, perfil, ticketData) {
       } catch {
         // Fallback para selectpickers custom
         try {
-          await page.evaluate(({s, v}) => {
+          await safeEvaluate(page, ({s, v}) => {
             const el = document.querySelector(s);
             if (el) {
               const opt = Array.from(el.options).find(o => o.value === v || o.text.includes(v));
@@ -127,7 +149,7 @@ async function rellenarHeuristico(page, perfil, ticketData) {
 }
 
 async function detectarYResolverCaptcha(page, url) {
-  const info = await page.evaluate(() => {
+  const info = await safeEvaluate(page, () => {
     const cf = document.querySelector('.cf-turnstile, [data-sitekey][class*="turnstile"]');
     if (cf) return { tipo: 'turnstile', sitekey: cf.dataset.sitekey || null };
     const cfIframe = document.querySelector('iframe[src*="challenges.cloudflare.com"]');
@@ -143,7 +165,7 @@ async function detectarYResolverCaptcha(page, url) {
     const generic = document.querySelector('[data-sitekey]');
     if (generic) return { tipo: 'turnstile', sitekey: generic.dataset.sitekey };
     return { tipo: 'none', sitekey: null };
-  });
+  }, null, { tipo: 'none', sitekey: null });
 
   if (info.tipo === 'none') return { tipo: 'none' };
   if (!info.sitekey) return { tipo: info.tipo, error: 'sitekey no encontrado en DOM' };
@@ -178,7 +200,7 @@ async function detectarYResolverCaptcha(page, url) {
     if (!token) return { tipo: info.tipo, error: 'CapSolver timeout' };
 
     // Inyectar el token según el tipo de captcha
-    await page.evaluate(({tipo, t}) => {
+    await safeEvaluate(page, ({tipo, t}) => {
       if (tipo === 'turnstile') {
         document.querySelectorAll('input[name="cf-turnstile-response"], textarea[name="cf-turnstile-response"]').forEach(el => {
           el.value = t;
@@ -304,11 +326,15 @@ Si hay error irrecuperable responde {"accion":"error","descripcion":"causa"}.`;
 async function ejecutarConPage(page, url, perfil, ticketData) {
   await page.goto(url, { waitUntil: 'networkidle', timeout: NAV_TIMEOUT_MS }).catch(() => {});
 
+  // HEB y otros portales redirigen internamente tras el goto inicial; un segundo
+  // waitForLoadState deja que esas navegaciones se asienten antes de tocar el DOM.
+  await page.waitForLoadState('networkidle', { timeout: NAV_TIMEOUT_MS }).catch(() => {});
+
   // Detectar archetypes problemáticos antes de intentar nada
-  const sitState = await page.evaluate(() => ({
+  const sitState = await safeEvaluate(page, () => ({
     hasPasswordField: !!document.querySelector('input[type=password]'),
     visibleInputs:    document.querySelectorAll('input:not([type=hidden]):not([type=submit])').length
-  }));
+  }), null, { hasPasswordField: false, visibleInputs: 0 });
 
   if (sitState.hasPasswordField) {
     return { success: false, mensaje: 'Universal: portal requiere login (password field detectado)' };
