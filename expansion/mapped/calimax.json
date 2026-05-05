@@ -20,5 +20,20 @@
     "base_url": "https://calimax.com.mx/facturacion",
     "flow": []
   },
-  "notas_arquitecto": "Portal Angular 20 (SSR) con componentes Spartan/Analog (brn-dialog, brn-sheet, brn-popover); todos los campos del formulario de facturación son dinámicos y no están presentes en el HTML estático capturado — se requiere handler manual para navegar a la sección de facturación, esperar hidratación y mapear selectores reales en runtime."
+  "notas_arquitecto": "Portal Angular 20 (SSR) con componentes Spartan/Analog (brn-dialog, brn-sheet, brn-popover); todos los campos del formulario de facturación son dinámicos y no están presentes en el HTML estático capturado — se requiere handler manual para navegar a la sección de facturación, esperar hidratación y mapear selectores reales en runtime.",
+  "inspection": {
+    "inspected_at": "2026-05-05",
+    "final_url": "https://www.calimax.com.mx/",
+    "title": "Tienda | Calimax en linea",
+    "status": "url_redirect_home",
+    "note": "Redirige al home del dominio: https://www.calimax.com.mx/",
+    "inputs_found": 1,
+    "captcha": {
+      "recaptcha": false,
+      "hcaptcha": false,
+      "turnstile": false,
+      "sitekey": null
+    },
+    "has_password": false
+  }
 }

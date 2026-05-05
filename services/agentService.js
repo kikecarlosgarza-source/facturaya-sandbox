@@ -131,6 +131,20 @@ function buildHintForPortal(url, ctx) {
       'Solo llena los 5 campos visibles y presiona Enviar.\n\n'
     );
   }
+  if (url.includes('shell.com.mx/electronic-billing')) {
+    return (
+      'shell.com.mx/electronic-billing NO tiene un form único — es un selector de estado.\n' +
+      'La página muestra una lista de estados de México (Aguascalientes, CDMX, Coahuila, etc.).\n' +
+      'Cada estado redirige a un portal específico de Shell para esa región.\n' +
+      'Pasos:\n' +
+      '1. Identifica el estado de la estación Shell donde se cargó. Si el ticket o el establecimiento "' + (ctx.establecimiento || '') + '" no permite determinarlo, reporta el problema.\n' +
+      '2. Click en el estado correspondiente.\n' +
+      '3. En el portal del estado, busca el form de facturación y llénalo con:\n' +
+      '   RFC: ' + ctx.perfil.rfc + ', Nombre: ' + ctx.perfil.nombre + ', CP: ' + ctx.perfil.cp + ', Email: ' + ctx.perfil.email + '\n' +
+      '   Folio: ' + ctx.folio + ', Total: ' + ctx.total + ', Fecha: ' + ctx.fecha + '\n' +
+      'NO presiones F11, Escape ni teclas de sistema.\n\n'
+    );
+  }
   if (url.includes('heb.com.mx')) {
     const tienda = ctx.numero_tienda || '(busca el número de Sucursal en el ticket)';
     return (

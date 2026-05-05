@@ -17,5 +17,20 @@
     "base_url": "https://walmart.com.mx/facturacion",
     "flow": []
   },
-  "notas_arquitecto": "Portal bloqueado por PerimeterX (px-captcha) con desafío de presión de botón tipo CAPTCHA interactivo; imposible automatizar sin handler humano o servicio de resolución de desafíos."
+  "notas_arquitecto": "Portal bloqueado por PerimeterX (px-captcha) con desafío de presión de botón tipo CAPTCHA interactivo; imposible automatizar sin handler humano o servicio de resolución de desafíos.",
+  "inspection": {
+    "inspected_at": "2026-05-05",
+    "final_url": "https://www.walmart.com.mx/blocked?url=L2F5dWRhL2FydGljdWxvL2NvbW8tZmFjdHVyYXIvNjU3NDlmODBlZjI3NDdiNmJlNDIzMTQ1ZWEzMTBjMGI=&uuid=20708bd2-48c2-11f1-8987-59f4c42f6466&vid=&g=b",
+    "title": "Verifica tu identidad",
+    "status": "url_blocked_antibot",
+    "note": "Anti-bot challenge (Walmart-style \"Verify Your Identity\")",
+    "inputs_found": 0,
+    "captcha": {
+      "recaptcha": false,
+      "hcaptcha": false,
+      "turnstile": false,
+      "sitekey": null
+    },
+    "has_password": false
+  }
 }

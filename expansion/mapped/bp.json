@@ -17,5 +17,20 @@
     "base_url": "https://bp.com.mx/facturacion",
     "flow": []
   },
-  "notas_arquitecto": "El HTML analizado corresponde al sitio corporativo global bp.com (en inglés), no al portal de facturación electrónica bp.com.mx; no se encontraron campos de facturación (RFC, folio, email, CP, régimen, uso CFDI), por lo que se requiere inspección manual del portal correcto antes de automatizar."
+  "notas_arquitecto": "El HTML analizado corresponde al sitio corporativo global bp.com (en inglés), no al portal de facturación electrónica bp.com.mx; no se encontraron campos de facturación (RFC, folio, email, CP, régimen, uso CFDI), por lo que se requiere inspección manual del portal correcto antes de automatizar.",
+  "inspection": {
+    "inspected_at": "2026-05-05",
+    "final_url": "https://www.bp.com/",
+    "title": "Home",
+    "status": "url_redirect_other_domain",
+    "note": "Redirige a dominio distinto: www.bp.com",
+    "inputs_found": 1,
+    "captcha": {
+      "recaptcha": false,
+      "hcaptcha": false,
+      "turnstile": false,
+      "sitekey": null
+    },
+    "has_password": false
+  }
 }

@@ -17,5 +17,20 @@
     "base_url": "https://www.chevroncontechron.com/es_mx/home/Facturacion.html",
     "flow": []
   },
-  "notas_arquitecto": "El HTML capturado corresponde a la página principal/localizador de estaciones, NO al formulario de facturación real; la sección de Facturación enlaza a /es_mx/home/Facturacion.html cuyo contenido interno (posiblemente iFrame o SPA de tercero) no fue entregado — se requiere handler manual para inspeccionar el portal real de facturación antes de automatizar."
+  "notas_arquitecto": "El HTML capturado corresponde a la página principal/localizador de estaciones, NO al formulario de facturación real; la sección de Facturación enlaza a /es_mx/home/Facturacion.html cuyo contenido interno (posiblemente iFrame o SPA de tercero) no fue entregado — se requiere handler manual para inspeccionar el portal real de facturación antes de automatizar.",
+  "inspection": {
+    "inspected_at": "2026-05-05",
+    "final_url": "https://www.chevroncontechron.com/",
+    "title": "Chevron con Techron - Estaciones de Servicio | Chevron With Techron (MX) | Chevron With Techron (US)",
+    "status": "url_redirect_home",
+    "note": "Redirige al home del dominio: https://www.chevroncontechron.com/",
+    "inputs_found": 2,
+    "captcha": {
+      "recaptcha": false,
+      "hcaptcha": false,
+      "turnstile": false,
+      "sitekey": null
+    },
+    "has_password": false
+  }
 }

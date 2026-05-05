@@ -16,5 +16,20 @@
     "base_url": "https://bodegaaurrera.com.mx/facturacion",
     "flow": []
   },
-  "notas_arquitecto": "Portal bloqueado por PerimeterX/HUMAN captcha de 'mantén presionado' antes de acceder al formulario; requiere handler manual."
+  "notas_arquitecto": "Portal bloqueado por PerimeterX/HUMAN captcha de 'mantén presionado' antes de acceder al formulario; requiere handler manual.",
+  "inspection": {
+    "inspected_at": "2026-05-05",
+    "final_url": "https://www.bodegaaurrera.com.mx/blocked?url=L2luaWNpbw==&uuid=2051b67f-48c2-11f1-bf1c-0a1467177315&vid=&g=b",
+    "title": "Verify Your Identity",
+    "status": "url_blocked_antibot",
+    "note": "Anti-bot challenge (Walmart-style \"Verify Your Identity\")",
+    "inputs_found": 0,
+    "captcha": {
+      "recaptcha": false,
+      "hcaptcha": false,
+      "turnstile": false,
+      "sitekey": null
+    },
+    "has_password": false
+  }
 }

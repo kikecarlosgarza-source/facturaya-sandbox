@@ -17,5 +17,20 @@
     "base_url": "https://totalenergies.com.mx/facturacion",
     "flow": []
   },
-  "notas_arquitecto": "El HTML capturado corresponde a la página principal del sitio corporativo, no al portal de facturación; no se detectaron campos de facturación electrónica ni formulario CFDI — se requiere handler manual para inspeccionar la URL real de facturación y sus campos."
+  "notas_arquitecto": "El HTML capturado corresponde a la página principal del sitio corporativo, no al portal de facturación; no se detectaron campos de facturación electrónica ni formulario CFDI — se requiere handler manual para inspeccionar la URL real de facturación y sus campos.",
+  "inspection": {
+    "inspected_at": "2026-05-05",
+    "final_url": "https://totalenergies.mx/",
+    "title": "TotalEnergies México | Lubricantes para todo tipo de motor",
+    "status": "url_redirect_other_domain",
+    "note": "Redirige a dominio distinto: totalenergies.mx",
+    "inputs_found": 1,
+    "captcha": {
+      "recaptcha": false,
+      "hcaptcha": false,
+      "turnstile": false,
+      "sitekey": null
+    },
+    "has_password": false
+  }
 }

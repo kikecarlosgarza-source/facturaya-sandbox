@@ -17,5 +17,20 @@
     "base_url": "https://www.shell.com.mx/electronic-billing.html",
     "flow": []
   },
-  "notas_arquitecto": "El portal de Shell México es un directorio que redirige a portales individuales por estación de servicio; no tiene formulario propio, requiere handler para seleccionar la estación correcta y seguir el flujo del sub-portal correspondiente."
+  "notas_arquitecto": "El portal de Shell México es un directorio que redirige a portales individuales por estación de servicio; no tiene formulario propio, requiere handler para seleccionar la estación correcta y seguir el flujo del sub-portal correspondiente.",
+  "inspection": {
+    "inspected_at": "2026-05-05",
+    "final_url": "https://www.shell.com.mx/electronic-billing",
+    "title": "Facturación Electrónica | Shell México",
+    "status": "url_no_form",
+    "note": "Página existe pero no expone form de facturación al usuario anónimo",
+    "inputs_found": 0,
+    "captcha": {
+      "recaptcha": false,
+      "hcaptcha": false,
+      "turnstile": false,
+      "sitekey": null
+    },
+    "has_password": false
+  }
 }

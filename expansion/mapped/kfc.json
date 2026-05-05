@@ -17,5 +17,20 @@
     "base_url": "https://kfc.com.mx/facturacion",
     "flow": []
   },
-  "notas_arquitecto": "Portal SPA construido sobre Next.js + tictuk.com; la URL /facturacion renderiza la home del ecommerce sin formulario de facturación visible en el HTML capturado — se requiere handler manual para navegar al flujo real de facturación (posiblemente en subdominio o ruta dinámica distinta)."
+  "notas_arquitecto": "Portal SPA construido sobre Next.js + tictuk.com; la URL /facturacion renderiza la home del ecommerce sin formulario de facturación visible en el HTML capturado — se requiere handler manual para navegar al flujo real de facturación (posiblemente en subdominio o ruta dinámica distinta).",
+  "inspection": {
+    "inspected_at": "2026-05-05",
+    "final_url": "https://kfc.com.mx/facturacion",
+    "title": "KFC Mexico | Home",
+    "status": "url_no_form",
+    "note": "Página existe pero no expone form de facturación al usuario anónimo",
+    "inputs_found": 0,
+    "captcha": {
+      "recaptcha": false,
+      "hcaptcha": false,
+      "turnstile": false,
+      "sitekey": null
+    },
+    "has_password": false
+  }
 }
