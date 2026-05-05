@@ -1,0 +1,11 @@
+{
+  "portal": "oxxo_tienda",
+  "inspected_at": "2026-05-05",
+  "status": "url_not_found",
+  "note": "Probé https://factura.oxxo.com (DNS dead), https://www.oxxo.com/facturacion (404), https://oxxo.facturate.mx (DNS dead). OXXO tienda no expone portal de facturación público con URL estable — el modelo es: cada ticket trae un QR único que abre URL one-time. Sin un ticket real con QR no podemos descubrir el dominio. Distinto de OXXO Gas (facturacion.oxxogas.com) que SÍ tiene portal estable y handler bespoke.",
+  "candidate_urls_tried": [
+    {"url": "https://factura.oxxo.com",          "result": "DNS_DEAD"},
+    {"url": "https://www.oxxo.com/facturacion",  "result": "HTTP_404"},
+    {"url": "https://oxxo.facturate.mx",         "result": "DNS_DEAD"}
+  ]
+}

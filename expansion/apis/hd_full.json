@@ -1,0 +1,873 @@
+{
+  "portal": "hd",
+  "inspected_at": "2026-05-05T22:36:16.771Z",
+  "final_url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/#/portalweb",
+  "driver_error": "page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://facturacion.homedepot.com.mx/\", waiting until \"networkidle\"\u001b[22m\n",
+  "driver_note": null,
+  "perfil_used": {
+    "rfc": "XAXX010101000",
+    "nombre": "PUBLICO EN GENERAL",
+    "cp": "01000",
+    "email": "test@example.com",
+    "regimen": "616",
+    "uso_cfdi": "S01"
+  },
+  "total_requests": 29,
+  "by_resource_type": {
+    "document": 3,
+    "script": 12,
+    "stylesheet": 1,
+    "font": 4,
+    "xhr": 4,
+    "image": 4,
+    "fetch": 1
+  },
+  "by_host": {
+    "facturacion.homedepot.com.mx": 1,
+    "facturacion.homedepot.com.mx:2053": 16,
+    "challenges.cloudflare.com": 8,
+    "": 4
+  },
+  "requests": [
+    {
+      "n": 1,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx/",
+      "resourceType": "document",
+      "headers": {
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 302,
+      "responseHeaders": {
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "9f733830bd743c4e-QRO",
+        "content-type": "text/html;charset=UTF-8",
+        "date": "Tue, 05 May 2026 22:35:39 GMT",
+        "location": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/#/portalweb",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-request-id": "b6f65678178a4c64a1414b446f23d6a9"
+      },
+      "responseBodyError": "response.text: Response body is unavailable for redirect responses"
+    },
+    {
+      "n": 2,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/",
+      "resourceType": "document",
+      "headers": {
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "9f73383178375638-QRO",
+        "content-encoding": "gzip",
+        "content-type": "text/html",
+        "date": "Tue, 05 May 2026 22:35:39 GMT",
+        "last-modified": "Wed, 07 Jan 2026 23:37:40 GMT",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-request-id": "d4c982d5814076171e9139c23083fd85"
+      },
+      "responseBody": "<!doctype html>\n<html lang=\"es\" data-beasties-container>\n<head>\n  <meta charset=\"utf-8\">\n  <title>Facturación Electrónica - The Home Depot</title>\n  <base href=\"/FacturacionWeb/\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <link rel=\"icon\" type=\"image/png\" href=\"/FacturacionWeb/favicon.png\">\n  <meta name=\"description\" content=\"Sistema de Facturación Electrónica de The Home Depot\">\n  <meta http-equiv=\"Cache-control\" content=\"no-cache, no-store, must-revalidate\">\n  <meta http-equiv=\"Pragma\" content=\"no-cache\">\n  <meta http-equiv=\"expires\" content=\"0\">\n<style>:root{--bs-blue:#0d6efd;--bs-indigo:#6610f2;--bs-purple:#6f42c1;--bs-pink:#d63384;--bs-red:#dc3545;--bs-orange:#fd7e14;--bs-yellow:#ffc107;--bs-green:#198754;--bs-teal:#20c997;--bs-cyan:#0dcaf0;--bs-black:#000;--bs-white:#fff;--bs-gray:#6c757d;--bs-gray-dark:#343a40;--bs-gray-100:#f8f9fa;--bs-gray-200:#e9ecef;--bs-gray-300:#dee2e6;--bs-gray-400:#ced4da;--bs-gray-500:#adb5bd;--bs-gray-600:#6c757d;--bs-gray-700:#495057;--bs-gray-800:#343a40;--bs-gray-900:#212529;--bs-primary:#0d6efd;--bs-secondary:#6c757d;--bs-success:#198754;--bs-info:#0dcaf0;--bs-warning:#ffc107;--bs-danger:#dc3545;--bs-light:#f8f9fa;--bs-dark:#212529;--bs-primary-rgb:13,110,253;--bs-secondary-rgb:108,117,125;--bs-success-rgb:25,135,84;--bs-info-rgb:13,202,240;--bs-warning-rgb:255,193,7;--bs-danger-rgb:220,53,69;--bs-light-rgb:248,249,250;--bs-dark-rgb:33,37,41;--bs-primary-text-emphasis:#052c65;--bs-secondary-text-emphasis:#2b2f32;--bs-success-text-emphasis:#0a3622;--bs-info-text-emphasis:#055160;--bs-warning-text-emphasis:#664d03;--bs-danger-text-emphasis:#58151c;--bs-light-text-emphasis:#495057;--bs-dark-text-emphasis:#495057;--bs-primary-bg-subtle:#cfe2ff;--bs-secondary-bg-subtle:#e2e3e5;--bs-success-bg-subtle:#d1e7dd;--bs-info-bg-subtle:#cff4fc;--bs-warning-bg-subtle:#fff3cd;--bs-danger-bg-subtle:#f8d7da;--bs-light-bg-subtle:#fcfcfd;--bs-dark-bg-subtle:#ced4da;--bs-primary-border-subtle:#9ec5fe;--bs-secondary-border-subtle:#c4c8cb;--bs-success-border-subtle:#a3cfbb;--bs-info-border-subtle:#9eeaf9;--bs-warning-border-subtle:#ffe69c;--bs-danger-border-subtle:#f1aeb5;--bs-light-border-subtle:#e9ecef;--bs-dark-border-subtle:#adb5bd;--bs-white-rgb:255,255,255;--bs-black-rgb:0,0,0;--bs-font-sans-serif:system-ui,-apple-system,\"Segoe UI\",Roboto,\"Helvetica Neue\",\"Noto Sans\",\"Liberation Sans\",Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\",\"Segoe UI Symbol\",\"Noto Color Emoji\";--bs-font-monospace:SFMono-Regular,Menlo,Monaco,Consolas,\"Liberation Mono\",\"Courier New\",monospace;--bs-gradient:linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, 0));--bs-body-font-family:var(--bs-font-sans-serif);--bs-body-font-size:1rem;--bs-body-font-weight:400;--bs-body-line-height:1.5;--bs-body-color:#212529;--bs-body-color-rgb:33,37,41;--bs-body-bg:#fff;--bs-body-bg-rgb:255,255,255;--bs-emphasis-color:#000;--bs-emphasis-color-rgb:0,0,0;--bs-secondary-color:rgba(33, 37, 41, .75);--bs-secondary-color-rgb:33,37,41;--bs-secondary-bg:#e9ecef;--bs-secondary-bg-rgb:233,236,239;--bs-tertiary-color:rgba(33, 37, 41, .5);--bs-tertiary-color-rgb:33,37,41;--bs-tertiary-bg:#f8f9fa;--bs-tertiary-bg-rgb:248,249,250;--bs-heading-color:inherit;--bs-link-color:#0d6efd;--bs-link-color-rgb:13,110,253;--bs-link-decoration:underline;--bs-link-hover-color:#0a58ca;--bs-link-hover-color-rgb:10,88,202;--bs-code-color:#d63384;--bs-highlight-color:#212529;--bs-highlight-bg:#fff3cd;--bs-border-width:1px;--bs-border-style:solid;--bs-border-color:#dee2e6;--bs-border-color-translucent:rgba(0, 0, 0, .175);--bs-border-radius:.375rem;--bs-border-radius-sm:.25rem;--bs-border-radius-lg:.5rem;--bs-border-radius-xl:1rem;--bs-border-radius-xxl:2rem;--bs-border-radius-2xl:var(--bs-border-radius-xxl);--bs-border-radius-pill:50rem;--bs-box-shadow:0 .5rem 1rem rgba(0, 0, 0, .15);--bs-box-shadow-sm:0 .125rem .25rem rgba(0, 0, 0, .075);--bs-box-shadow-lg:0 1rem 3rem rgba(0, 0, 0, .175);--bs-box-shadow-inset:inset 0 1px 2px rgba(0, 0, 0, .075);--bs-focus-ring-width:.25rem;--bs-focus-ring-opacity:.25;--bs-focus-ring-color:rgba(13, 110, 253, .25);--bs-form-valid-color:#198754;--bs-form-valid-border-color:#198754;--bs-form-invalid-color:#dc3545;--bs-form-invalid-border-color:#dc3545}*,:after,:before{box-sizing:border-box}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}body{margin:0;font-family:var(--bs-body-font-family);font-size:var(--bs-body-font-size);font-weight:var(--bs-body-font-weight);line-height:var(--bs-body-line-height);color:var(--bs-body-color);text-align:var(--bs-body-text-align);background-color:var(--bs-body-bg);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}:root{--bs-breakpoint-xs:0;--bs-breakpoint-sm:576px;--bs-breakpoint-md:768px;--bs-breakpoint-lg:992px;--bs-breakpoint-xl:1200px;--bs-breakpoint-xxl:1400px}:root{--bs-btn-close-filter: }:root{--bs-carousel-indicator-active-bg:#fff;--bs-carousel-caption-color:#fff;--bs-carousel-control-icon-filter: }:root{--primary-color:#F96302;--secondary-color:#F58743;--tres-color:#ec5600;--background-color:white;--text-color:#333}@font-face{font-family:\"Helvetica Neue Lt Std 55 Roman\";src:url(HelveticaNeueLTStd55Roman.d4674add1702a574.otf) format(\"truetype\")}body{font-family:\"Helvetica Neue Lt Std 55 Roman\",sans-serif;color:#333}</style><link rel=\"stylesheet\" href=\"styles.032c64d83dcb9336.css\" media=\"print\" onload=\"this.media='all'\"><noscript><link rel=\"stylesheet\" href=\"styles.032c64d83dcb9336.css\"></noscript></head>\n<body>\n  <app-root></app-root>\n<script src=\"runtime.3d43e4a7c0e41620.js\" type=\"module\"></script><script src=\"polyfills.4374f1a484e19313.js\" type=\"module\"></script><script src=\"scripts.da3914aa1954b3b4.js\" defer></script><script src=\"main.928afe88989988bc.js\" type=\"module\"></script></body>\n</html>\n",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 3,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/runtime.3d43e4a7c0e41620.js",
+      "resourceType": "script",
+      "headers": {
+        "origin": "https://facturacion.homedepot.com.mx:2053",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "077537d21a9c509f4b960e577c5e7135",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"2831-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f7338322beb5638-QRO",
+        "date": "Tue, 05 May 2026 22:35:39 GMT",
+        "content-type": "text/javascript",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "(()=>{\"use strict\";var e,b={},m={};function r(e){var n=m[e];if(void 0!==n)return n.exports;var t=m[e]={exports:{}};return b[e].call(t.exports,t,t.exports,r),t.exports}r.m=b,e=[],r.O=(n,t,o,f)=>{if(!t){var a=1/0;for(i=0;i<e.length;i++){for(var[t,o,f]=e[i],s=!0,u=0;u<t.length;u++)(!1&f||a>=f)&&Object.keys(r.O).every(v=>r.O[v](t[u]))?t.splice(u--,1):(s=!1,f<a&&(a=f));if(s){e.splice(i--,1);var d=o();void 0!==d&&(n=d)}}return n}f=f||0;for(var i=e.length;i>0&&e[i-1][2]>f;i--)e[i]=e[i-1];e[i]=[t,o,f]},r.n=e=>{var n=e&&e.__esModule?()=>e.default:()=>e;return r.d(n,{a:n}),n},r.d=(e,n)=>{for(var t in n)r.o(n,t)&&!r.o(e,t)&&Object.defineProperty(e,t,{enumerable:!0,get:n[t]})},r.f={},r.e=e=>Promise.all(Object.keys(r.f).reduce((n,t)=>(r.f[t](e,n),n),[])),r.u=e=>e+\".\"+{499:\"52d1a65f8eb2eec4\",592:\"0de2e956bc1d6c47\",600:\"9ce380a4bcce6569\"}[e]+\".js\",r.miniCssF=e=>{},r.o=(e,n)=>Object.prototype.hasOwnProperty.call(e,n),(()=>{var e={},n=\"kiosko:\";r.l=(t,o,f,i)=>{if(e[t])e[t].push(o);else{var a,s;if(void 0!==f)for(var u=document.getElementsByTagName(\"script\"),d=0;d<u.length;d++){var l=u[d];if(l.getAttribute(\"src\")==t||l.getAttribute(\"data-webpack\")==n+f){a=l;break}}a||(s=!0,(a=document.createElement(\"script\")).type=\"module\",a.charset=\"utf-8\",a.timeout=120,r.nc&&a.setAttribute(\"nonce\",r.nc),a.setAttribute(\"data-webpack\",n+f),a.src=r.tu(t)),e[t]=[o];var c=(g,v)=>{a.onerror=a.onload=null,clearTimeout(p);var _=e[t];if(delete e[t],a.parentNode&&a.parentNode.removeChild(a),_&&_.forEach(h=>h(v)),g)return g(v)},p=setTimeout(c.bind(null,void 0,{type:\"timeout\",target:a}),12e4);a.onerror=c.bind(null,a.onerror),a.onload=c.bind(null,a.onload),s&&document.head.appendChild(a)}}})(),r.r=e=>{typeof Symbol<\"u\"&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:\"Module\"}),Object.defineProperty(e,\"__esModule\",{value:!0})},(()=>{var e;r.tt=()=>(void 0===e&&(e={createScriptURL:n=>n},typeof trustedTypes<\"u\"&&trustedTypes.createPolicy&&(e=trustedTypes.createPolicy(\"angular#bundler\",e))),e)})(),r.tu=e=>r.tt().createScriptURL(e),r.p=\"\",(()=>{var e={121:0};r.f.j=(o,f)=>{var i=r.o(e,o)?e[o]:void 0;if(0!==i)if(i)f.push(i[2]);else if(121!=o){var a=new Promise((l,c)=>i=e[o]=[l,c]);f.push(i[2]=a);var s=r.p+r.u(o),u=new Error;r.l(s,l=>{if(r.o(e,o)&&(0!==(i=e[o])&&(e[o]=void 0),i)){var c=l&&(\"load\"===l.type?\"missing\":l.type),p=l&&l.target&&l.target.src;u.message=\"Loading chunk \"+o+\" failed.\\n(\"+c+\": \"+p+\")\",u.name=\"ChunkLoadError\",u.type=c,u.request=p,i[1](u)}},\"chunk-\"+o,o)}else e[o]=0},r.O.j=o=>0===e[o];var n=(o,f)=>{var u,d,[i,a,s]=f,l=0;if(i.some(p=>0!==e[p])){for(u in a)r.o(a,u)&&(r.m[u]=a[u]);if(s)var c=s(r)}for(o&&o(f);l<i.length;l++)r.o(e,d=i[l])&&e[d]&&e[d][0](),e[d]=0;return r.O(c)},t=self.webpackChunkkiosko=self.webpackChunkkiosko||[];t.forEach(n.bind(null,0)),t.push=n.bind(null,t.push.bind(t))})()})();",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 4,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/polyfills.4374f1a484e19313.js",
+      "resourceType": "script",
+      "headers": {
+        "origin": "https://facturacion.homedepot.com.mx:2053",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "2f82b529fe3a5cce7c6ed2e0e2169b3e",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"35397-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f7338322c115638-QRO",
+        "date": "Tue, 05 May 2026 22:35:39 GMT",
+        "content-type": "text/javascript",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "\"use strict\";(self.webpackChunkkiosko=self.webpackChunkkiosko||[]).push([[461],{1532:()=>{const Oe=function(u,...E){if(Oe.translate){const x=Oe.translate(u,E);u=x[0],E=x[1]}let d=U(u[0],u.raw[0]);for(let x=1;x<u.length;x++)d+=E[x-1]+U(u[x],u.raw[x]);return d},Ue=\":\";function U(u,E){return E.charAt(0)===Ue?u.substring(function Ce(u,E){for(let d=1,x=1;d<u.length;d++,x++)if(\"\\\\\"===E[x])x++;else if(\":\"===u[d])return d;throw new Error(`Unterminated $localize metadata block in \"${E}\".`)}(u,E)+1):u}globalThis.$localize=Oe},6935:()=>{const ie=globalThis;function oe(e){return(ie.__Zone_symbol_prefix||\"__zone_symbol__\")+e}const Re=Object.getOwnPropertyDescriptor,Ne=Object.defineProperty,je=Object.getPrototypeOf,ze=Object.create,We=Array.prototype.slice,He=\"addEventListener\",qe=\"removeEventListener\",xe=oe(He),Be=oe(qe),ue=\"true\",_e=\"false\",Ce=oe(\"\");function Oe(e,r){return Zone.current.wrap(e,r)}function Ue(e,r,c,t,i){return Zone.current.scheduleMacroTask(e,r,c,t,i)}const U=oe,u=typeof window<\"u\",E=u?window:void 0,d=u&&E||globalThis;function $(e,r){for(let c=e.length-1;c>=0;c--)\"function\"==typeof e[c]&&(e[c]=Oe(e[c],r+\"_\"+c));return e}function pe(e){return!e||!1!==e.writable&&!(\"function\"==typeof e.get&&typeof e.set>\"u\")}const re=typeof WorkerGlobalScope<\"u\"&&self instanceof WorkerGlobalScope,J=!(\"nw\"in d)&&typeof d.process<\"u\"&&\"[object process]\"===d.process.toString(),fe=!J&&!re&&!(!u||!E.HTMLElement),Fe=typeof d.process<\"u\"&&\"[object process]\"===d.process.toString()&&!re&&!(!u||!E.HTMLElement),Pe={},Xe=U(\"enable_beforeunload\"),$e=function(e){if(!(e=e||d.event))return;let r=Pe[e.type];r||(r=Pe[e.type]=U(\"ON_PROPERTY\"+e.type));const c=this||e.target||d,t=c[r];let i;return fe&&c===E&&\"error\"===e.type?(i=t&&t.call(this,e.message,e.filename,e.lineno,e.colno,e.error),!0===i&&e.preventDefault()):(i=t&&t.apply(this,arguments),\"beforeunload\"===e.type&&d[Xe]&&\"string\"==typeof i?e.returnValue=i:null!=i&&!i&&e.preventDefault()),i};function he(e,r,c){let t=Re(e,r);if(!t&&c&&Re(c,r)&&(t={enumerable:!0,configurable:!0}),!t||!t.configurable)return;const i=U(\"on\"+r+\"patched\");if(e.hasOwnProperty(i)&&e[i])return;delete t.writable,delete t.value;const f=t.get,p=t.set,k=r.slice(2);let v=Pe[k];v||(v=Pe[k]=U(\"ON_PROPERTY\"+k)),t.set=function(N){let T=this;!T&&e===d&&(T=d),T&&(\"function\"==typeof T[v]&&T.removeEventListener(k,$e),p?.call(T,null),T[v]=N,\"function\"==typeof N&&T.addEventListener(k,$e,!1))},t.get=function(){let N=this;if(!N&&e===d&&(N=d),!N)return null;const T=N[v];if(T)return T;if(f){let w=f.call(this);if(w)return t.set.call(this,w),\"function\"==typeof N.removeAttribute&&N.removeAttribute(r),w}return null},Ne(e,r,t),e[i]=!0}function Ge(e,r,c){if(r)for(let t=0;t<r.length;t++)he(e,\"on\"+r[t],c);else{const t=[];for(const i in e)\"on\"==i.slice(0,2)&&t.push(i);for(let i=0;i<t.length;i++)he(e,t[i],c)}}const se=U(\"originalInstance\");function De(e){const r=d[e];if(!r)return;d[U(e)]=r,d[e]=function(){const i=$(arguments,e);switch(i.length){case 0:this[se]=new r;break;case 1:this[se]=new r(i[0]);break;case 2:this[se]=new r(i[0],i[1]);break;case 3:this[se]=new r(i[0],i[1],i[2]);break;case 4:this[se]=new r(i[0],i[1],i[2],i[3]);break;default:throw new Error(\"Arg list too long.\")}},ye(d[e],r);const c=new r(function(){});let t;for(t in c)\"XMLHttpRequest\"===e&&\"responseBlob\"===t||function(i){\"function\"==typeof c[i]?d[e].prototype[i]=function(){return this[se][i].apply(this[se],arguments)}:Ne(d[e].prototype,i,{set:function(f){\"function\"==typeof f?(this[se][i]=Oe(f,e+\".\"+i),ye(this[se][i],f)):this[se][i]=f},get:function(){return this[se][i]}})}(t);for(t in r)\"prototype\"!==t&&r.hasOwnProperty(t)&&(d[e][t]=r[t])}function me(e,r,c){let t=e;for(;t&&!t.hasOwnProperty(r);)t=je(t);!t&&e[r]&&(t=e);const i=U(r);let f=null;if(t&&(!(f=t[i])||!t.hasOwnProperty(i))&&(f=t[i]=t[r],pe(t&&Re(t,r)))){const k=c(f,i,r);t[r]=function(){return k(this,arguments)},ye(t[r],f)}return f}function kt(e,r,c){let t=null;function i(f){const p=f.data;return p.args[p.cbIdx]=function(){f.invoke.apply(this,arguments)},t.apply(p.target,p.args),f}t=me(e,r,f=>function(p,k){const v=c(p,k);return v.cbIdx>=0&&\"function\"==typeof k[v.cbIdx]?Ue(v.name,k[v.cbIdx],v,i):f.apply(p,k)})}function ye(e,r){e[U(\"OriginalDelegate\")]=r}let nt=!1,Je=!1;function pt(){if(nt)return Je;nt=!0;try{const e=E.navigator.userAgent;(-1!==e.indexOf(\"MSIE \")||-1!==e.indexOf(\"Trident/\")||-1!==e.indexOf(\"Edge/\"))&&(Je=!0)}catch{}return Je}function rt(e){return\"function\"==typeof e}function ot(e){return\"number\"==typeof e}const mt={useG:!0},de={},st={},it=new RegExp(\"^\"+Ce+\"(\\\\w+)(true|false)$\"),ct=U(\"propagationStopped\");function at(e,r){const c=(r?r(e):e)+_e,t=(r?r(e):e)+ue,i=Ce+c,f=Ce+t;de[e]={},de[e][_e]=i,de[e][ue]=f}function yt(e,r,c,t){const i=t&&t.add||He,f=t&&t.rm||qe,p=t&&t.listeners||\"eventListeners\",k=t&&t.rmAll||\"removeAllListeners\",v=U(i),N=\".\"+i+\":\",T=\"prependListener\",w=\".\"+T+\":\",H=function(R,_,F){if(R.isRemoved)return;const z=R.callback;let ne;\"object\"==typeof z&&z.handleEvent&&(R.callback=m=>z.handleEvent(m),R.originalDelegate=z);try{R.invoke(R,_,[F])}catch(m){ne=m}const W=R.options;return W&&\"object\"==typeof W&&W.once&&_[f].call(_,F.type,R.originalDelegate?R.originalDelegate:R.callback,W),ne};function V(R,_,F){if(!(_=_||e.event))return;const z=R||_.target||e,ne=z[de[_.type][F?ue:_e]];if(ne){const W=[];if(1===ne.length){const m=H(ne[0],z,_);m&&W.push(m)}else{const m=ne.slice();for(let K=0;K<m.length&&(!_||!0!==_[ct]);K++){const L=H(m[K],z,_);L&&W.push(L)}}if(1===W.length)throw W[0];for(let m=0;m<W.length;m++){const K=W[m];r.nativeScheduleMicroTask(()=>{throw K})}}}const Y=function(R){return V(this,R,!1)},ce=function(R){return V(this,R,!0)};function ae(R,_){if(!R)return!1;let F=!0;_&&void 0!==_.useG&&(F=_.useG);const z=_&&_.vh;let ne=!0;_&&void 0!==_.chkDup&&(ne=_.chkDup);let W=!1;_&&void 0!==_.rt&&(W=_.rt);let m=R;for(;m&&!m.hasOwnProperty(i);)m=je(m);if(!m&&R[i]&&(m=R),!m||m[v])return!1;const K=_&&_.eventNameToString,L={},S=m[v]=m[i],P=m[U(f)]=m[f],I=m[U(p)]=m[p],le=m[U(k)]=m[k];le",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 5,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/scripts.da3914aa1954b3b4.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "07d08270e804cc8a21af6218e85ee417",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"158234-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f7338322c1c5638-QRO",
+        "date": "Tue, 05 May 2026 22:35:39 GMT",
+        "content-type": "text/javascript",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "!function(G,le){\"object\"==typeof exports&&typeof module<\"u\"?module.exports=le():\"function\"==typeof define&&define.amd?define(le):(G=typeof globalThis<\"u\"?globalThis:G||self).bootstrap=le()}(this,function(){\"use strict\";const G=new Map,le={set(i,e,o){G.has(i)||G.set(i,new Map);const r=G.get(i);r.has(e)||0===r.size?r.set(e,o):console.error(`Bootstrap doesn't allow more than one instance per element. Bound instance: ${Array.from(r.keys())[0]}.`)},get:(i,e)=>G.has(i)&&G.get(i).get(e)||null,remove(i,e){if(!G.has(i))return;const o=G.get(i);o.delete(e),0===o.size&&G.delete(i)}},$e=\"transitionend\",x=i=>(i&&window.CSS&&window.CSS.escape&&(i=i.replace(/#([^\\s\"#']+)/g,(e,o)=>`#${CSS.escape(o)}`)),i),so=i=>{i.dispatchEvent(new Event($e))},Se=i=>!(!i||\"object\"!=typeof i)&&(void 0!==i.jquery&&(i=i[0]),void 0!==i.nodeType),u=i=>Se(i)?i.jquery?i[0]:i:\"string\"==typeof i&&i.length>0?document.querySelector(x(i)):null,Be=i=>{if(!Se(i)||0===i.getClientRects().length)return!1;const e=\"visible\"===getComputedStyle(i).getPropertyValue(\"visibility\"),o=i.closest(\"details:not([open])\");if(!o)return e;if(o!==i){const r=i.closest(\"summary\");if(r&&r.parentNode!==o||null===r)return!1}return e},Ne=i=>!i||i.nodeType!==Node.ELEMENT_NODE||!!i.classList.contains(\"disabled\")||(void 0!==i.disabled?i.disabled:i.hasAttribute(\"disabled\")&&\"false\"!==i.getAttribute(\"disabled\")),Gt=i=>{if(!document.documentElement.attachShadow)return null;if(\"function\"==typeof i.getRootNode){const e=i.getRootNode();return e instanceof ShadowRoot?e:null}return i instanceof ShadowRoot?i:i.parentNode?Gt(i.parentNode):null},ee=()=>{},Cn=()=>window.jQuery&&!document.body.hasAttribute(\"data-bs-no-jquery\")?window.jQuery:null,en=[],ue=()=>\"rtl\"===document.documentElement.dir,pe=i=>{var e;e=()=>{const o=Cn();if(o){const r=i.NAME,c=o.fn[r];o.fn[r]=i.jQueryInterface,o.fn[r].Constructor=i,o.fn[r].noConflict=()=>(o.fn[r]=c,i.jQueryInterface)}},\"loading\"===document.readyState?(en.length||document.addEventListener(\"DOMContentLoaded\",()=>{for(const o of en)o()}),en.push(e)):e()},te=(i,e=[],o=i)=>\"function\"==typeof i?i.call(...e):o,tn=(i,e,o=!0)=>{if(!o)return void te(i);const r=(h=>{if(!h)return 0;let{transitionDuration:m,transitionDelay:w}=window.getComputedStyle(h);const y=Number.parseFloat(m),_=Number.parseFloat(w);return y||_?(m=m.split(\",\")[0],w=w.split(\",\")[0],1e3*(Number.parseFloat(m)+Number.parseFloat(w))):0})(e)+5;let c=!1;const d=({target:h})=>{h===e&&(c=!0,e.removeEventListener($e,d),te(i))};e.addEventListener($e,d),setTimeout(()=>{c||so(e)},r)},se=(i,e,o,r)=>{const c=i.length;let d=i.indexOf(e);return-1===d?!o&&r?i[c-1]:i[0]:(d+=o?1:-1,r&&(d=(d+c)%c),i[Math.max(0,Math.min(d,c-1))])},St=/[^.]*(?=\\..*)\\.|.*/,be=/\\..*/,D=/::\\d+$/,Ue={};let En=1;const nn={mouseenter:\"mouseover\",mouseleave:\"mouseout\"},ro=new Set([\"click\",\"dblclick\",\"mouseup\",\"mousedown\",\"contextmenu\",\"mousewheel\",\"DOMMouseScroll\",\"mouseover\",\"mouseout\",\"mousemove\",\"selectstart\",\"selectend\",\"keydown\",\"keypress\",\"keyup\",\"orientationchange\",\"touchstart\",\"touchmove\",\"touchend\",\"touchcancel\",\"pointerdown\",\"pointermove\",\"pointerup\",\"pointerleave\",\"pointercancel\",\"gesturestart\",\"gesturechange\",\"gestureend\",\"focus\",\"blur\",\"change\",\"reset\",\"select\",\"submit\",\"focusin\",\"focusout\",\"load\",\"unload\",\"beforeunload\",\"resize\",\"move\",\"DOMContentLoaded\",\"readystatechange\",\"error\",\"abort\",\"scroll\"]);function on(i,e){return e&&`${e}::${En++}`||i.uidEvent||En++}function Pt(i){const e=on(i);return i.uidEvent=e,Ue[e]=Ue[e]||{},Ue[e]}function Te(i,e,o=null){return Object.values(i).find(r=>r.callable===e&&r.delegationSelector===o)}function it(i,e,o){const r=\"string\"==typeof e,c=r?o:e||o;let d=Tn(i);return ro.has(d)||(d=i),[r,c,d]}function Ye(i,e,o,r,c){if(\"string\"!=typeof e||!i)return;let[d,h,m]=it(e,o,r);var E;e in nn&&(E=h,h=function(C){if(!C.relatedTarget||C.relatedTarget!==C.delegateTarget&&!C.delegateTarget.contains(C.relatedTarget))return E.call(this,C)});const w=Pt(i),y=w[m]||(w[m]={}),_=Te(y,h,d?o:null);if(_)return void(_.oneOff=_.oneOff&&c);const b=on(h,e.replace(St,\"\")),L=d?function(A,E,C){return function T(F){const W=A.querySelectorAll(E);for(let{target:S}=F;S&&S!==this;S=S.parentNode)for(const j of W)if(j===S)return It(F,{delegateTarget:S}),T.oneOff&&f.off(A,F.type,E,C),C.apply(S,[F])}}(i,o,h):function(A,E){return function C(T){return It(T,{delegateTarget:A}),C.oneOff&&f.off(A,T.type,E),E.apply(A,[T])}}(i,h);L.delegationSelector=d?o:null,L.callable=h,L.oneOff=c,L.uidEvent=b,y[b]=L,i.addEventListener(m,L,d)}function Xe(i,e,o,r,c){const d=Te(e[o],r,c);d&&(i.removeEventListener(o,d,!!c),delete e[o][d.uidEvent])}function Dt(i,e,o,r){const c=e[o]||{};for(const[d,h]of Object.entries(c))d.includes(r)&&Xe(i,e,o,h.callable,h.delegationSelector)}function Tn(i){return i=i.replace(be,\"\"),nn[i]||i}const f={on(i,e,o,r){Ye(i,e,o,r,!1)},one(i,e,o,r){Ye(i,e,o,r,!0)},off(i,e,o,r){if(\"string\"!=typeof e||!i)return;const[c,d,h]=it(e,o,r),m=h!==e,w=Pt(i),y=w[h]||{},_=e.startsWith(\".\");if(void 0===d){if(_)for(const b of Object.keys(w))Dt(i,w,b,e.slice(1));for(const[b,L]of Object.entries(y)){const A=b.replace(D,\"\");m&&!e.includes(A)||Xe(i,w,h,L.callable,L.delegationSelector)}}else{if(!Object.keys(y).length)return;Xe(i,w,h,d,c?o:null)}},trigger(i,e,o){if(\"string\"!=typeof e||!i)return null;const r=Cn();let c=null,d=!0,h=!0,m=!1;e!==Tn(e)&&r&&(c=r.Event(e,o),r(i).trigger(c),d=!c.isPropagationStopped(),h=!c.isImmediatePropagationStopped(),m=c.isDefaultPrevented());const w=It(new Event(e,{bubbles:d,cancelable:!0}),o);return m&&w.preventDefault(),h&&i.dispatchEvent(w),w.defaultPrevented&&c&&c.preventDefault(),w}};function It(i,e={}){for(const[o,r]of Object.entries(e))try{i[o]=r}catch{Object.defineProperty(i,o,{configurable:!0,get:()=>r})}return i}function sn(i){if(\"true\"===i)return!0;if(\"false\"===i)return!1;if(i===Number(i).toString())return Number(i);if(\"\"===i||\"null\"===i)return null;if(\"string\"!=typeof i)return i;try{return JSON.parse(decodeURIComponent(i))}catch{return i}}function jt(i){return i.replace(/[A-Z]/g,e=>`-${e.toLowerCas",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 6,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/main.928afe88989988bc.js",
+      "resourceType": "script",
+      "headers": {
+        "origin": "https://facturacion.homedepot.com.mx:2053",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "e568dfff8606cc9f2b1ef27369589864",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"366561-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f7338322c195638-QRO",
+        "date": "Tue, 05 May 2026 22:35:39 GMT",
+        "content-type": "text/javascript",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "\"use strict\";(self.webpackChunkkiosko=self.webpackChunkkiosko||[]).push([[792],{274:(Fe,te,b)=>{b.d(te,{H:()=>$});var I=b(1397),k=b(8071);function $(E,U){return(0,k.T)(U)?(0,I.Z)(E,U,1):(0,I.Z)(E,1)}},345:(Fe,te,b)=>{b.d(te,{hE:()=>U,up:()=>Ct});var I=b(9361),k=b(1360);let U=(()=>{class _e{_doc;constructor(we){this._doc=we}getTitle(){return this._doc.title}setTitle(we){this._doc.title=we||\"\"}static \\u0275fac=function(je){return new(je||_e)(k.KVO(I.q))};static \\u0275prov=k.jDH({token:_e,factory:_e.\\u0275fac,providedIn:\"root\"})}return _e})(),Ct=(()=>{class _e{static \\u0275fac=function(je){return new(je||_e)};static \\u0275prov=k.jDH({token:_e,factory:function(je){let It=null;return It=je?new(je||_e):k.KVO(De),It},providedIn:\"root\"})}return _e})(),De=(()=>{class _e extends Ct{_doc;constructor(we){super(),this._doc=we}sanitize(we,je){if(null==je)return null;switch(we){case k.WPN.NONE:return je;case k.WPN.HTML:return(0,k.ZF7)(je,\"HTML\")?(0,k.rcV)(je):(0,k.h9k)(this._doc,String(je)).toString();case k.WPN.STYLE:return(0,k.ZF7)(je,\"Style\")?(0,k.rcV)(je):je;case k.WPN.SCRIPT:if((0,k.ZF7)(je,\"Script\"))return(0,k.rcV)(je);throw new k.wOt(5200,!1);case k.WPN.URL:return(0,k.ZF7)(je,\"URL\")?(0,k.rcV)(je):(0,k.$MX)(String(je));case k.WPN.RESOURCE_URL:if((0,k.ZF7)(je,\"ResourceURL\"))return(0,k.rcV)(je);throw new k.wOt(5201,!1);default:throw new k.wOt(5202,!1)}}bypassSecurityTrustHtml(we){return(0,k.Kcf)(we)}bypassSecurityTrustStyle(we){return(0,k.cWb)(we)}bypassSecurityTrustScript(we){return(0,k.UyX)(we)}bypassSecurityTrustUrl(we){return(0,k.osQ)(we)}bypassSecurityTrustResourceUrl(we){return(0,k.e5t)(we)}static \\u0275fac=function(je){return new(je||_e)(k.KVO(I.q))};static \\u0275prov=k.jDH({token:_e,factory:_e.\\u0275fac,providedIn:\"root\"})}return _e})()},467:(Fe,te,b)=>{function I($,E,U,ne,B,ee,oe){try{var X=$[ee](oe),K=X.value}catch(fe){return void U(fe)}X.done?E(K):Promise.resolve(K).then(ne,B)}function k($){return function(){var E=this,U=arguments;return new Promise(function(ne,B){var ee=$.apply(E,U);function oe(K){I(ee,ne,B,oe,X,\"next\",K)}function X(K){I(ee,ne,B,oe,X,\"throw\",K)}oe(void 0)})}}b.d(te,{A:()=>k})},591:(Fe,te,b)=>{function I(k){return new TypeError(`You provided ${null!==k&&\"object\"==typeof k?\"an invalid object\":`'${k}'`} where a stream was expected. You can provide an Observable, Promise, ReadableStream, Array, AsyncIterable, or Iterable.`)}b.d(te,{L:()=>I})},980:(Fe,te,b)=>{b.d(te,{j:()=>k});var I=b(9974);function k($){return(0,I.N)((E,U)=>{try{E.subscribe(U)}finally{U.add($)}})}},983:(Fe,te,b)=>{b.d(te,{w:()=>k});const k=new(b(1985).c)(U=>U.complete())},1026:(Fe,te,b)=>{b.d(te,{$:()=>I});const I={onUnhandledError:null,onStoppedNotification:null,Promise:void 0,useDeprecatedSynchronousErrorHandling:!1,useDeprecatedNextContext:!1}},1203:(Fe,te,b)=>{b.d(te,{F:()=>k,m:()=>$});var I=b(3669);function k(...E){return $(E)}function $(E){return 0===E.length?I.D:1===E.length?E[0]:function(ne){return E.reduce((B,ee)=>ee(B),ne)}}},1301:(Fe,te,b)=>{var I=b(6048),k=b(9377),$=b(9361),E=b(1360);const U=new E.nKC(\"\");let ne=(()=>{class u{_zone;_plugins;_eventNameToPlugin=new Map;constructor(i,l){this._zone=l,i.forEach(d=>{d.manager=this}),this._plugins=i.slice().reverse()}addEventListener(i,l,d,p){return this._findPluginFor(l).addEventListener(i,l,d,p)}getZone(){return this._zone}_findPluginFor(i){let l=this._eventNameToPlugin.get(i);if(l)return l;if(l=this._plugins.find(p=>p.supports(i)),!l)throw new E.wOt(5101,!1);return this._eventNameToPlugin.set(i,l),l}static \\u0275fac=function(l){return new(l||u)(E.KVO(U),E.KVO(E.SKi))};static \\u0275prov=E.jDH({token:u,factory:u.\\u0275fac})}return u})();class B{_doc;constructor(s){this._doc=s}manager}const ee=\"ng-app-id\";function oe(u){for(const s of u)s.remove()}function X(u,s){const i=s.createElement(\"style\");return i.textContent=u,i}function fe(u,s){const i=s.createElement(\"link\");return i.setAttribute(\"rel\",\"stylesheet\"),i.setAttribute(\"href\",u),i}let Le=(()=>{class u{doc;appId;nonce;inline=new Map;external=new Map;hosts=new Set;isServer;constructor(i,l,d,p={}){this.doc=i,this.appId=l,this.nonce=d,this.isServer=(0,k.Vy)(p),function K(u,s,i,l){const d=u.head?.querySelectorAll(`style[${ee}=\"${s}\"],link[${ee}=\"${s}\"]`);if(d)for(const p of d)p.removeAttribute(ee),p instanceof HTMLLinkElement?l.set(p.href.slice(p.href.lastIndexOf(\"/\")+1),{usage:0,elements:[p]}):p.textContent&&i.set(p.textContent,{usage:0,elements:[p]})}(i,l,this.inline,this.external),this.hosts.add(i.head)}addStyles(i,l){for(const d of i)this.addUsage(d,this.inline,X);l?.forEach(d=>this.addUsage(d,this.external,fe))}removeStyles(i,l){for(const d of i)this.removeUsage(d,this.inline);l?.forEach(d=>this.removeUsage(d,this.external))}addUsage(i,l,d){const p=l.get(i);p?p.usage++:l.set(i,{usage:1,elements:[...this.hosts].map(g=>this.addElement(g,d(i,this.doc)))})}removeUsage(i,l){const d=l.get(i);d&&(d.usage--,d.usage<=0&&(oe(d.elements),l.delete(i)))}ngOnDestroy(){for(const[,{elements:i}]of[...this.inline,...this.external])oe(i);this.hosts.clear()}addHost(i){this.hosts.add(i);for(const[l,{elements:d}]of this.inline)d.push(this.addElement(i,X(l,this.doc)));for(const[l,{elements:d}]of this.external)d.push(this.addElement(i,fe(l,this.doc)))}removeHost(i){this.hosts.delete(i)}addElement(i,l){return this.nonce&&l.setAttribute(\"nonce\",this.nonce),this.isServer&&l.setAttribute(ee,this.appId),i.appendChild(l)}static \\u0275fac=function(l){return new(l||u)(E.KVO($.q),E.KVO(E.sZ2),E.KVO(E.BIS,8),E.KVO(E.Agw))};static \\u0275prov=E.jDH({token:u,factory:u.\\u0275fac})}return u})();const ge={svg:\"http://www.w3.org/2000/svg\",xhtml:\"http://www.w3.org/1999/xhtml\",xlink:\"http://www.w3.org/1999/xlink\",xml:\"http://www.w3.org/XML/1998/namespace\",xmlns:\"http://www.w3.org/2000/xmlns/\",math:\"http://www.w3.org/1998/Math/MathML\"},Ce=/%COMP%/g,L=new E.nKC(\"\",{providedIn:\"root\",factory:()=>!0});function ie(u,s){return s.map(i=>i.replace(Ce,u))}let nt=(()=>{class u{eventManager;sharedStylesHost;appId;removeStylesOnCompDestroy;doc;platfor",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 7,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/styles.032c64d83dcb9336.css",
+      "resourceType": "stylesheet",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "6c5fb7d5f53a06e2b3a828763f5bed3d",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"324368-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f7338322c205638-QRO",
+        "date": "Tue, 05 May 2026 22:35:39 GMT",
+        "content-type": "text/css",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "@charset \"UTF-8\";/*!\n* Bootstrap  v5.3.6 (https://getbootstrap.com/)\n* Copyright 2011-2025 The Bootstrap Authors\n* Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)\n*/:root,[data-bs-theme=light]{--bs-blue:#0d6efd;--bs-indigo:#6610f2;--bs-purple:#6f42c1;--bs-pink:#d63384;--bs-red:#dc3545;--bs-orange:#fd7e14;--bs-yellow:#ffc107;--bs-green:#198754;--bs-teal:#20c997;--bs-cyan:#0dcaf0;--bs-black:#000;--bs-white:#fff;--bs-gray:#6c757d;--bs-gray-dark:#343a40;--bs-gray-100:#f8f9fa;--bs-gray-200:#e9ecef;--bs-gray-300:#dee2e6;--bs-gray-400:#ced4da;--bs-gray-500:#adb5bd;--bs-gray-600:#6c757d;--bs-gray-700:#495057;--bs-gray-800:#343a40;--bs-gray-900:#212529;--bs-primary:#0d6efd;--bs-secondary:#6c757d;--bs-success:#198754;--bs-info:#0dcaf0;--bs-warning:#ffc107;--bs-danger:#dc3545;--bs-light:#f8f9fa;--bs-dark:#212529;--bs-primary-rgb:13,110,253;--bs-secondary-rgb:108,117,125;--bs-success-rgb:25,135,84;--bs-info-rgb:13,202,240;--bs-warning-rgb:255,193,7;--bs-danger-rgb:220,53,69;--bs-light-rgb:248,249,250;--bs-dark-rgb:33,37,41;--bs-primary-text-emphasis:#052c65;--bs-secondary-text-emphasis:#2b2f32;--bs-success-text-emphasis:#0a3622;--bs-info-text-emphasis:#055160;--bs-warning-text-emphasis:#664d03;--bs-danger-text-emphasis:#58151c;--bs-light-text-emphasis:#495057;--bs-dark-text-emphasis:#495057;--bs-primary-bg-subtle:#cfe2ff;--bs-secondary-bg-subtle:#e2e3e5;--bs-success-bg-subtle:#d1e7dd;--bs-info-bg-subtle:#cff4fc;--bs-warning-bg-subtle:#fff3cd;--bs-danger-bg-subtle:#f8d7da;--bs-light-bg-subtle:#fcfcfd;--bs-dark-bg-subtle:#ced4da;--bs-primary-border-subtle:#9ec5fe;--bs-secondary-border-subtle:#c4c8cb;--bs-success-border-subtle:#a3cfbb;--bs-info-border-subtle:#9eeaf9;--bs-warning-border-subtle:#ffe69c;--bs-danger-border-subtle:#f1aeb5;--bs-light-border-subtle:#e9ecef;--bs-dark-border-subtle:#adb5bd;--bs-white-rgb:255,255,255;--bs-black-rgb:0,0,0;--bs-font-sans-serif:system-ui,-apple-system,\"Segoe UI\",Roboto,\"Helvetica Neue\",\"Noto Sans\",\"Liberation Sans\",Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\",\"Segoe UI Symbol\",\"Noto Color Emoji\";--bs-font-monospace:SFMono-Regular,Menlo,Monaco,Consolas,\"Liberation Mono\",\"Courier New\",monospace;--bs-gradient:linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, 0));--bs-body-font-family:var(--bs-font-sans-serif);--bs-body-font-size:1rem;--bs-body-font-weight:400;--bs-body-line-height:1.5;--bs-body-color:#212529;--bs-body-color-rgb:33,37,41;--bs-body-bg:#fff;--bs-body-bg-rgb:255,255,255;--bs-emphasis-color:#000;--bs-emphasis-color-rgb:0,0,0;--bs-secondary-color:rgba(33, 37, 41, .75);--bs-secondary-color-rgb:33,37,41;--bs-secondary-bg:#e9ecef;--bs-secondary-bg-rgb:233,236,239;--bs-tertiary-color:rgba(33, 37, 41, .5);--bs-tertiary-color-rgb:33,37,41;--bs-tertiary-bg:#f8f9fa;--bs-tertiary-bg-rgb:248,249,250;--bs-heading-color:inherit;--bs-link-color:#0d6efd;--bs-link-color-rgb:13,110,253;--bs-link-decoration:underline;--bs-link-hover-color:#0a58ca;--bs-link-hover-color-rgb:10,88,202;--bs-code-color:#d63384;--bs-highlight-color:#212529;--bs-highlight-bg:#fff3cd;--bs-border-width:1px;--bs-border-style:solid;--bs-border-color:#dee2e6;--bs-border-color-translucent:rgba(0, 0, 0, .175);--bs-border-radius:.375rem;--bs-border-radius-sm:.25rem;--bs-border-radius-lg:.5rem;--bs-border-radius-xl:1rem;--bs-border-radius-xxl:2rem;--bs-border-radius-2xl:var(--bs-border-radius-xxl);--bs-border-radius-pill:50rem;--bs-box-shadow:0 .5rem 1rem rgba(0, 0, 0, .15);--bs-box-shadow-sm:0 .125rem .25rem rgba(0, 0, 0, .075);--bs-box-shadow-lg:0 1rem 3rem rgba(0, 0, 0, .175);--bs-box-shadow-inset:inset 0 1px 2px rgba(0, 0, 0, .075);--bs-focus-ring-width:.25rem;--bs-focus-ring-opacity:.25;--bs-focus-ring-color:rgba(13, 110, 253, .25);--bs-form-valid-color:#198754;--bs-form-valid-border-color:#198754;--bs-form-invalid-color:#dc3545;--bs-form-invalid-border-color:#dc3545}[data-bs-theme=dark]{color-scheme:dark;--bs-body-color:#dee2e6;--bs-body-color-rgb:222,226,230;--bs-body-bg:#212529;--bs-body-bg-rgb:33,37,41;--bs-emphasis-color:#fff;--bs-emphasis-color-rgb:255,255,255;--bs-secondary-color:rgba(222, 226, 230, .75);--bs-secondary-color-rgb:222,226,230;--bs-secondary-bg:#343a40;--bs-secondary-bg-rgb:52,58,64;--bs-tertiary-color:rgba(222, 226, 230, .5);--bs-tertiary-color-rgb:222,226,230;--bs-tertiary-bg:#2b3035;--bs-tertiary-bg-rgb:43,48,53;--bs-primary-text-emphasis:#6ea8fe;--bs-secondary-text-emphasis:#a7acb1;--bs-success-text-emphasis:#75b798;--bs-info-text-emphasis:#6edff6;--bs-warning-text-emphasis:#ffda6a;--bs-danger-text-emphasis:#ea868f;--bs-light-text-emphasis:#f8f9fa;--bs-dark-text-emphasis:#dee2e6;--bs-primary-bg-subtle:#031633;--bs-secondary-bg-subtle:#161719;--bs-success-bg-subtle:#051b11;--bs-info-bg-subtle:#032830;--bs-warning-bg-subtle:#332701;--bs-danger-bg-subtle:#2c0b0e;--bs-light-bg-subtle:#343a40;--bs-dark-bg-subtle:#1a1d20;--bs-primary-border-subtle:#084298;--bs-secondary-border-subtle:#41464b;--bs-success-border-subtle:#0f5132;--bs-info-border-subtle:#087990;--bs-warning-border-subtle:#997404;--bs-danger-border-subtle:#842029;--bs-light-border-subtle:#495057;--bs-dark-border-subtle:#343a40;--bs-heading-color:inherit;--bs-link-color:#6ea8fe;--bs-link-hover-color:#8bb9fe;--bs-link-color-rgb:110,168,254;--bs-link-hover-color-rgb:139,185,254;--bs-code-color:#e685b5;--bs-highlight-color:#dee2e6;--bs-highlight-bg:#664d03;--bs-border-color:#495057;--bs-border-color-translucent:rgba(255, 255, 255, .15);--bs-form-valid-color:#75b798;--bs-form-valid-border-color:#75b798;--bs-form-invalid-color:#ea868f;--bs-form-invalid-border-color:#ea868f}*,:after,:before{box-sizing:border-box}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}body{margin:0;font-family:var(--bs-body-font-family);font-size:var(--bs-body-font-size);font-weight:var(--bs-body-font-weight);line-height:var(--bs-body-line-height);color:var(--bs-body-color);text-align:var(--bs-body-text-align);background-color:var(--bs-body-bg);-webkit-text-size-adjust:100",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 8,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/HelveticaNeueLTStd55Roman.d4674add1702a574.otf",
+      "resourceType": "font",
+      "headers": {
+        "origin": "https://facturacion.homedepot.com.mx:2053",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "c87577123b3c2c8830edabd58f994f86",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"29044-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f7338324ca15638-QRO",
+        "date": "Tue, 05 May 2026 22:35:39 GMT",
+        "content-type": "font/otf",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "[skipped font/otf]"
+    },
+    {
+      "n": 9,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/592.0de2e956bc1d6c47.js",
+      "resourceType": "script",
+      "headers": {
+        "origin": "https://facturacion.homedepot.com.mx:2053",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "e0999dc2d4949dcf7d1dafd2776defd9",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"223224-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f73383758575638-QRO",
+        "date": "Tue, 05 May 2026 22:35:40 GMT",
+        "content-type": "text/javascript",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "(self.webpackChunkkiosko=self.webpackChunkkiosko||[]).push([[592],{112:(At,se,S)=>{\"use strict\";S.d(se,{Bq:()=>Ks,UN:()=>ic});var o=S(1360),t=S(1985),z=S(6977),ft=S(983),oe=S(7673),Y=S(1413),Ze=S(8750),wn=S(1397),Wn=S(7441),Ge=S(8071),Cn=S(6450);const et=[\"addListener\",\"removeListener\"],kt=[\"addEventListener\",\"removeEventListener\"],me=[\"on\",\"off\"];function G(n,a,e,i){if((0,Ge.T)(e)&&(i=e,e=void 0),i)return G(n,a,e).pipe((0,Cn.I)(i));const[s,d]=function Yn(n){return(0,Ge.T)(n.addEventListener)&&(0,Ge.T)(n.removeEventListener)}(n)?kt.map(f=>b=>n[f](a,b,e)):function U(n){return(0,Ge.T)(n.addListener)&&(0,Ge.T)(n.removeListener)}(n)?et.map(ae(n,a)):function Rt(n){return(0,Ge.T)(n.on)&&(0,Ge.T)(n.off)}(n)?me.map(ae(n,a)):[];if(!s&&(0,Wn.X)(n))return(0,wn.Z)(f=>G(f,a,e))((0,Ze.Tg)(n));if(!s)throw new TypeError(\"Invalid event target\");return new t.c(f=>{const b=(...w)=>f.next(1<w.length?w:w[0]);return s(b),()=>d(b)})}function ae(n,a){return e=>i=>n[e](a,i)}var Tn=S(8359);class Kt extends Tn.yU{constructor(a,e){super()}schedule(a,e=0){return this}}const gt={setInterval(n,a,...e){const{delegate:i}=gt;return i?.setInterval?i.setInterval(n,a,...e):setInterval(n,a,...e)},clearInterval(n){const{delegate:a}=gt;return(a?.clearInterval||clearInterval)(n)},delegate:void 0};var Zt=S(7908);const Me={now:()=>(Me.delegate||Date).now(),delegate:void 0};class Pe{constructor(a,e=Pe.now){this.schedulerActionCtor=a,this.now=e}schedule(a,e=0,i){return new this.schedulerActionCtor(this,a).schedule(i,e)}}Pe.now=Me.now;const at=new class $e extends Pe{constructor(a,e=Pe.now){super(a,e),this.actions=[],this._active=!1}flush(a){const{actions:e}=this;if(this._active)return void e.push(a);let i;this._active=!0;do{if(i=a.execute(a.state,a.delay))break}while(a=e.shift());if(this._active=!1,i){for(;a=e.shift();)a.unsubscribe();throw i}}}(class Pt extends Kt{constructor(a,e){super(a,e),this.scheduler=a,this.work=e,this.pending=!1}schedule(a,e=0){var i;if(this.closed)return this;this.state=a;const s=this.id,d=this.scheduler;return null!=s&&(this.id=this.recycleAsyncId(d,s,e)),this.pending=!0,this.delay=e,this.id=null!==(i=this.id)&&void 0!==i?i:this.requestAsyncId(d,this.id,e),this}requestAsyncId(a,e,i=0){return gt.setInterval(a.flush.bind(a,this),i)}recycleAsyncId(a,e,i=0){if(null!=i&&this.delay===i&&!1===this.pending)return e;null!=e&&gt.clearInterval(e)}execute(a,e){if(this.closed)return new Error(\"executing a cancelled action\");this.pending=!1;const i=this._execute(a,e);if(i)return i;!1===this.pending&&null!=this.id&&(this.id=this.recycleAsyncId(this.scheduler,this.id,null))}_execute(a,e){let s,i=!1;try{this.work(a)}catch(d){i=!0,s=d||new Error(\"Scheduled action threw falsy error\")}if(i)return this.unsubscribe(),s}unsubscribe(){if(!this.closed){const{id:a,scheduler:e}=this,{actions:i}=e;this.work=this.state=this.scheduler=null,this.pending=!1,(0,Zt.o)(i,this),null!=a&&(this.id=this.recycleAsyncId(e,a,null)),this.delay=null,super.unsubscribe()}}});var mt=S(9470);const{isArray:en}=Array;function Sn(n){return 1===n.length&&en(n[0])?n[0]:n}var Le=S(4360);S(6365);var be=S(9326);function ue(...n){const a=(0,be.ms)(n),e=Sn(n);return e.length?new t.c(i=>{let s=e.map(()=>[]),d=e.map(()=>!1);i.add(()=>{s=d=null});for(let f=0;!i.closed&&f<e.length;f++)(0,Ze.Tg)(e[f]).subscribe((0,Le._)(i,b=>{if(s[f].push(b),s.every(w=>w.length)){const w=s.map(E=>E.shift());i.next(a?a(...w):w),s.some((E,D)=>!E.length&&d[D])&&i.complete()}},()=>{d[f]=!0,!s[f].length&&i.complete()}));return()=>{s=d=null}}):ft.w}S(6648);var vt=S(8793),Oe=S(5964),I=S(8141),ie=S(6354),Ie=S(9974),st=S(3669),pe=S(5343);function le(...n){const a=(0,be.ms)(n);return(0,Ie.N)((e,i)=>{const s=n.length,d=new Array(s);let f=n.map(()=>!1),b=!1;for(let w=0;w<s;w++)(0,Ze.Tg)(n[w]).subscribe((0,Le._)(i,E=>{d[w]=E,!b&&!f[w]&&(f[w]=!0,(b=f.every(st.D))&&(f=null))},pe.l));e.subscribe((0,Le._)(i,w=>{if(b){const E=[w,...d];i.next(a?a(...E):E)}}))})}var ze=S(6697),On=S(5558);S(9172),S(2881);var yt=S(9361);S(4341),Math,Math,Math;const Ci=[\"*\"],Se=[\"dialog\"],Ho={animation:!0,transitionTimerDelayMs:5};let xo=(()=>{class n{constructor(){this.animation=Ho.animation}static{this.\\u0275fac=function(i){return new(i||n)}}static{this.\\u0275prov=o.jDH({token:n,factory:n.\\u0275fac,providedIn:\"root\"})}}return n})();function _(n){return\"string\"==typeof n}function M(n){return null!=n}function yn(n){return(n||document.body).getBoundingClientRect()}const Or=()=>{},{transitionTimerDelayMs:Fr}=Ho,ko=new Map,Ft=(n,a,e,i)=>{let s=i.context||{};const d=ko.get(a);if(d)switch(i.runningTransition){case\"continue\":return ft.w;case\"stop\":n.run(()=>d.transition$.complete()),s=Object.assign(d.context,s),ko.delete(a)}const f=e(a,i.animation,s)||Or;if(!i.animation||\"none\"===window.getComputedStyle(a).transitionProperty)return n.run(()=>f()),(0,oe.of)(void 0).pipe(function Mr(n){return a=>new t.c(e=>a.subscribe({next:f=>n.run(()=>e.next(f)),error:f=>n.run(()=>e.error(f)),complete:()=>n.run(()=>e.complete())}))}(n));const b=new Y.B,w=new Y.B,E=b.pipe(function Nn(...n){return a=>(0,vt.x)(a,(0,oe.of)(...n))}(!0));ko.set(a,{transition$:b,complete:()=>{w.next(),w.complete()},context:s});const D=function Ra(n){const{transitionDelay:a,transitionDuration:e}=window.getComputedStyle(n);return 1e3*(parseFloat(a)+parseFloat(e))}(a);return n.runOutsideAngular(()=>{const N=G(a,\"transitionend\").pipe((0,z.Q)(E),(0,Oe.p)(({target:O})=>O===a));(function Bt(...n){return 1===(n=Sn(n)).length?(0,Ze.Tg)(n[0]):new t.c(function bt(n){return a=>{let e=[];for(let i=0;e&&!a.closed&&i<n.length;i++)e.push((0,Ze.Tg)(n[i]).subscribe((0,Le._)(a,s=>{if(e){for(let d=0;d<e.length;d++)d!==i&&e[d].unsubscribe();e=null}a.next(s)})))}}(n))})(function It(n=0,a,e=at){let i=-1;return null!=a&&((0,mt.m)(a)?e=a:i=a),new t.c(s=>{let d=function Dn(n){return n instanceof Date&&!isNaN(n)}(n)?+n-e.now():n;d<0&&(d=0);let f=0;return e.schedule(function(){s.closed||(s.next(f++),0<=i?this.schedule(void 0,i):s.complete())},d)})}(D+Fr).pipe((0,z.Q)(E)),N,w).pipe((0,z.Q)(E)).sub",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 10,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/600.9ce380a4bcce6569.js",
+      "resourceType": "script",
+      "headers": {
+        "origin": "https://facturacion.homedepot.com.mx:2053",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "3569d2d3f1411e703713d9b381944345",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"107007-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f733837585f5638-QRO",
+        "date": "Tue, 05 May 2026 22:35:40 GMT",
+        "content-type": "text/javascript",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "\"use strict\";(self.webpackChunkkiosko=self.webpackChunkkiosko||[]).push([[600],{1600:(ie,v,m)=>{m.r(v),m.d(v,{PortalwebComponent:()=>ne});var f=m(467),h=m(2881),b=m(4341),x=m(112),R=m(4371),p=m(4843),k=m(5312),t=m(1360),M=m(9361);const E=\"ngx-turnstile\",C=\"onloadTurnstileCallback\";let O=(()=>{class i{elementRef;zone;document;siteKey;action;cData;theme=\"auto\";language=\"auto\";version=\"0\";tabIndex;appearance=\"always\";retry=\"auto\";size=\"normal\";resolved=new t.bkB;errored=new t.bkB;widgetId;constructor(e,r,o){this.elementRef=e,this.zone=r,this.document=o,(0,t.mal)(()=>this.createWidget())}_getCloudflareTurnstileUrl(){if(\"0\"===this.version)return\"https://challenges.cloudflare.com/turnstile/v0/api.js\";throw\"Version not defined in ngx-turnstile component.\"}createWidget(){let e={sitekey:this.siteKey,theme:this.theme,language:this.language,tabindex:this.tabIndex,action:this.action,cData:this.cData,appearance:this.appearance,retry:this.retry,size:this.size,callback:o=>{this.zone.run(()=>this.resolved.emit(o))},\"error-callback\":o=>(this.zone.run(()=>this.errored.emit(o)),!1),\"expired-callback\":()=>{this.zone.run(()=>this.reset())}};if(window[C]=()=>{this.elementRef?.nativeElement&&(this.widgetId=window.turnstile.render(this.elementRef.nativeElement,e))},this.scriptLoaded())return void window[C]();const r=this.document.createElement(\"script\");r.src=`${this._getCloudflareTurnstileUrl()}?render=explicit&onload=${C}`,r.id=E,r.async=!0,r.defer=!0,this.document.head.appendChild(r)}reset(){this.widgetId&&(this.resolved.emit(null),window.turnstile.reset(this.widgetId))}ngOnDestroy(){this.widgetId&&window.turnstile.remove(this.widgetId)}scriptLoaded(){return!!this.document.getElementById(E)}static \\u0275fac=function(r){return new(r||i)(t.rXU(t.aKT),t.rXU(t.SKi),t.rXU(M.q))};static \\u0275cmp=t.VBU({type:i,selectors:[[\"ngx-turnstile\"]],inputs:{siteKey:\"siteKey\",action:\"action\",cData:\"cData\",theme:\"theme\",language:\"language\",version:\"version\",tabIndex:\"tabIndex\",appearance:\"appearance\",retry:\"retry\",size:\"size\"},outputs:{resolved:\"resolved\",errored:\"errored\"},exportAs:[\"ngx-turnstile\"],standalone:!1,decls:0,vars:0,template:function(r,o){},encapsulation:2})}return i})(),I=(()=>{class i{static \\u0275fac=function(r){return new(r||i)};static \\u0275mod=t.$C({type:i});static \\u0275inj=t.G2t({})}return i})();var T=m(2659),w=m(6616),F=m(345),y=m(9567),S=m(4236);function A(i,l){if(1&i&&(t.j41(0,\"div\",19)(1,\"p\")(2,\"strong\"),t.EFF(3,\"Estimado cliente:\"),t.k0s(),t.EFF(4),t.k0s()()),2&i){const e=t.XpG();t.R7$(4),t.SpI(\" Es importante recordarles que deben realizar su factura antes del d\\xeda 31 de diciembre para que tengan valor fiscal en el ejercicio \",e.anioSiguiente,\", de no hacerlo no existe forma de generar documentos electr\\xf3nicos con una fecha anterior.\")}}function j(i,l){if(1&i&&(t.j41(0,\"div\",42),t.EFF(1),t.k0s()),2&i){const e=t.XpG(2);t.R7$(),t.SpI(\" \",e.mensajeErrorRFC,\" \")}}function N(i,l){if(1&i){const e=t.RV6();t.j41(0,\"ngx-turnstile\",43),t.bIt(\"resolved\",function(o){t.eBV(e);const n=t.XpG(2);return t.Njj(n.onTurnstileResolved(o))})(\"expired\",function(){t.eBV(e);const o=t.XpG(2);return t.Njj(o.onTurnstileExpired())})(\"error\",function(o){t.eBV(e);const n=t.XpG(2);return t.Njj(n.onTurnstileError(o))}),t.k0s()}if(2&i){const e=t.XpG(2);t.Y8G(\"siteKey\",e.turnstileSiteKey)}}function D(i,l){if(1&i){const e=t.RV6();t.j41(0,\"div\",20)(1,\"div\",21)(2,\"h2\"),t.EFF(3,\"Captura tu informaci\\xf3n para facturar:\"),t.k0s(),t.j41(4,\"div\",22)(5,\"div\",23)(6,\"label\",24),t.EFF(7,\"RFC:\"),t.k0s(),t.j41(8,\"input\",25),t.mxI(\"ngModelChange\",function(o){t.eBV(e);const n=t.XpG();return t.DH7(n.rfc,o)||(n.rfc=o),t.Njj(o)}),t.bIt(\"input\",function(){t.eBV(e);const o=t.XpG();return t.Njj(o.onRFCInput())})(\"keyup\",function(o){t.eBV(e);const n=t.XpG();return t.Njj(n.onRFCKeyUp(o))}),t.k0s(),t.DNE(9,j,2,1,\"div\",26),t.k0s(),t.j41(10,\"div\",23)(11,\"label\",27),t.EFF(12,\" No. de Ticket: \"),t.j41(13,\"span\",28),t.EFF(14,\"? \"),t.j41(15,\"div\",29)(16,\"div\",30)(17,\"div\",31)(18,\"h3\"),t.EFF(19,\"No. de Ticket\"),t.k0s()(),t.j41(20,\"div\",32)(21,\"div\",33),t.nrm(22,\"div\",34),t.j41(23,\"div\",35)(24,\"p\")(25,\"strong\"),t.EFF(26,\"Localiza el n\\xfamero de ticket en tu recibo\"),t.k0s()(),t.j41(27,\"p\"),t.EFF(28,\"El n\\xfamero de ticket es el c\\xf3digo de 23 d\\xedgitos que aparece debajo del c\\xf3digo de barras en tu recibo de compra.\"),t.k0s()()()()()()()(),t.j41(29,\"input\",36),t.mxI(\"ngModelChange\",function(o){t.eBV(e);const n=t.XpG();return t.DH7(n.ticket,o)||(n.ticket=o),t.Njj(o)}),t.bIt(\"keypress\",function(o){t.eBV(e);const n=t.XpG();return t.Njj(n.preventNonNumeric(o))})(\"input\",function(o){t.eBV(e);const n=t.XpG();return t.Njj(n.onTicketInput(o))}),t.k0s()(),t.j41(30,\"div\",37),t.DNE(31,N,1,1,\"ngx-turnstile\",38),t.k0s(),t.j41(32,\"div\",39)(33,\"button\",40),t.bIt(\"click\",function(){t.eBV(e);const o=t.XpG();return t.Njj(o.limpiarRFC())}),t.EFF(34,\"Limpiar\"),t.k0s(),t.j41(35,\"button\",41),t.bIt(\"click\",function(){t.eBV(e);const o=t.XpG();return t.Njj(o.continuarTicket())}),t.EFF(36,\"Continuar\"),t.k0s()()()()()}if(2&i){const e=t.XpG();t.R7$(8),t.AVh(\"input-error\",e.rfcInvalido),t.R50(\"ngModel\",e.rfc),t.R7$(),t.Y8G(\"ngIf\",e.rfcInvalido),t.R7$(20),t.R50(\"ngModel\",e.ticket),t.R7$(2),t.Y8G(\"ngIf\",e.showTurnstile),t.R7$(2),t.Y8G(\"disabled\",!e.rfc&&!e.ticket),t.R7$(2),t.Y8G(\"disabled\",!e.rfc||e.rfc.length<12||!e.ticket||e.ticket.length<18)}}function U(i,l){if(1&i&&(t.j41(0,\"option\",66),t.EFF(1),t.k0s()),2&i){const e=l.$implicit;t.Y8G(\"value\",e.clave),t.R7$(),t.Lme(\" \",e.clave,\" - \",e.descripcion,\" \")}}function G(i,l){if(1&i&&(t.j41(0,\"option\",66),t.EFF(1),t.k0s()),2&i){const e=l.$implicit;t.Y8G(\"value\",e.clave),t.R7$(),t.Lme(\" \",e.clave,\" - \",e.descripcion,\" \")}}function V(i,l){1&i&&(t.j41(0,\"div\",47),t.EFF(1,\" No hay usos CFDI disponibles para el r\\xe9gimen fiscal seleccionado \"),t.k0s())}function z(i,l){1&i&&(t.j41(0,\"div\",47),t.EFF(1,\" Primero selecciona un r\\xe9gimen fiscal para ver los usos CFDI disponibles \"),t.k0s())}function L(i,l){1&i&&(t.j41(0,\"div\",47),t.EFF(1,\" Seleccio",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 11,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/CFDiConnectFacturacion/facturacion/getCatRegimenfiscal",
+      "resourceType": "xhr",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "application/json, text/plain, */*",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "8a7ade86521ab14a19b236a28b1e99f3",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f73383bae605638-QRO",
+        "date": "Tue, 05 May 2026 22:35:40 GMT",
+        "content-type": "application/json;charset=UTF-8",
+        "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "server": "cloudflare"
+      },
+      "responseBody": "[{\"id\":1,\"clave\":\"601\",\"descripcion\":\"General de Ley Personas Morales\",\"personas\":\"Morales\"},{\"id\":2,\"clave\":\"603\",\"descripcion\":\"Personas Morales con Fines No Lucrativos\",\"personas\":\"Morales\"},{\"id\":3,\"clave\":\"605\",\"descripcion\":\"Sueldos y Salarios e Ingresos Asimilados a Salarios\",\"personas\":\"Fisicas\"},{\"id\":4,\"clave\":\"606\",\"descripcion\":\"Arrendamiento\",\"personas\":\"Fisicas\"},{\"id\":5,\"clave\":\"607\",\"descripcion\":\"Régimen de Enajenación o Adquisición de Bienes\",\"personas\":\"Fisicas\"},{\"id\":6,\"clave\":\"608\",\"descripcion\":\"Demás Ingresos\",\"personas\":\"Fisicas\"},{\"id\":7,\"clave\":\"610\",\"descripcion\":\"Residentes en el Extranjero sin Establecimiento Permanente en México\",\"personas\":\"Fisicas, Morales\"},{\"id\":8,\"clave\":\"611\",\"descripcion\":\"Ingresos por Dividendos (socios y accionistas)\",\"personas\":\"Fisicas\"},{\"id\":9,\"clave\":\"612\",\"descripcion\":\"Personas Fisicas con Actividades Empresariales y Profesionales\",\"personas\":\"Fisicas\"},{\"id\":10,\"clave\":\"614\",\"descripcion\":\"Ingresos por intereses\",\"personas\":\"Fisicas\"},{\"id\":11,\"clave\":\"615\",\"descripcion\":\"Régimen de los ingresos por obtención de premios\",\"personas\":\"Fisicas\"},{\"id\":12,\"clave\":\"616\",\"descripcion\":\"Sin obligaciones fiscales\",\"personas\":\"Fisicas\"},{\"id\":13,\"clave\":\"620\",\"descripcion\":\"Sociedades Cooperativas de Producción que optan por diferir sus ingresos\",\"personas\":\"Morales\"},{\"id\":14,\"clave\":\"621\",\"descripcion\":\"Incorporación Fiscal\",\"personas\":\"Fisicas\"},{\"id\":15,\"clave\":\"622\",\"descripcion\":\"Actividades Agrícolas, Ganaderas, Silvícolas. y Pesqueras\",\"personas\":\"Morales\"},{\"id\":16,\"clave\":\"623\",\"descripcion\":\"Opcional para Grupos de Sociedades\",\"personas\":\"Morales\"},{\"id\":17,\"clave\":\"624\",\"descripcion\":\"Coordinados\",\"personas\":\"Morales\"},{\"id\":18,\"clave\":\"625\",\"descripcion\":\"Régimen de las Actividades Empresariales con inngresos a través de Plataformas Tecnológicas\",\"personas\":\"Fisicas\"},{\"id\":19,\"clave\":\"626\",\"descripcion\":\"Régimen Simplificado de Confianza\",\"personas\":\"Fisicas, Morales\"}]",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 12,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/CFDiConnectFacturacion/facturacion/getCatUsoCFDI",
+      "resourceType": "xhr",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "application/json, text/plain, */*",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "a851e57b31c70e8b85b973829a0bf251",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f73383bae6a5638-QRO",
+        "date": "Tue, 05 May 2026 22:35:40 GMT",
+        "content-type": "application/json;charset=UTF-8",
+        "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "server": "cloudflare"
+      },
+      "responseBody": "[{\"id\":1,\"regimenFiscal\":\"601, 603, 606, 612, 620, 621, 622, 623, 624, 625,626\",\"sistema\":\"AMBOS\",\"clave\":\"G01\",\"descripcion\":\"Adquisición de mercancías\",\"personas\":\"Fisicas, Morales\"},{\"id\":2,\"regimenFiscal\":\"601, 603, 606, 612, 616, 620, 621, 622, 623, 624, 625, 626\",\"sistema\":\"AMBOS\",\"clave\":\"G02\",\"descripcion\":\"Devoluciones, descuentos o bonificaciones.\",\"personas\":\"Fisicas, Morales, Admin\"},{\"id\":3,\"regimenFiscal\":\"601, 603, 606, 612, 620, 621, 622, 623, 624, 625, 626\",\"sistema\":\"AMBOS\",\"clave\":\"G03\",\"descripcion\":\"Gastos en general.\",\"personas\":\"Fisicas, Morales\"},{\"id\":4,\"regimenFiscal\":\"601, 603, 606, 612, 620, 621, 622, 623, 624, 625, 626\",\"sistema\":\"AMBOS\",\"clave\":\"I01\",\"descripcion\":\"Construcciones.\",\"personas\":\"Fisicas, Morales\"},{\"id\":5,\"regimenFiscal\":\"601, 603, 606, 612, 620, 621, 622, 623, 624, 625, 626\",\"sistema\":\"AMBOS\",\"clave\":\"I02\",\"descripcion\":\"Mobiliario y equipo de oficina por inversiones.\",\"personas\":\"Fisicas, Morales\"},{\"id\":6,\"regimenFiscal\":\"601, 603, 606, 612, 620, 621, 622, 623, 624, 625, 626\",\"sistema\":\"AMBOS\",\"clave\":\"I03\",\"descripcion\":\"Equipo de transporte.\",\"personas\":\"Fisicas, Morales, Admin\"},{\"id\":7,\"regimenFiscal\":\"601, 603, 606, 612, 620, 621, 622, 623, 624, 625, 626\",\"sistema\":\"AMBOS\",\"clave\":\"I04\",\"descripcion\":\"Equipo de computo y accesorios.\",\"personas\":\"Fisicas, Morales\"},{\"id\":8,\"regimenFiscal\":\"601, 603, 606, 612, 620, 621, 622, 623, 624, 625, 626\",\"sistema\":\"AMBOS\",\"clave\":\"I05\",\"descripcion\":\"Dados, troqueles, moldes, matrices y herramental.\",\"personas\":\"Fisicas, Morales\"},{\"id\":9,\"regimenFiscal\":\"601, 603, 606, 612, 620, 621, 622, 623, 624, 625, 626\",\"sistema\":\"AMBOS\",\"clave\":\"I06\",\"descripcion\":\"Comunicaciones telefónicas.\",\"personas\":\"Fisicas, Morales\"},{\"id\":10,\"regimenFiscal\":\"601, 603, 606, 612, 620, 621, 622, 623, 624, 625, 626\",\"sistema\":\"AMBOS\",\"clave\":\"I07\",\"descripcion\":\"Comunicaciones satelitales.\",\"personas\":\"Fisicas, Morales, Admin\"},{\"id\":11,\"regimenFiscal\":\"601, 603, 606, 612, 620, 621, 622, 623, 624, 625, 626\",\"sistema\":\"AMBOS\",\"clave\":\"I08\",\"descripcion\":\"Otra maquinaria y equipo.\",\"personas\":\"Fisicas, Morales\"},{\"id\":12,\"regimenFiscal\":\"605, 606, 607, 608, 611, 612, 614, 615, 625\",\"sistema\":\"AMBOS\",\"clave\":\"D01\",\"descripcion\":\"Honorarios médicos, dentales y gastos hospitalarios.\",\"personas\":\"Fisicas, Admin\"},{\"id\":13,\"regimenFiscal\":\"605, 606, 607, 608, 611, 612, 614, 615, 625\",\"sistema\":\"AMBOS\",\"clave\":\"D02\",\"descripcion\":\"Gastos médicos por incapacidad o discapacidad.\",\"personas\":\"Fisicas, Admin\"},{\"id\":14,\"regimenFiscal\":\"605, 606, 607, 608, 611, 612, 614, 615, 625\",\"sistema\":\"AMBOS\",\"clave\":\"D03\",\"descripcion\":\"Gastos funerales.\",\"personas\":\"Fisicas, Admin\"},{\"id\":15,\"regimenFiscal\":\"605, 606, 607, 608, 611, 612, 614, 615, 625\",\"sistema\":\"AMBOS\",\"clave\":\"D04\",\"descripcion\":\"Donativos.\",\"personas\":\"Fisicas, Admin\"},{\"id\":16,\"regimenFiscal\":\"605, 606, 607, 608, 611, 612, 614, 615, 625\",\"sistema\":\"AMBOS\",\"clave\":\"D05\",\"descripcion\":\"Intereses reales efectivamente pagados por créditos hipotecarios (casa habitación).\",\"personas\":\"Fisicas, Admin\"},{\"id\":17,\"regimenFiscal\":\"605, 606, 607, 608, 611, 612, 614, 615, 625\",\"sistema\":\"AMBOS\",\"clave\":\"D06\",\"descripcion\":\"Aportaciones voluntarias al SAR.\",\"personas\":\"Fisicas, Admin\"},{\"id\":18,\"regimenFiscal\":\"605, 606, 607, 608, 611, 612, 614, 615, 625\",\"sistema\":\"AMBOS\",\"clave\":\"D07\",\"descripcion\":\"Primas por seguros de gastos médicos.\",\"personas\":\"Fisicas, Admin\"},{\"id\":19,\"regimenFiscal\":\"605, 606, 607, 608, 611, 612, 614, 615, 625\",\"sistema\":\"AMBOS\",\"clave\":\"D08\",\"descripcion\":\"Gastos de transportación escolar obligatoria.\",\"personas\":\"Fisicas, Admin\"},{\"id\":20,\"regimenFiscal\":\"605, 606, 607, 608, 611, 612, 614, 615, 625\",\"sistema\":\"AMBOS\",\"clave\":\"D09\",\"descripcion\":\"Depósitos en cuentas para el ahorro, primas que tengan como base planes de pensiones.\",\"personas\":\"Fisicas, Admin\"},{\"id\":21,\"regimenFiscal\":\"605, 606, 607, 608, 611, 612, 614, 615, 625\",\"sistema\":\"AMBOS\",\"clave\":\"D10\",\"descripcion\":\"Pagos por servicios educativos (colegiaturas).\",\"personas\":\"Fisicas, Admin\"},{\"id\":22,\"regimenFiscal\":\"601, 603, 605, 606, 608, 610, 611, 612, 614, 616, 620, 621, 622, 623, 624, 607, 615, 625, 626\",\"sistema\":\"AMBOS\",\"clave\":\"S01\",\"descripcion\":\"Sin efectos fiscales.  \",\"personas\":\"Fisicas, Morales\"}]",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 13,
+      "method": "GET",
+      "url": "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onloadTurnstileCallback",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 302,
+      "responseHeaders": {
+        "cache-control": "max-age=300, stale-if-error=10800, stale-while-revalidate=300, public",
+        "location": "/turnstile/v0/g/fe6331af5207/api.js",
+        "cross-origin-resource-policy": "cross-origin",
+        "cf-ray": "9f73383fafd5b6eb-QRO",
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "content-length": "0",
+        "date": "Tue, 05 May 2026 22:35:41 GMT",
+        "server": "cloudflare"
+      },
+      "responseBodyError": "response.text: Response body is unavailable for redirect responses"
+    },
+    {
+      "n": 14,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/logo_thd.63220ad26d57482f.svg",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/styles.032c64d83dcb9336.css",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "3a4066d916f77e87339c2213e493fc70",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"10084-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f73383bbe965638-QRO",
+        "date": "Tue, 05 May 2026 22:35:40 GMT",
+        "content-type": "image/svg+xml",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "[skipped image/svg+xml]"
+    },
+    {
+      "n": 15,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/recibo-facturacion.652df6da54106658.png",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "537d7bfd410e970c649a9443cf8288f4",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"34420-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f73383bbea65638-QRO",
+        "accept-ranges": "bytes",
+        "content-length": "34420",
+        "date": "Tue, 05 May 2026 22:35:40 GMT",
+        "content-type": "image/png",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "[skipped image/png]"
+    },
+    {
+      "n": 16,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/HelveticaNeueLTStd97BlkCn.1a215711d05e9e89.otf",
+      "resourceType": "font",
+      "headers": {
+        "origin": "https://facturacion.homedepot.com.mx:2053",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/styles.032c64d83dcb9336.css",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "52fbec1cb0d980912df15307dafb8b04",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"30852-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f73383bbead5638-QRO",
+        "date": "Tue, 05 May 2026 22:35:40 GMT",
+        "content-type": "font/otf",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "[skipped font/otf]"
+    },
+    {
+      "n": 17,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/HelveticaNeueLTStd87HvCn.d6f6a763029e09be.otf",
+      "resourceType": "font",
+      "headers": {
+        "origin": "https://facturacion.homedepot.com.mx:2053",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/styles.032c64d83dcb9336.css",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "1ad9298b2dd921fb0eff28837c4c8eeb",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"31328-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f73383bbeb25638-QRO",
+        "date": "Tue, 05 May 2026 22:35:40 GMT",
+        "content-type": "font/otf",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "[skipped font/otf]"
+    },
+    {
+      "n": 18,
+      "method": "GET",
+      "url": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/HelveticaNeueLTStd45Lt.655bc9a6dc3f8b52.otf",
+      "resourceType": "font",
+      "headers": {
+        "origin": "https://facturacion.homedepot.com.mx:2053",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://facturacion.homedepot.com.mx:2053/FacturacionWeb/styles.032c64d83dcb9336.css",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-request-id": "ce5d826af40547da40fc8a862514a1b2",
+        "content-encoding": "gzip",
+        "cf-cache-status": "DYNAMIC",
+        "etag": "W/\"28980-1767829059000\"",
+        "x-content-type-options": "nosniff",
+        "cf-ray": "9f73383bbeb75638-QRO",
+        "date": "Tue, 05 May 2026 22:35:40 GMT",
+        "content-type": "font/otf",
+        "last-modified": "Wed, 07 Jan 2026 23:37:39 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "[skipped font/otf]"
+    },
+    {
+      "n": 19,
+      "method": "GET",
+      "url": "https://challenges.cloudflare.com/turnstile/v0/g/fe6331af5207/api.js",
+      "resourceType": "script",
+      "headers": {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "referer": "https://facturacion.homedepot.com.mx:2053/"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "cache-control": "max-age=31536000, stale-if-error=10800, stale-while-revalidate=31536000, public",
+        "content-encoding": "br",
+        "cross-origin-resource-policy": "cross-origin",
+        "cf-ray": "9f73383fe82ab6eb-QRO",
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "date": "Tue, 05 May 2026 22:35:41 GMT",
+        "content-type": "application/javascript; charset=UTF-8",
+        "last-modified": "Thu, 30 Apr 2026 17:06:00 GMT",
+        "server": "cloudflare"
+      },
+      "responseBody": "\"use strict\";(function(){function cr(e,t,a,o,i,c,s){try{var d=e[c](s),p=d.value}catch(f){a(f);return}d.done?t(p):Promise.resolve(p).then(o,i)}function sr(e){return function(){var t=this,a=arguments;return new Promise(function(o,i){var c=e.apply(t,a);function s(p){cr(c,o,i,s,d,\"next\",p)}function d(p){cr(c,o,i,s,d,\"throw\",p)}s(void 0)})}}function Re(e,t,a){return t in e?Object.defineProperty(e,t,{value:a,enumerable:!0,configurable:!0,writable:!0}):e[t]=a,e}function M(e,t){\"@swc/helpers - instanceof\";return t!=null&&typeof Symbol!=\"undefined\"&&t[Symbol.hasInstance]?!!t[Symbol.hasInstance](e):e instanceof t}function _e(e){for(var t=1;t<arguments.length;t++){var a=arguments[t]!=null?arguments[t]:{},o=Object.keys(a);typeof Object.getOwnPropertySymbols==\"function\"&&(o=o.concat(Object.getOwnPropertySymbols(a).filter(function(i){return Object.getOwnPropertyDescriptor(a,i).enumerable}))),o.forEach(function(i){Re(e,i,a[i])})}return e}function _a(e,t){var a=Object.keys(e);if(Object.getOwnPropertySymbols){var o=Object.getOwnPropertySymbols(e);t&&(o=o.filter(function(i){return Object.getOwnPropertyDescriptor(e,i).enumerable})),a.push.apply(a,o)}return a}function St(e,t){return t=t!=null?t:{},Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(t)):_a(Object(t)).forEach(function(a){Object.defineProperty(e,a,Object.getOwnPropertyDescriptor(t,a))}),e}function dr(e){if(Array.isArray(e))return e}function fr(e,t){var a=e==null?null:typeof Symbol!=\"undefined\"&&e[Symbol.iterator]||e[\"@@iterator\"];if(a!=null){var o=[],i=!0,c=!1,s,d;try{for(a=a.call(e);!(i=(s=a.next()).done)&&(o.push(s.value),!(t&&o.length===t));i=!0);}catch(p){c=!0,d=p}finally{try{!i&&a.return!=null&&a.return()}finally{if(c)throw d}}return o}}function pr(){throw new TypeError(\"Invalid attempt to destructure non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.\")}function Rt(e,t){(t==null||t>e.length)&&(t=e.length);for(var a=0,o=new Array(t);a<t;a++)o[a]=e[a];return o}function vr(e,t){if(e){if(typeof e==\"string\")return Rt(e,t);var a=Object.prototype.toString.call(e).slice(8,-1);if(a===\"Object\"&&e.constructor&&(a=e.constructor.name),a===\"Map\"||a===\"Set\")return Array.from(a);if(a===\"Arguments\"||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(a))return Rt(e,t)}}function Ve(e,t){return dr(e)||fr(e,t)||vr(e,t)||pr()}function P(e){\"@swc/helpers - typeof\";return e&&typeof Symbol!=\"undefined\"&&e.constructor===Symbol?\"symbol\":typeof e}function mr(e,t){var a,o,i,c={label:0,sent:function(){if(i[0]&1)throw i[1];return i[1]},trys:[],ops:[]},s=Object.create((typeof Iterator==\"function\"?Iterator:Object).prototype),d=Object.defineProperty;return d(s,\"next\",{value:p(0)}),d(s,\"throw\",{value:p(1)}),d(s,\"return\",{value:p(2)}),typeof Symbol==\"function\"&&d(s,Symbol.iterator,{value:function(){return this}}),s;function p(v){return function(I){return f([v,I])}}function f(v){if(a)throw new TypeError(\"Generator is already executing.\");for(;s&&(s=0,v[0]&&(c=0)),c;)try{if(a=1,o&&(i=v[0]&2?o.return:v[0]?o.throw||((i=o.return)&&i.call(o),0):o.next)&&!(i=i.call(o,v[1])).done)return i;switch(o=0,i&&(v=[v[0]&2,i.value]),v[0]){case 0:case 1:i=v;break;case 4:return c.label++,{value:v[1],done:!1};case 5:c.label++,o=v[1],v=[0];continue;case 7:v=c.ops.pop(),c.trys.pop();continue;default:if(i=c.trys,!(i=i.length>0&&i[i.length-1])&&(v[0]===6||v[0]===2)){c=0;continue}if(v[0]===3&&(!i||v[1]>i[0]&&v[1]<i[3])){c.label=v[1];break}if(v[0]===6&&c.label<i[1]){c.label=i[1],i=v;break}if(i&&c.label<i[2]){c.label=i[2],c.ops.push(v);break}i[2]&&c.ops.pop(),c.trys.pop();continue}v=t.call(e,c)}catch(I){v=[6,I],o=0}finally{a=i=0}if(v[0]&5)throw v[1];return{value:v[0]?v[1]:void 0,done:!0}}}var gr=300,yr=10,hr=200500,br=300020,tt=300030,rt=300031;function kt(e){var t=new URLSearchParams;if(e.params.botnet&&t.set(\"botnet\",\"true\"),e.params._debugSitekeyOverrides&&(e.params._debugSitekeyOverrides.offlabel!==\"default\"&&t.set(\"offlabel\",e.params._debugSitekeyOverrides.offlabel),e.params._debugSitekeyOverrides.clearanceLevel!==\"default\"&&t.set(\"clearance_level\",e.params._debugSitekeyOverrides.clearanceLevel),e.params._debugSitekeyOverrides.offlabelShowPrivacy&&e.params._debugSitekeyOverrides.offlabelShowPrivacy!==\"default\"&&t.set(\"offlabel_show_privacy\",e.params._debugSitekeyOverrides.offlabelShowPrivacy),e.params._debugSitekeyOverrides.offlabelShowHelp&&e.params._debugSitekeyOverrides.offlabelShowHelp!==\"default\"&&t.set(\"offlabel_show_help\",e.params._debugSitekeyOverrides.offlabelShowHelp)),e.params._debugForceLoopFeedback&&t.set(\"force_loop_feedback\",\"true\"),e.params[\"offlabel-show-privacy\"]!==void 0&&t.set(\"offlabel_show_privacy\",String(e.params[\"offlabel-show-privacy\"])),e.params[\"offlabel-show-help\"]!==void 0&&t.set(\"offlabel_show_help\",String(e.params[\"offlabel-show-help\"])),window.__cfDebugTurnstileOutcome&&t.set(\"__cfDebugTurnstileOutcome\",String(window.__cfDebugTurnstileOutcome)),!(t.size===0||t.toString()===\"\"))return t.toString()}var at=\"cf-chl-widget-\",K=\"cloudflare-challenge\",_r=\".cf-turnstile\",xr=\".cf-challenge\",Er=\".g-recaptcha\",wr=\"cf_challenge_response\",Tr=\"cf-turnstile-response\",Ir=\"g-recaptcha-response\",Ar=8e3,Sr=10800*1e3,Ot=\"private-token\",Rr=3,kr=500,Or=500,fe=\"\",Ct=\"_cftscs_\",Cr=512;var pe=(function(e){return e.Managed=\"managed\",e.NonInteractive=\"non-interactive\",e.Invisible=\"invisible\",e})({}),G=(function(e){return e.Normal=\"normal\",e.Compact=\"compact\",e.Invisible=\"invisible\",e.Flexible=\"flexible\",e})({}),nt=(function(e){return e.Auto=\"auto\",e.Light=\"light\",e.Dark=\"dark\",e})({}),it=(function(e){return e.Verifying=\"verifying\",e.VerifyingHavingTroubles=\"verifying-having-troubles\",e.VerifyingOverrun=\"verifying-overrun\",e.FailureWoHavingTroubles=\"failure-wo-having-troubles\",e.FailureHavingTroubles=\"failure-having-troubles\",e.FailureFeedback=\"failure-feedback\",e.FailureFeedbackCode=\"failure-feedback-code\",e.ExpiredNeverRefresh=\"expired-never-refresh\",e.ExpiredManualRefresh=\"expired-manual-refresh\",e",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 20,
+      "method": "GET",
+      "url": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/gfxt9/0x4AAAAAAB6nsteTRVZ39dGq/auto/fbE/new/normal?lang=auto",
+      "resourceType": "document",
+      "headers": {
+        "referer": "https://facturacion.homedepot.com.mx:2053/",
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "accept-ch": "Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "cf-ray": "9f7338407ac185e7-QRO",
+        "content-encoding": "br",
+        "content-security-policy": "default-src 'none'; script-src 'nonce-L46A9Gb6qkMB54PK3PMPmh' 'unsafe-eval'; script-src-attr 'none'; worker-src blob:; style-src 'unsafe-inline'; img-src 'self'; connect-src 'self'; frame-src 'self' blob:; child-src 'self' blob:; form-action 'none'; base-uri 'self'; trusted-types ymiGc5 default; require-trusted-types-for 'script'; sandbox allow-same-origin allow-scripts allow-popups allow-forms",
+        "content-type": "text/html; charset=UTF-8",
+        "critical-ch": "Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA",
+        "cross-origin-embedder-policy": "require-corp",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "cross-origin",
+        "date": "Tue, 05 May 2026 22:35:41 GMT",
+        "document-policy": "js-profiling",
+        "origin-agent-cluster": "?1",
+        "permissions-policy": "accelerometer=(),browsing-topics=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),interest-cohort=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=(self)",
+        "priority": "u=0,i",
+        "referrer-policy": "same-origin",
+        "server": "cloudflare",
+        "server-timing": "xex0qafi;dur=220855\ncfExtPri"
+      },
+      "responseBody": "<!DOCTYPE HTML><html lang=\"en-US\"><head><meta http-equiv=\"x-ua-compatible\" content=\"IE=Edge,chrome=1\"><meta http-equiv=\"content-security-policy\" content=\"default-src &#39;none&#39;; script-src &#39;nonce-L46A9Gb6qkMB54PK3PMPmh&#39; &#39;unsafe-eval&#39;; script-src-attr &#39;none&#39;; worker-src blob:; style-src &#39;unsafe-inline&#39;; img-src &#39;self&#39;; connect-src &#39;self&#39;; frame-src &#39;self&#39; blob:; child-src &#39;self&#39; blob:; form-action &#39;none&#39;; base-uri &#39;self&#39;; trusted-types ymiGc5 default; require-trusted-types-for &#39;script&#39;\"><meta name=\"robots\" content=\"noindex, nofollow\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\"><link rel=\"preload\" href=\"/cdn-cgi/challenge-platform/h/g/cmg/1\" as=\"image\"><title>Checking your Browser&hellip;</title><style id=\"BMiHH5\">@keyframes spin{100%{transform:rotate(360deg)}}@keyframes scale{0%, 100%{transform:none}50%{transform:scale3d(1, 1, 1)}}@keyframes stroke{100%{stroke-dashoffset:0}}@keyframes scale-up-center{0%{transform:scale(.01)}100%{transform:scale(1)}}@keyframes fade-in{0%{opacity:0}100%{opacity:1}}@keyframes fireworks{0%{transform:scale(0);opacity:0}50%{transform:scale(1.5);opacity:1}100%{transform:scale(2);opacity:0}}@keyframes firework{0%{opacity:0;stroke-dashoffset:8;}30%{opacity:1}100%{stroke-dashoffset:-8;}}@keyframes unspin{40%{stroke-width:1px;stroke-linecap:square;stroke-dashoffset:192}100%{stroke-width:0}}#success-i{width:30px;height:30px;display:flex;border-radius:50%;box-shadow:inset 0 0 0 #228b49;stroke-width:1px;fill:#fff;stroke:#fff;stroke-miterlimit:10;animation:scale-up-center .3s cubic-bezier(.55, .085, .68, .53) both;stroke-width:6px}#success-i .p1{animation:stroke .4s cubic-bezier(.65, 0, .45, 1) forwards;animation-delay:.3s;box-shadow:inset 0 0 0 #228b49;stroke-dasharray:242;stroke-dashoffset:242}.success-circle{stroke-dashoffset:0;stroke-width:2;stroke-miterlimit:10;stroke:#228b49;fill:#228b49}#success-pre-i{width:30px;height:30px}#success-pre-i line{stroke:#228b49;animation:firework .3s 1 ease-out;stroke-width:1;stroke-dasharray:32 32;stroke-dashoffset:-8;}.circle{stroke-width:3px;stroke-linecap:round;stroke:#228b49;stroke-dasharray:0,100,0;stroke-dashoffset:200;stroke-miterlimit:1;stroke-linejoin:round}#fail-i,#fail-small-i{width:30px;height:30px;display:flex;border-radius:50%;box-shadow:inset 0 0 0 #b20f03;stroke-width:1px;fill:#fff;stroke:#fff;stroke-miterlimit:10;animation:scale-up-center .6s cubic-bezier(.55, .085, .68, .53) both}.failure-circle{stroke-dasharray:166;stroke-dashoffset:166;stroke-width:2;stroke-miterlimit:10;stroke:#b20f03;fill:#b20f03;animation:stroke .6s cubic-bezier(.65, 0, .45, 1) forwards}.failure-cross{animation:fade-in-animation .1s .4s cubic-bezier(1, 1, 0, 1) backwards;fill:#f2f2f2;transform-origin:bottom center}@keyframes fade-in-animation{0%{fill:#b20f03;stroke:#b20f03}100%{fill:#f2f2f2;stroke:#f2f2f2}}#fail-small-i{width:12px;height:12px}#verifying-i,#overrun-i{display:flex;animation:spin 5s linear infinite;width:30px;height:30px}.expired-circle,.timeout-circle{stroke-dasharray:166;stroke-dashoffset:166;stroke-width:2;stroke-miterlimit:10;stroke:#595959;fill:#595959}#expired-i,#timeout-i{width:30px;height:30px;display:flex;border-radius:50%;box-shadow:inset 0 0 0 #595959;stroke-width:1px;fill:#fff;stroke:#fff;stroke-miterlimit:10;animation:scale .3s ease-in-out .9s both}#branding{display:inline-flex;flex-direction:column;text-align:right}#logo{margin-bottom:1px;height:25px}.logo-text{fill:#000}.unspun .circle{animation:unspin .7s cubic-bezier(.65, 0, .45, 1) forwards}@media (prefers-color-scheme: dark){body.theme-auto,.main-wrapper.theme-auto{background-color:#313131;color:#f2f2f2}.theme-auto a{color:#f2f2f2}.theme-auto a:link{color:#f2f2f2}.theme-auto a:hover{color:#b9d6ff}.theme-auto a:visited{color:#9d94ec}.theme-auto a:focus,.theme-auto a:active{outline:2px solid #4693ff;outline-offset:2px;border-radius:2px}.theme-auto h1,.theme-auto p{color:#f2f2f2}.theme-auto #success-i{box-shadow:inset 0 0 0 #2db35e}.theme-auto #success-i .p1{box-shadow:inset 0 0 0 #2db35e}.theme-auto .success-circle{stroke:#2db35e;fill:#2db35e}.theme-auto .failure-circle{stroke:#fc574a;fill:#fc574a}.theme-auto .expired-circle,.theme-auto .timeout-circle{stroke-dasharray:166;stroke-dashoffset:166;stroke-width:2;stroke-miterlimit:10;stroke:#b6b6b6;fill:#b6b6b6}.theme-auto #expired-i,.theme-auto #timeout-i{width:30px;height:30px;display:flex;border-radius:50%;box-shadow:inset 0 0 0 #b6b6b6;stroke-width:1px;fill:#fff;stroke:#fff;stroke-miterlimit:10}.theme-auto .cb-lb .cb-i{border:2px solid #999;background-color:#0a0a0a}.theme-auto .cb-lb input:focus~.cb-i,.theme-auto .cb-lb input:active~.cb-i{outline:2px solid #4693ff;outline-offset:2px;border-radius:2px}.theme-auto .cb-lb input:checked~.cb-i{background-color:#4a4a4a}.theme-auto .cb-lb input:checked~.cb-i::after{border-color:#fbad41}.theme-auto #challenge-error-title{color:#fc574a}.theme-auto #terms{color:#f2f2f2}.theme-auto #content{border-color:#f2f2f2;background-color:#313131}.theme-auto #qr{fill:#f38020}.theme-auto .logo-text{fill:#fff}.theme-auto .overlay{border-color:#fc574a;background-color:#feccc8;color:#780a02}.theme-auto .circle{stroke:#2db35e}.theme-auto .botnet-overlay{border-color:#f2f2f2;background-color:#ffd6a8}.theme-auto .botnet-overlay a{color:#262626}.theme-auto .botnet-overlay a:link{color:#262626}.theme-auto .botnet-overlay a:hover{color:#262626}.theme-auto .botnet-overlay a:visited{color:#262626}.theme-auto .botnet-overlay a:focus,.theme-auto .botnet-overlay a:active{outline:2px solid #4693ff;outline-offset:2px;border-radius:2px}}body.theme-dark,.main-wrapper.theme-dark{background-color:#313131;color:#f2f2f2}.theme-dark a{color:#f2f2f2}.theme-dark a:link{color:#f2f2f2}.theme-dark a:hover{color:#b9d6ff}.theme-dark a:visited{color:#9d94ec}.theme-dark a:focus,.theme-dark a:active{outline:2px solid #4693ff;outline-offset:2px;border-radius:2px}.theme-dark h1,.theme-d",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 21,
+      "method": "GET",
+      "url": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/cmg/1",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/gfxt9/0x4AAAAAAB6nsteTRVZ39dGq/auto/fbE/new/normal?lang=auto",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "cf-ray": "9f73384358c185e7-QRO",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "server-timing": "cfExtPri",
+        "content-length": "86",
+        "date": "Tue, 05 May 2026 22:35:41 GMT",
+        "content-type": "image/png",
+        "server": "cloudflare",
+        "priority": "u=3,i"
+      },
+      "responseBody": "[skipped image/png]"
+    },
+    {
+      "n": 22,
+      "method": "GET",
+      "url": "blob:https://challenges.cloudflare.com/8aa3a93e-2b33-49a4-8a10-42515113b249",
+      "resourceType": "script",
+      "headers": {
+        "accept": "*/*",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false
+    },
+    {
+      "n": 23,
+      "method": "POST",
+      "url": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/flow/ov1/2336820412:1778019017:Gv7eJ4-lx7ozAIMg0qIsNhCa9yFcZ45pf-rf0mpac7w/9f7338407ac185e7/gDUjl_cmxwIb.a_cYz9NKcuYB39EWJj2IKqb55RZryk-1778020541-1.2.1.1-mGaqtIXV1rKcreu_dQkWpiYV3YyyUB8E7jceulfm1vFnQUt3O2EzBeHSrwH0kK5_",
+      "resourceType": "xhr",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/gfxt9/0x4AAAAAAB6nsteTRVZ39dGq/auto/fbE/new/normal?lang=auto",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "cf-chl-ra": "0",
+        "sec-ch-ua-mobile": "?0",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "content-type": "text/plain;charset=UTF-8",
+        "cf-chl": "gDUjl_cmxwIb.a_cYz9NKcuYB39EWJj2IKqb55RZryk-1778020541-1.2.1.1-mGaqtIXV1rKcreu_dQkWpiYV3YyyUB8E7jceulfm1vFnQUt3O2EzBeHSrwH0kK5_"
+      },
+      "requestBody": "h1BIU8ffM8nhdCgkQlzASo4B2ajHu5ZG5CMCa0Z5qpc$$iMUy0HBCObL2nUKWvYW2-C-5buP$fUiXg5anmtVv117Qq300DmwIdOvzgybP-6BPhyzjp4wcIaonW58gIPF$il9VvhASSuEfEB7w9vcP7fg2v9KExKpFDnHth4TETGKSLG2kskPRqWFONgkwd6i6LyzEitg5e-mSMYix8XpHKtBTT0+pq22H55evGhL+m9nM+778DIw$W9Bz44TbkTUpAYKR4gjUsDSNSgPxc2DKbuvQy8s2B0zEaXpahFeuldU7h19RRInDL$8Ym+fcq6WSD3mViNZwueCeKWTilZUBIipx7z88nu63PnFMVK7fP7ecJckeOKBzPqb$HNpHQ+OlV260S4+uZf8Dx3Yttoe$LOIv1K$Y+OhNZPjRCMAHyVTg-7uahi9kgibyaMmmgVPb+FO+ZusMAmseepuq$lQe1RY$Th6znM1Mb8$MZeyIOsvPfZ0jp4XoAeVdReZ1$egtfbpY90mYJw-D8lxx$ftOYcWAIGgfv3ZEZh6MD$s3zcwsRChOEGhLoXKpjWVoDCiqcIgT83Amy$xwc83bcJWYKn+u8xYIP-9fh2y7BcqFWzRGXtVq330P7G7uii+xRlqYUHwj0woJt8RPhBGyvm1gLTwdkRhchRcj+2K9VwZKt3cwwp7gmjod4OWjaKzthIvbbhVUOIS-DofHiHuZDF1Lon567umXMWjDw0fRFmAI1ZihV930Ij4zXM$kzL-MxI7XiPhmedzpJ4Btvh$G5RgDn2T2XwnclFQ-u26uWJdB1eKJjVNENIBsbycAFVAZgcY7GU$Re+x-g1D7Phu1FhcyW0gQHVEaVOsEYHisCwN2DKDRyF85aiwZetywU9U1OE8guo4O82OaLjlYQQKlGw6OHE1d1ODLhL8D5PPThPSRVywUNf+c2i9An6tu-2Xg7DP1Xmk5Sew5TU7lvReLJSJT8jC45tMzImdh4TSKZ03-0vz-k47vyfi0Vce3ynuT+uW9x98SEt0j1jPcQt1cY1W2Sba++OawiA3ZPyoW91$IHXBt5kN2y-bZ70Ej-7i0CSyMCINVj6pnm7$sRVlj-9d5DKCsYmRQaY9Aucb6lXinT0HVmiHJOEmpgChvG7WsbwjuSec-+HDcLSs7lF0ajbhP4owFKB5De6KTiV3YPmWQiMGNifZOZfxGt3kykfdmFq9CyIZobfeEqk9A9RduXRhPkwJgblK+6uiQiBTbXEsH3602qZYunqTE2QiVwU6hqa8sVGxj0z7jd14nuOMP+jsFsZetcBqT9GzE6wXbaiC+82laM3lswz4Oy96oKuHECxlP2QoV2Oiu+qZ8k6GwByO4lxPyHb1812OUz5KscXHGl+0ZHGc4XYFFDkVZhZd+ki3EJGYpO0U$IJol-qjn-Uo0i5U6goOOJ8ypfldhIJNKP8gT0beasF8SfA1slRVBPliK6JCG1x-cdYs+zjSdABm75JGQ$mfTENgzjvH95aw1ddW0kA8U6mcQbKv65T62Cjm9EM6mwTcHn4ijC31H6WTF-J00TvKtAxHLyxz$7MjP3oBK-ZbozV9Q752lzvgGBJ3nD0-PQWmupKBUfGT7vQYtPd6WeI-sMIH$OyfzBgRVnfHJZC2N10qxgWaKluHN+FEXu5GPiXkSBgF8XKuftvLZ5RvTsJzijFqChpOC5iqQncVhXdcnEiDJy3dPVUGKIXlSvgDxW2sOU83UPqk7jLn0yTnWUggB4jaPSFCNcexb2g9y780ELYjTXGp80qTGD$jUAUXP6nA6kVIs-gIP7QTE+4RdsPBCxtR9$w$bDUR8SuqNVHx61kA70ac8jjqNztNfubXF+fW5Pb3pcByFA-BoCGp$vUhD2d99e2EIcCda0fnPc1fC9CyZEh2vl5ggwnLH5Q8Qhn80t-V2pBnNeI5PFDsomTHEI6RPKjLsAEtcDpaCNmlbsi4ksibLgCRod5N2uuSP2dfHg1vDWe3KIAcpvLnd12cJNyXpX6231e8s7lxF6MtXo+7tTwzyqQ+E8JWEd$aKfok6QjWceyV4509Wil4Ef1l2BK1flf55Z7STsLx48$F6qqGexAhuzdSk3PJ8h48SQLfFjsVN2HEuTzSk+ZUTnfLYBsXCFGepywBMeQMl5SEcD5WvaVIZAURVGeafqaHo+XL317jIlb8BBFb-zz9IH0wGO6w8BQWfe1PeJhNq58Ig6a1vYCHjWgf+6mX$DGvCfUpL$6U3$P2B7uNFjxds2JGIWSzwIo5LYLCdBKlcdbjXDHZHJTSSbbZE0E0sLlVKLBzJv4GLF7Cm2VCXvlQZAKtuheoRi4OabTmYFGEi0nhabE5mz-OlqyGfshWpKAqsBZh7XXM3X2bUYmzyd9PxDvlY1D8q$LHm+cCJITsAU4JMhno-oldM82o1iumZoshRIziLo9dTNaW$vQy8tL14a1ENOHWw5ApVnowE6iVIS3F4kmmJqxHAZKaiJgBfUOFpOOk$dSEC2vBotAeGsPYzselDsc999KscPFSXUnIDVGu0dW2mG8-62iMHx79K3gAf6VXNfDpK2a+5mnMBVICqH$0Q5CbuCW41JiN66I-Gv9+bSiYK3Dbq4cu-EzFawcB6Kc0gxMpakG215F8hyMc7BqIOSCQ4aMhI3kE$Md0LaLv3NxV0JHwWkhbsTcjnQdFWBkMbqGoyWu7oDQ3yXJgJ2T+XM0FH7O60fwjXCUzyOQBbEXxedTc6PCUFi+XWvUL-MqYJ2SWd7+LqGaHkknfz1vLbqDm$mufDVM37I2ZFEkO326lg70zVUvpzzBZOdoLUFvnaX48PUZXJ+07KDblnO1pHR6d7A0-E4mWitmEdy5sLuNjaM7R8GtQpFn6qjd2Y-eEunyi02yxC9osKxY4kenWGwA5eAIpkJZdK0HTYlgoq9LoeBdMkQ0SmSz1Kl43fsC2tJ8WvwWefmcTwYV6MtGHEf3dYLtLZje7hGhlNmZSdDVt5fzX2fMXEQQOaBLBs0E1MARSGRBvQpv+$Z6BwRdnbJy9mEobtkYG56SfCV1c9qSznwHQLVeOP38byZBUg5dzpMC6gqW5Sqn6xOBktbkm-AofqYlRPHU3NZ33msA97uNwlIC3fimsvhioqIc1bGxsBaYjUonG5RNvOBx6$cmsG9EaCFIuJJ3pPwKN3KZsWTB7TkHl0fJTbNJ8s$DoRPOR7LMzkF8laIBhpJ11tO8ze$9k+-W2zWIiR-etyAUzJwohV+s32Iibu9qBNdJyYtsyR1uNQBoOWye+yW+pJlzEbN4pbtP07poDgJCqPfe8+VCbXX8N-vMEsfwWNRboBoPZNeP848j2dm7bf-$HNaVkAsuF5FhJzw0DxJUlRJS+M$BtmIkpbDsgCl-fz-KcGxm-ozmBk6LLDw9ylYWm7hApSoE+1PtMmugeSCvK51KXxjI99VfV1QCBUK38VI4tQEh8Hz8IBin7QXPczIIJPktk32pAxXBnXHYop2G8lQC-fRZw82lEtDJ-ppS65epMETKIqt++zF94xeIgztSiqc8Q7Izsq+",
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "timing-allow-origin": "https://challenges.cloudflare.com",
+        "content-encoding": "br",
+        "cf-ray": "9f733846581785e7-QRO",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "server-timing": "cfExtPri",
+        "date": "Tue, 05 May 2026 22:35:42 GMT",
+        "content-type": "text/plain; charset=UTF-8",
+        "cf-chl-gen": "tzIehf4S8VRVbrb/9NhLqYeo4WpMJLdauz7T3fbgV/64AfNQjDg+hEv22XSuApPehDVwTkcytczQMrtB+sEYLULuRSRu93Qtku46Z623e8ydliqRT7tQdYX6Ykwq8ok9wF6kxFeHRNjlpeNI341fcNMYDQnaYZOjKuKL9lqEQeX9PUuYVVwy7F82po8DkYKNCUg+qna7ez4HU/aaT2HEGJG8dcaaFrFIcyM3zg9y4TEw1vMiePI0/V/6Ct+8veb3G5vdESvhBazqemVJJ4x6Qlb5PmaHH9iMBHcw3njOymCGTzttnX0QDfbWOeHzyT3ctfHcO9HGqICkVt9C7bSoYrPT6179n/14+68ZEorbTMeunHpWj0xOgPt+HFU5cZZ2F9yXAVIwPdcNKZg0xByJI01f3lBXOKrvY5Lw4c6IxF0xzdvqxT1habZ9mU7+FuYdMXO7FlyoRth3aNw9jVPAanqatJssN6Ls9r9+XlDC3NESiO2wKkx/9Chgoj801pkXILSEbzE8k9bQvP00vJ0MwI4jZDcbBgEORE0megWcaoDM8c884SkwnTfc9rIpMrsjfICu4AfMbr0mdkrLWBWRCw==$ajSUGQJG/Cwzr0YEZmhFwg==",
+        "server": "cloudflare",
+        "priority": "u=1,i"
+      },
+      "responseBody": "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",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 24,
+      "method": "GET",
+      "url": "blob:https://challenges.cloudflare.com/9fca5bde-dc72-494b-b51d-cd8c5407b99a",
+      "resourceType": "script",
+      "headers": {
+        "accept": "*/*",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "content-type": "text/javascript",
+        "content-length": "292"
+      },
+      "responseBody": "var _p=null;if(self.trustedTypes)try{_p=self.trustedTypes.createPolicy('ymiGc5',{createScript:function(s){return s;}})}catch(e){self.postMessage({type:'tt-policy-error',msg:e.message})}onmessage=function(e){e.isTrusted&&''===e.origin&&null===e.source&&eval(_p?_p.createScript(e.data):e.data)}",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 25,
+      "method": "GET",
+      "url": "blob:https://challenges.cloudflare.com/9fca5bde-dc72-494b-b51d-cd8c5407b99a",
+      "resourceType": "script",
+      "headers": {
+        "accept": "*/*",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "content-type": "text/javascript",
+        "content-length": "292"
+      },
+      "responseBody": "var _p=null;if(self.trustedTypes)try{_p=self.trustedTypes.createPolicy('ymiGc5',{createScript:function(s){return s;}})}catch(e){self.postMessage({type:'tt-policy-error',msg:e.message})}onmessage=function(e){e.isTrusted&&''===e.origin&&null===e.source&&eval(_p?_p.createScript(e.data):e.data)}",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 26,
+      "method": "GET",
+      "url": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/pat/9f7338407ac185e7/1778020542476/4a330440404de006066a2c2ba5304ff02ea3ee60aca8d96d67317139c0e7226b/euJGI00c8izCLPg",
+      "resourceType": "fetch",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/gfxt9/0x4AAAAAAB6nsteTRVZ39dGq/auto/fbE/new/normal?lang=auto",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 401,
+      "responseHeaders": {
+        "www-authenticate": "PrivateToken challenge=\"AAIAGXBhdC1pc3N1ZXIuY2xvdWRmbGFyZS5jb20gSjMEQEBN4AYGaiwrpTBP8C6j7mCsqNltZzFxOcDnImsAGWNoYWxsZW5nZXMuY2xvdWRmbGFyZS5jb20=\", token-key=\"MIIBUjA9BgkqhkiG9w0BAQowMKANMAsGCWCGSAFlAwQCAqEaMBgGCSqGSIb3DQEBCDALBglghkgBZQMEAgKiAwIBMAOCAQ8AMIIBCgKCAQEAnhDBFOftxU8rk1qnNiznVN82DHpOr0pZ9Gwvw_HHFTQCB5G2QSUzJ2DlG5lPTAn431L1LlG4JElrhWF44FF8uF0TI1l1QMPbkjplUPflMr3Ao0ljj-CG9VBSiQUnm7afTBonlmCr3yMa8oGvyXz2Z2oR-0WbOQ-xBFYUhVOegwYszH_ggmC0ycnNbs-YUT_9Ilq0NbvxyELX0tlqgseGWV7BmGNo8r-Z5EY92hPUoWnwiw7A_o1mazq5E3ifMEz3aQRJPSbTz4HJ4pOdy8MWb1RXlDGymW5A7Mex-LZofk1fVGoKIGqvm4P0_wnHlyE_O-kNyEEsnNFlJCvVXQ2fLwIDAQAB\", max-age=20, PrivateToken challenge=\"AAIAHXNhdC5wYXQtaXNzdWVyLmNsb3VkZmxhcmUuY29tIEozBEBATeAGBmosK6UwT_Auo-5grKjZbWcxcTnA5yJrABljaGFsbGVuZ2VzLmNsb3VkZmxhcmUuY29t\", token-key=\"MIIBUjA9BgkqhkiG9w0BAQowMKANMAsGCWCGSAFlAwQCAqEaMBgGCSqGSIb3DQEBCDALBglghkgBZQMEAgKiAwIBMAOCAQ8AMIIBCgKCAQEA7hhpDBWJQwjgywFj9choB90o4olnRnPEE9tlDo1oP55lYXmHTiUHE84EhVZcn2rGkxLLm9XZ7UCaLagOM4485gbhWGd6y1zuMqpwnIqVeBux2dbrZhkPUspmbeT0cOq8yIRDllKqkw1HgKvMjeJG5MmiFz0lVO-ZIycAWNG9IUtVU37QfjGuR1vTG2T5f30bUysUMWEaAL0KJEAa5U3bXEjYeKp3iMpLLo9N3D4wAJLtzLRFmFx7dRUXn69LIxvdr4OpH4x_ihOh4Vj_ywOlRm0Xi64z5_8EJ8AF6-EKbLNfeDHLjP-3POM_uGuTQ9CFqO_GrSWGt4aQTkzwcXepvwIDAQAB\", max-age=20, PrivateToken challenge=\"AAIALHBwLWlzc3Vlci1wcm9kdWN0aW9uLnJlc2VhcmNoLmNsb3VkZmxhcmUuY29tIEozBEBATeAGBmosK6UwT_Auo-5grKjZbWcxcTnA5yJrABljaGFsbGVuZ2VzLmNsb3VkZmxhcmUuY29t\", token-key=\"MIIBUjA9BgkqhkiG9w0BAQowMKANMAsGCWCGSAFlAwQCAqEaMBgGCSqGSIb3DQEBCDALBglghkgBZQMEAgKiAwIBMAOCAQ8AMIIBCgKCAQEA5avJFvlF2_FgcYLWuBvFefwtsmy4UT_S4BnbcZqClwfJToPtjfdeAoSWGxzovsOPPsB29qt8OzVw4Gfx3KxgpdKaAMBS_QJOVZMB3xMHhoAXrpv-RkQppcYiF0yRGOeLE3FevCHyexYIe1WJ_4747wCFIDLFAs0ARlhEpLZ2NorpkBK7oWkLK1K8BtEbn4KcwMKdlh1Cqqgbb1NOHh5FmF_w27kSfycFZjC35ku4a_HEOQBTOgJHl2wD5OIa5KIhuuC0th5A0eRnJJi_64LYezVB5malIsJf-wGP-XRFD0jKJySCX8KZTGzc0YGYfYhHnjBoox1o0FUE5HzwGNcOaQIDAQAB\", max-age=20",
+        "cf-ray": "9f73387e6b3b85e7-QRO",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "server-timing": "cfExtPri",
+        "content-length": "1",
+        "date": "Tue, 05 May 2026 22:35:51 GMT",
+        "content-type": "text/plain; charset=utf-8",
+        "server": "cloudflare",
+        "priority": "u=1,i"
+      },
+      "responseBody": "J",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 27,
+      "method": "GET",
+      "url": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/d/9f7338407ac185e7/1778020542476/U4Sxj0BEo5DLv8e",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/gfxt9/0x4AAAAAAB6nsteTRVZ39dGq/auto/fbE/new/normal?lang=auto",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "cf-ray": "9f73388438a885e7-QRO",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "server-timing": "cfExtPri",
+        "content-length": "960",
+        "date": "Tue, 05 May 2026 22:35:52 GMT",
+        "content-type": "image/png",
+        "server": "cloudflare",
+        "priority": "u=3,i"
+      },
+      "responseBody": "[skipped image/png]"
+    },
+    {
+      "n": 28,
+      "method": "POST",
+      "url": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/flow/ov1/2336820412:1778019017:Gv7eJ4-lx7ozAIMg0qIsNhCa9yFcZ45pf-rf0mpac7w/9f7338407ac185e7/gDUjl_cmxwIb.a_cYz9NKcuYB39EWJj2IKqb55RZryk-1778020541-1.2.1.1-mGaqtIXV1rKcreu_dQkWpiYV3YyyUB8E7jceulfm1vFnQUt3O2EzBeHSrwH0kK5_",
+      "resourceType": "xhr",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/gfxt9/0x4AAAAAAB6nsteTRVZ39dGq/auto/fbE/new/normal?lang=auto",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "cf-chl-ra": "0",
+        "sec-ch-ua-mobile": "?0",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "content-type": "text/plain;charset=UTF-8",
+        "cf-chl": "gDUjl_cmxwIb.a_cYz9NKcuYB39EWJj2IKqb55RZryk-1778020541-1.2.1.1-mGaqtIXV1rKcreu_dQkWpiYV3YyyUB8E7jceulfm1vFnQUt3O2EzBeHSrwH0kK5_"
+      },
+      "requestBody": "h1BIU8ffM8nhdCgkQlzASo4B2ajHu5ZG5CMCa0Z5qpc$$iMUy0HBCObL2nUKWvYW2-C-5buP$fUiXg5anmtVv117Qq300DmwIdOvzgybP-6BPhyzjp4wcIaonW58gIPF$il9VvhASSuEfEB7w9vcP7fg2v9KExKpFDnHth4TETGULNQTFWKxIFwg67gv0uo8kjfAMClB57YMlOs9Df28AoqYzY+cZMLtO$wmFkQNVOdYAdgDA77DpKwi3ul7SxZqQWGJApk6H$fJZbkHQUqi5P7UGUzROJ6MwKi-kCUyu9NUTH+ELQaiXkPNxqJwuItO4ANcIkP+ZJWiYEPGibWq8+Pudz7OmMIw8c5ph$pc37GX1YN4dqmwNMZ3GJYums4xxwOMCV1ex4XRppdSSxOzlaOHxvCOsh9LGcN-v1SpbbXBuwyf1OjnL+HXHmCU2yy3A-0tso-KkCZA9OvZgMAFJ$1mCquS7yiRdU6KOQcTUFMIW8ppnpcmO7G2QYuRY3i1WdBiVSMVPP3qiS9B$JV6uuOfNLnmmQGUQXEYAWbRElYvu3w+ggNfUw6GNw0TocO4ZPXjUiRNJk9GVO+Jqvs81LFfubwOzwH5+syceqY7cvlzOCqU$K6dS-xAWohh4momL-Oh1lz2l4-ZH1VfuMMaIfdjei0FqQzWUD4+EC$OpJ$9B5JsWO8fIsfNsyJzcavvtD+2eTjJeI251MlxG63VpIigLmfSa6nCyw27hZnL7Pw2FXxJ9ICsIYOXhxyvAsGMeIpOZhaP8IkezT--1wamXgx3-D86jkg1SXXzs659stjL-bcQVvvE9IiONfKuQQOq2p44ZfJ0fV22NPRcpuXmUUdoBbw4FPn8RWed2ewM6xxK3G3PRU5AOsxVlMgbg7327BI1YGnleO0CWAT5DEDzkOjponcA2wA8n2B$Pa+6uYUZyKNbIma7zh-B7zBEuaMgbbBdAs8Bpv7Ah8knLq$FjPyhswyMC-7As2$FqMB5ienkEs6coXyCIcoG-nOwL2UvXnd9PY$Q2ppMcBMjVa64Uga+fuyTGIfj4UsodB5+QZmZa2dH-ZLo4Hlocy1Py+lXXN1anRnZF4h$MQBEVNtMm11FJz+QUIqTgIojgY1kwpg1OFZJY1z+Ywq1-bHj31Bg1X3p3R-TaddjE-yMtFVcIi8NyoB+ZbRvJV9tXeu+3s+3PzZtGUff1dtQc+kPIUTciQ0GwqMRWRENksQPyDmvLxc24bzMb9a7aqbITzslA0VE0bYVRRfnU4QKUDZNUO-BQGx5nd9ITk1AC2PgxWy08I+bt0I4o7M79ICzv2NI3y3x7i2PAHRgHklaa3Mb233SnVtsdvoCI-Mmv8-wP3DqoY6OZH3heuvK5CueIL6icI6VO$OuTSJ1mjqPv6UhPt04auNK85CHdMuwfgwTiA6QnQdc$owpXg$mYzHTM24mXlSVM1zsdyBGI6ywZWXpBbhocizVoK7WU1AXsmNn8ClOHejnj7y2CHQP8LaTiZX+eYyeE6XaKILYf5nzs+yx$be1$ieVli1aKlxDxA4sb4HOV-nGHa975mVk5PC90Jxuolyf195IY50Ny5gZ2bN$FIReIEUwjtURPVRvO3Yvt52cINq8mjJ-djRCKTzZqBqPYi6+u6E8yWb0bPN6X+sNBs-$ZUmCc6q8Vp2f2IKakkuKHVV+nPp9jSLZRLfJ28fmbQzYNO+XR6-wCLdZ2chRlQaLjqAEzhIu8E+IqaCyHl3SumBHb7lEOH5z$HFuiuhvI4slL051kUv3NdIyfbLJy9Cj3eQ98ubdG++HmRSYy5suPcLU59w5OAVq2sU8pJVQxxnCeBFimQ6+K$AHMYYQT0ihbP20GjS7ZdMSQN1OXcL4YAjsUYh-Ggs9KHipfM0xLBl7bV8A9wUlHOBQ1T-yPPyi-IkdyG5iLfEUXwb5i9OI68xX7-Pqz8+6L5vTzL08vk$1Cn4hmVEGz1xPZ$dsZHx1kOvTblX33lHmYatqgEdS+j5GUVIPUeesHZBkT2Sa8tSlw0ET9f+L2sCzyJAeSaD5WvHf8QDe7AEY2laDD4vHKYBqPqjMxeqz-AN4f5CM4vdsR4+2kZpJoyNWwZh+RxVEaDX-z4-3Sdta-aR7a0cAEgBnxiSEHlUIcpN7EV-oR5kOBhDmGPPZBRc5UKbj$1QpyaSxMevWnmtAjxthRgMmAx+Oej50C6z01SnM1eQTaveKb6WU2$F8tu5chRZckYhhh7LTo1Es+DfBOwgiOxh4AnfEzAtJjSnQ9ga8FbxnEfazFBx3US6fGsvkpqCWIncEMLxMzxn6gw1Rk-QnmvfzlgVcMjzIgjDzxXMK+Q8gDvefTQboLKSt57cb3MLFJ8$Gv5FnyddDDvR6FPQW619p46Wbzx81+Rj9WAzlYxNtPMyazfeVmEZjbZB5l3wZwMbfM9InIPC04BXmO$Cie-Bi7zAITcd60$-lsjGOHek+WtVsgRfFuAF77W5HqKqmKZut9X83lh6uXZjgZk67NgZAAa8RXvSVohv27VPl-ft4R7PufZhTEGFUev3ftfCntj5XoG0Zucjoc8xPwpx0YtzvNRVzGg2eIM5GKCOAtvfTlNHp8bZ1b8qie7R8SJNl6X8z4TDDCV+Q3zPjCRYv4vcemGZ-qVxjaZwzZp15metijPo+Qk1K5vS3gPdnqgR6QF6Hi-$GsHCuMt5yHdWff$93gRG5tXgMQHly$+JcQMzNOVlRSlo9hgJC-ZSIoBc7bXWPSQ+8m$--9IbB6ViPu9jHLqh6FTPlp5-d5ulIzIMySzIhWhQ1wvs2Fh9gQqG91YxG$5kjeMkHcKtmP9vpvOu37UYsIfC6B4HfCe2sosCn6jWbia2ppBiBZsQiIOsWmlRfiwDY1VFakKt6JtPq3Dp6Kt7OQEGvSHaE+7RMyBZzVuv9PITqkUmzIAaatGYyvQW0myXJusUuq+3C1NzjKl70LUZK4f1D48wPRg0ZZy1yPhCmG663dcQqYMR+mW4LdqWvpOOt5WhOOnvxbKushLOo2LSnkJu3jcne-x8ON2XBgfS174jPE$o0l9OvK1+YN9v2KHGu0+Oj5+jnEElONDlH69DmtahFm6w4oUhWGIfJ66BxoeZC1chkJ-J0jUYPW$+NgfAPZdP84guLZK57i3246q6M4ijGqJ9LwhUTG+0LKwgPetqZZYHe$2xh8duOmvcXBMWJ91elIwuo3T33MHwdBby+K9Qsed+CVnQu7jXSHsd2wMbbefwv5a+0HJ+4EawIVpdNhZd3f6V7Oi47O2TWOxEuESCP4YTPRdNQwbVfTgYM38e5Y384QOAivspTJ8nhs2gyhG2IPh7v$9ZN--YMIJnP3OiZM1RjCLUc2LbKpL8Ehz7isUvx6ZF56NfCYt6kdmHgQlqNNP5ETX$NGfIOwoh9PitxZL+oZ3opDkHY13eHXOF6ITwPFdAQCjPTPxdGptIl7$9gcb$qE5X3iUZyNBGjcBjysTMHiTQLcDeihcsD0dVMXNtzJ22SBthz5X6xGbTHawDcV-bDLeGIoo3vQyo2ca3lM3Jn4mPEgjEvYX$0fjY2L4IayVbUqcTMZd$vlmcokm4XIfb95JSOu0S8eo5bOmMCI06i0R5vJ3$fpiDRlDODnmoxVvCv9oIYPqHk70AvtPOxTtyw6VkMdaBH6LtA7ItNhD5HXwad9Mj5lhC+vmA+uo85mwMWcSP6DRxsQBfVVXZoTQPkmblVh2XhpD8bLS$Wdo$+ZtjSwCi1tmZRQpbs1Bgj8G6wHJeIwb5hxWqGg5vuyR2jcwikZdcH7pRle7Gi2iY+G2X57hq7REs1A1gciu6FpgHqpL7FRKnB9vc2Xue+5xV6Xd7-2liI3xN4Fe7kPnYd33bSSc9nzOAuMljz+9Xt4iiLUaCFhdgGDuFBWRw0BKZzkIFGa3VZZgan1bLx2+H$ogL07DRHDh5oCbHH0uOIEfD$iUAuaYquPi61ThFvh8YVx+m37Bct+pUcyMWR83Hfu3wL-HblLjZXEgBh+z+f5bLwnNeJ5cCXBiqiGc+MUXJZPQmDMhZUACwg1LEBimO5vGAwnhYJQLGpoZz+fG+U3uqPsWbIDINaIyU-UDm0zJwRZhSEQ3s8ltY75YQfAuSbEQE+Amtj9JLVIhanALMkqCEXeCz4X-9StFlagIS-0xCQ8weNKRV8+3Z3xe6ZXWjmieIKkgtf8nC+i-ubv1JeLAuMf+T$80RFm3TcFVZSdD$mkFHFhHHOA+y+-Rc8M1sbClBF4TPX0IL5ez2U-5vFo5Bp+3xQBDp5e75R3hezLjFnW5KfVg8DMgzEz9EXu0IFLK4lmVGPIFEuERWJuZg8LFMgM2XZot4StSIXfFyPFSARxbEGKA1oOLGKFlveZLI8STCMyaXgnkvMFgmXUfHjGNnapdbJ86WvX83AdMjmic3W1c5RnvTZJcMUy-kVYDyBIqANuPzCGk5XQWXUiO$h0LAbgYkLqZSxCC0o84D$x97tvGIBB2VgZPc1VUkV5V-aHX9pGu$ob5p3fACnp8Q$Enks5AFEw8dvkhbwfonl2yMbFq$qZ4JX2DcM8-xNlDVKBGX+U96vKVgTb9m7$P+qf1b0okMYaliazFdTQWfRnTtl2uzREIE6JSz3+lmLN7OKWWnOu5MnX3LBoILaWPjus2Ok5ks1Yqaf3Vk+ZyT9tspQ2Wc8cXLffqSD6theS5F2cAQPkBPWz5F3kz7vsKIgV1CvFH0uUHLgzzmC8QNA$BoL0mw1LujXsdN05xQb9uwoQwIheBCUloz4M2qy6C0aFpgfgWfce8CFlbCci$bbLlyNVliXkDSBHax47QdMJhwSGNRxCuaa2kw0yEoy6ZFZQNpuYXjoqzJuW3Sb1szJnJkI9Jt8ngPF-geFC7qnGNvg9742FmVE50OH5MYktmQCqgl-LQlnv9pIyW3VMp5GCmP21pCqVl55Xx4KUkqkR3eQdU8Vvkl+udX3QUfXumcDel1kEtmfFVQ1aYYsMAx6SZVdHv-mLlVoqWNMuGdRqCGA3-Ja8WMs3Z7qvbbT8WcfXpsaBLo-7-9o06YT1j0v+QFNbQBc$hu8K5-33gtBBRmlZgBUAYJhYHmh6TgU41YGImVbUqiXbSl4PcvwLYIftbKK6LBKGz1dL$1zVyRx4iQsRRIExRbVdWGWLISkMdmuG8Qhn2Nlw45X1G3DAZ012LNcRqS-m$EFxIjDTF93L9JVBK3M$2IC9yyC9AHmZqNuMygOxiJTs6Me+RJcCvnJtbkLUZLv0X9$4djGI+nWM76dg2K$JGUTgYLAhNRq3qeSOmPBXZB3y9zfLSGiNESbeP9JgBpwo$4c7a2F9Q$b7Hpae0h5FGH5CWdzH-y8BZfvchGwd9m$XBREX4JkJ0DxH6TADVzvlbfhJ430AYmvE+NIwZRFffaFqsyZWc0dWJqSBGkq+gJG0zf032K5OYzMGTcMTpPJ$sp7D-Y8TXDHuyR0RLbqanU6wpsi0jMKi0AQePuWYf4jfGSZddTijx-9u33Elk$Zf4lq8ijYtUwNPQxKjZpXFvaBJipw7gEmnjeWuR2vn0AWBJc3aHH3QlSDgR2yiPEcDZaZy8As6ub5ZpDFT4c5z4WO9PEWx6vO63ZQ1XMeXynC2DPIxLNSCb0Vnvm+v9cC72L1HTSUtZYGVLYlX55YnBtj3X5I6HabsR$SFw14AoHMCSiwQ6BQqMbwmBvaYWj3HV8dtwP$hSzlkwb8OBNUvHA2L+y49i-BbtOHjf4Ce-Z$JKh8cjUol3nHX-JpuvQlF6S2UcHcjsnDHTIgujLHJ$$tfeRLDkz$FJ1X9IfLI9zUnOHvz7fMQMMIhmJEb-Y8bEI8Qd7yeMEQEQv3AuWcqWXOAqL1$M3o+TUz8SYSp$jgBUypW3MKBnxa3LcRVTAMjq8I2MARZVxweMZ9WOcPHvBmWmCy0xj$v5Nah-MuWvM102Y13f3a$uVZSzxw47ZLbLIz1XckYvUUD9RYz$Px014fZ4mq-o58",
+      "requestBodyTruncated": true,
+      "status": 200,
+      "responseHeaders": {
+        "timing-allow-origin": "https://challenges.cloudflare.com",
+        "content-encoding": "br",
+        "cf-ray": "9f73388ccb3e85e7-QRO",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "server-timing": "cfExtPri",
+        "date": "Tue, 05 May 2026 22:35:53 GMT",
+        "content-type": "text/plain; charset=UTF-8",
+        "cf-chl-gen": "6STnT5UWQLOAvaouOaisMaih1KbQPxWnqMuCmIN+ids=$oho9zO8I1/ykxPxuaGcwgQ==",
+        "server": "cloudflare",
+        "priority": "u=1,i"
+      },
+      "responseBody": "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",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 29,
+      "method": "GET",
+      "url": "blob:https://challenges.cloudflare.com/d5fc1b6e-7f8f-4c83-9fb4-c0271e61d827",
+      "resourceType": "script",
+      "headers": {
+        "accept": "*/*",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "content-type": "text/javascript",
+        "content-length": "292"
+      },
+      "responseBody": "var _p=null;if(self.trustedTypes)try{_p=self.trustedTypes.createPolicy('ymiGc5',{createScript:function(s){return s;}})}catch(e){self.postMessage({type:'tt-policy-error',msg:e.message})}onmessage=function(e){e.isTrusted&&''===e.origin&&null===e.source&&eval(_p?_p.createScript(e.data):e.data)}",
+      "responseBodyTruncated": false
+    }
+  ]
+}

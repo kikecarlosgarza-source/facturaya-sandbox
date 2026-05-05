@@ -1,0 +1,11 @@
+{
+  "portal": "super7_7eleven",
+  "inspected_at": "2026-05-05",
+  "status": "url_not_found",
+  "note": "Probé https://factura.7-eleven.com.mx (DNS dead), https://7-eleven.com.mx/facturacion (404), https://facturacion.7-eleven.com.mx (DNS dead). Super 7 / 7-Eleven México no tiene portal público con URL estable. Mismo modelo que OXXO: QR en ticket abre URL única.",
+  "candidate_urls_tried": [
+    {"url": "https://factura.7-eleven.com.mx",      "result": "DNS_DEAD"},
+    {"url": "https://7-eleven.com.mx/facturacion",  "result": "HTTP_404"},
+    {"url": "https://facturacion.7-eleven.com.mx",  "result": "DNS_DEAD"}
+  ]
+}
