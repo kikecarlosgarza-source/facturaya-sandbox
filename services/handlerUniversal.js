@@ -347,6 +347,66 @@ Si hay error irrecuperable responde {"accion":"error","descripcion":"causa"}.`;
   return { success: false, mensaje: `Universal IA: no se completó en ${CLAUDE_MAX_PASOS} pasos` };
 }
 
+// Replay de un macro grabado por el agente visual (Computer Use). Cada paso
+// trae coordenada + selector inferido al momento de grabar. Preferimos selector
+// (estable ante shifts de layout); coord es fallback cuando el selector ya no
+// matchea. Los placeholders {{rfc}}, {{folio}}, etc. se sustituyen por los
+// valores de este perfil/ticket antes de teclear.
+async function replayMacro(page, macro, perfil, ticketData) {
+  const subs = {
+    '{{folio}}':    String(ticketData.folio || ticketData.codigo_facturacion || ''),
+    '{{rfc}}':      perfil.rfc || '',
+    '{{nombre}}':   perfil.nombre_sat || perfil.nombre || '',
+    '{{cp}}':       perfil.cp || '',
+    '{{email}}':    perfil.email || '',
+    '{{regimen}}':  perfil.regimen || '612',
+    '{{uso_cfdi}}': perfil.uso_cfdi || 'G03',
+    '{{total}}':    String(ticketData.total || ''),
+    '{{fecha}}':    String(ticketData.fecha_compra || ticketData.fecha || '')
+  };
+
+  function applySubs(text) {
+    let out = String(text || '');
+    for (const [ph, val] of Object.entries(subs)) {
+      if (out.includes(ph)) out = out.split(ph).join(val);
+    }
+    return out;
+  }
+
+  for (const step of macro.steps) {
+    const t = step.type;
+    if (t === 'left_click' || t === 'right_click' || t === 'double_click') {
+      let clicked = false;
+      if (step.selector) {
+        try {
+          if (t === 'double_click') {
+            await page.dblclick(step.selector, { timeout: 2000 });
+          } else if (t === 'right_click') {
+            await page.click(step.selector, { button: 'right', timeout: 2000 });
+          } else {
+            await page.click(step.selector, { timeout: 2000 });
+          }
+          clicked = true;
+        } catch {}
+      }
+      if (!clicked && Array.isArray(step.coord)) {
+        const [x, y] = step.coord;
+        if (t === 'double_click') await page.mouse.dblclick(x, y);
+        else if (t === 'right_click') await page.mouse.click(x, y, { button: 'right' });
+        else await page.mouse.click(x, y);
+      }
+    } else if (t === 'type') {
+      await page.keyboard.type(applySubs(step.text), { delay: 50 });
+    } else if (t === 'key') {
+      await page.keyboard.press(step.key);
+    } else if (t === 'scroll' && Array.isArray(step.coord)) {
+      await page.mouse.move(step.coord[0], step.coord[1]);
+      await page.mouse.wheel(0, step.direction === 'down' ? 300 : -300);
+    }
+    await page.waitForTimeout(step.wait || 500);
+  }
+}
+
 async function ejecutarConPage(page, url, perfil, ticketData) {
   await page.goto(url, { waitUntil: 'networkidle', timeout: NAV_TIMEOUT_MS }).catch(() => {});
 
@@ -416,11 +476,49 @@ async function ejecutarConPage(page, url, perfil, ticketData) {
     // continuar igual; quizá el portal acepta sin captcha
   }
 
+  const urlPat = urlPattern(url);
+  const brand  = brandFromUrl(url);
+
+  // Replay de macros del agente visual antes que cualquier otra estrategia.
+  // Si Computer Use logró facturar este portal antes, dejó un macro JSON
+  // reproducible en portal_scripts (step='agente_visual_exitoso').
+  try {
+    const macros = db.prepare(`
+      SELECT id, patch_js, descripcion, confidence
+      FROM portal_scripts
+      WHERE step = 'agente_visual_exitoso' AND active = 1
+        AND (portal LIKE ? OR patch_js LIKE ?)
+      ORDER BY confidence DESC, id DESC
+      LIMIT 3
+    `).all(`%${brand}%`, `%${urlPat}%`);
+
+    for (const m of macros) {
+      let macro;
+      try { macro = JSON.parse(m.patch_js); } catch { continue; }
+      if (!macro || macro.version !== 1 || !Array.isArray(macro.steps)) continue;
+
+      try {
+        console.log(`[universal] replay macro #${m.id} (conf=${m.confidence}, ${macro.steps.length} pasos)`);
+        await replayMacro(page, macro, perfil, ticketData);
+        if (await verificarExito(page)) {
+          return {
+            success: true,
+            mensaje: `Universal: factura generada (macro agente visual #${m.id})`,
+            via: 'macro',
+            macroId: m.id
+          };
+        }
+      } catch (e) {
+        console.log(`[universal] macro #${m.id} falló:`, e.message);
+      }
+    }
+  } catch (e) {
+    console.log('[universal] error consultando macros:', e.message);
+  }
+
   // Aplicador de parches: antes del heurístico, busca parches JS ejecutables
   // (no JSON descriptors) activos para esta URL/brand y aplícalos. Cierra el
   // ciclo "detectar fallo → claudeAgent genera parche → aplicar parche".
-  const urlPat = urlPattern(url);
-  const brand  = brandFromUrl(url);
   try {
     const patches = findActivePatches.all(`%${brand}%`, `%${urlPat}%`);
     for (const p of patches) {

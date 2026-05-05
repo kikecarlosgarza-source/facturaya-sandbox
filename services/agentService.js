@@ -30,6 +30,82 @@ function determinarPortal(e,p) {
   return null;
 }
 function dominioDe(url) { try { return new URL(url).hostname.replace('www.',''); } catch { return url; } }
+
+function urlPattern(url) {
+  try { const u = new URL(url); return u.host + u.pathname; } catch { return url; }
+}
+
+function brandFromUrl(url) {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, '');
+    const parts = host.split('.');
+    const tlds = new Set(['com','org','net','gob','edu','mx','us','co']);
+    while (parts.length > 1 && tlds.has(parts[parts.length - 1].toLowerCase())) parts.pop();
+    return parts[parts.length - 1] || host;
+  } catch { return ''; }
+}
+
+function placeholderize(text, ctx) {
+  if (!text) return text;
+  let result = String(text);
+  const subs = [
+    ['{{folio}}',    String(ctx.folio || '')],
+    ['{{rfc}}',      ctx.perfil.rfc || ''],
+    ['{{nombre}}',   ctx.perfil.nombre || ''],
+    ['{{cp}}',       ctx.perfil.cp || ''],
+    ['{{email}}',    ctx.perfil.email || ''],
+    ['{{regimen}}',  ctx.perfil.regimen || ''],
+    ['{{uso_cfdi}}', ctx.perfil.uso_cfdi || ''],
+    ['{{total}}',    String(ctx.total || '')],
+    ['{{fecha}}',    String(ctx.fecha || '')]
+  ].filter(([, v]) => v && v.length >= 2)
+   .sort((a, b) => b[1].length - a[1].length);
+  for (const [ph, val] of subs) {
+    const re = new RegExp(val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    if (re.test(result)) result = result.replace(re, ph);
+  }
+  return result;
+}
+
+async function captureSelectorAt(page, coord) {
+  if (!Array.isArray(coord)) return { selector: null, tag: null };
+  try {
+    const info = await page.evaluate(([x, y]) => {
+      const el = document.elementFromPoint(x, y);
+      if (!el) return null;
+      function escId(s) { try { return CSS.escape(s); } catch { return s; } }
+      function build(e) {
+        if (e.id) return '#' + escId(e.id);
+        const name = e.getAttribute && e.getAttribute('name');
+        if (name) return e.tagName.toLowerCase() + '[name="' + String(name).replace(/"/g, '\\"') + '"]';
+        const path = [];
+        let cur = e;
+        while (cur && cur.nodeType === 1 && cur !== document.body) {
+          let part = cur.tagName.toLowerCase();
+          const cls = (cur.className && typeof cur.className === 'string') ? cur.className : '';
+          if (cls) {
+            const c = cls.split(/\s+/).filter(Boolean).slice(0, 2).map(escId).join('.');
+            if (c) part += '.' + c;
+          }
+          const parent = cur.parentNode;
+          if (parent && parent.children) {
+            const same = Array.from(parent.children).filter(s => s.tagName === cur.tagName);
+            if (same.length > 1) part += ':nth-of-type(' + (same.indexOf(cur) + 1) + ')';
+          }
+          path.unshift(part);
+          if (path.length > 4) break;
+          cur = cur.parentNode;
+        }
+        return path.join(' > ');
+      }
+      return { selector: build(el), tag: el.tagName };
+    }, coord);
+    return info || { selector: null, tag: null };
+  } catch {
+    return { selector: null, tag: null };
+  }
+}
+
 async function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
 
 async function screenshot(page) {
@@ -144,6 +220,7 @@ module.exports = { procesarConAgente: async function(solicitudId) {
 
     let iteraciones = 0;
     const MAX = 20;
+    const recording = [];
 
     while(iteraciones < MAX) {
       iteraciones++;
@@ -212,6 +289,31 @@ module.exports = { procesarConAgente: async function(solicitudId) {
 
         if(exitoso) {
           saveKnowledge(portal, { ultimo_exito: new Date().toISOString() }, true);
+
+          // Persistir macro reproducible para que handlerUniversal lo replaye
+          // sin gastar tokens de visión la próxima vez.
+          if (recording.length > 0) {
+            try {
+              const macro = {
+                version: 1,
+                url_pattern: urlPattern(url),
+                viewport: { width: DISPLAY_WIDTH, height: DISPLAY_HEIGHT },
+                steps: recording
+              };
+              db.prepare(`INSERT INTO portal_scripts (portal, step, patch_js, descripcion, confidence, active)
+                          VALUES (?, ?, ?, ?, ?, 1)`).run(
+                brandFromUrl(url),
+                'agente_visual_exitoso',
+                JSON.stringify(macro),
+                `Macro Computer Use para ${portal}`,
+                0.9
+              );
+              console.log('[CU] Macro guardado:', recording.length, 'pasos');
+            } catch (e) {
+              console.log('[CU] err saving macro:', e.message);
+            }
+          }
+
           db.prepare('UPDATE solicitudes SET status=?,status_detalle=? WHERE id=?').run('completado','Factura generada via Computer Use',solicitudId);
           console.log('[CU] EXITO!');
           return { success: true };
@@ -236,9 +338,48 @@ module.exports = { procesarConAgente: async function(solicitudId) {
               source: { type: 'base64', media_type: 'image/jpeg', data: sc2 }
             }];
           } else {
+            // Capturar selector ANTES de ejecutar el click — el DOM puede mutar tras la acción
+            const action = block.input.action;
+            const isClick = action === 'left_click' || action === 'right_click' || action === 'double_click';
+            let selectorInfo = { selector: null, tag: null };
+            if (isClick) {
+              selectorInfo = await captureSelectorAt(page, block.input.coordinate);
+            }
+
             // Ejecutar accion en el browser
             await ejecutarAccion(page, block.input);
             await sleep(1500);
+
+            // Registrar paso reproducible
+            if (isClick) {
+              recording.push({
+                type: action,
+                coord: block.input.coordinate,
+                selector: selectorInfo.selector,
+                tag: selectorInfo.tag,
+                wait: 800
+              });
+            } else if (action === 'type') {
+              recording.push({
+                type: 'type',
+                text: placeholderize(block.input.text, ctx),
+                wait: 300
+              });
+            } else if (action === 'key') {
+              recording.push({
+                type: 'key',
+                key: block.input.key,
+                wait: 300
+              });
+            } else if (action === 'scroll') {
+              recording.push({
+                type: 'scroll',
+                coord: block.input.coordinate,
+                direction: block.input.direction,
+                wait: 300
+              });
+            }
+
             // Tomar screenshot del resultado
             const sc3 = await screenshot(page);
             resultado = [{
