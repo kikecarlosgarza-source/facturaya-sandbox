@@ -147,6 +147,11 @@ try { db.exec('ALTER TABLE perfiles_fiscales ADD COLUMN constancia_path TEXT'); 
 // principalmente). Se extrae en claudeService y se usa en el hint del agente
 // visual para portales como alsea.interfactura.com.
 try { db.exec('ALTER TABLE solicitudes ADD COLUMN numero_tienda TEXT'); } catch(e) {}
+
+// numero_ticket: 9 dígitos del ticket. Distinto del folio: en Alsea el campo
+// "Número de ticket" pide específicamente los 9 dígitos visibles, no el folio
+// completo que puede traer espacios o sufijos.
+try { db.exec('ALTER TABLE solicitudes ADD COLUMN numero_ticket TEXT'); } catch(e) {}
 module.exports = db;
 module.exports.db = db;
 module.exports.uuid = require('uuid').v4;

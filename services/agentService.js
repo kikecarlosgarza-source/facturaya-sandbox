@@ -120,15 +120,23 @@ async function captureSelectorAt(page, coord) {
 function buildHintForPortal(url, ctx) {
   if (url.includes('alsea.interfactura.com')) {
     const tienda = ctx.numero_tienda || '(no detectado en el ticket — búscalo)';
+    const ticket = ctx.numero_ticket || ctx.folio;
     return (
-      'Pasos exactos para alsea.interfactura.com - llena estos campos y presiona Enviar:\n' +
+      'alsea.interfactura.com tiene flujo de 2 pasos. Llena ambos en orden:\n\n' +
+      'Paso 1 - Datos del ticket:\n' +
       '1. RFC: ' + ctx.perfil.rfc + '\n' +
-      '2. Número de ticket (9 dígitos): ' + ctx.folio + '\n' +
+      '2. Número de ticket (9 dígitos): ' + ticket + '\n' +
       '3. Número de tienda (5 dígitos): ' + tienda + '\n' +
-      '4. Fecha de consumo: ' + ctx.fecha + '\n' +
-      '5. Monto total: ' + ctx.total + '\n' +
-      'NO presiones F11, Escape ni teclas de sistema.\n' +
-      'Solo llena los 5 campos visibles y presiona Enviar.\n\n'
+      '4. Fecha: ' + ctx.fecha + '\n' +
+      '5. Monto: ' + ctx.total + '\n' +
+      'Presiona Enviar/Continuar.\n\n' +
+      'Paso 2 - Datos fiscales (aparece después del paso 1):\n' +
+      '1. Selecciona Persona Física\n' +
+      '2. Régimen fiscal: ' + ctx.perfil.regimen + '\n' +
+      '3. Uso CFDI: ' + ctx.perfil.uso_cfdi + '\n' +
+      '4. Email: ' + ctx.perfil.email + '\n' +
+      '5. Presiona Enviar.\n\n' +
+      'NO presiones F11, Escape ni teclas de sistema.\n\n'
     );
   }
   if (url.includes('shell.com.mx/electronic-billing')) {
@@ -234,6 +242,7 @@ module.exports = { procesarConAgente: async function(solicitudId) {
   const ctx = {
     folio:s.folio, fecha:s.fecha_compra, total:s.total,
     numero_tienda: s.numero_tienda || '',
+    numero_ticket: s.numero_ticket || '',
     portal_url:url, establecimiento:s.establecimiento,
     perfil:{rfc:p.rfc,nombre:p.nombre,cp:p.cp,email:p.email,regimen:p.regimen||'612',uso_cfdi:p.uso_cfdi||'G03'}
   };

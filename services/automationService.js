@@ -1106,6 +1106,7 @@ async function procesarFactura(solicitudId) {
     no_estacion: solicitud.estacion || '',
     web_id: solicitud.web_id || '',
     numero_tienda: solicitud.numero_tienda || '',
+    numero_ticket: solicitud.numero_ticket || '',
     fecha_compra: solicitud.fecha_compra || '',
     fecha_formateada: solicitud.fecha_compra || '',
     establecimiento: solicitud.establecimiento,
