@@ -142,6 +142,11 @@ db.exec(`
 // Fiscal subida por el usuario. Se usa como adjunto al mandar email al negocio
 // y para compartir vía WhatsApp (expo-sharing).
 try { db.exec('ALTER TABLE perfiles_fiscales ADD COLUMN constancia_path TEXT'); } catch(e) {}
+
+// numero_tienda: 5 dígitos de la sucursal en cadenas de restaurantes (Alsea
+// principalmente). Se extrae en claudeService y se usa en el hint del agente
+// visual para portales como alsea.interfactura.com.
+try { db.exec('ALTER TABLE solicitudes ADD COLUMN numero_tienda TEXT'); } catch(e) {}
 module.exports = db;
 module.exports.db = db;
 module.exports.uuid = require('uuid').v4;

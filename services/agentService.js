@@ -184,6 +184,7 @@ module.exports = { procesarConAgente: async function(solicitudId) {
 
   const ctx = {
     folio:s.folio, fecha:s.fecha_compra, total:s.total,
+    numero_tienda: s.numero_tienda || '',
     portal_url:url, establecimiento:s.establecimiento,
     perfil:{rfc:p.rfc,nombre:p.nombre,cp:p.cp,email:p.email,regimen:p.regimen||'612',uso_cfdi:p.uso_cfdi||'G03'}
   };
@@ -208,14 +209,16 @@ module.exports = { procesarConAgente: async function(solicitudId) {
     // etc.) se lo decimos en el prompt para que no lo descubra desde cero.
     let hintDominio = '';
     if (url.includes('alsea.interfactura.com')) {
+      const tienda = ctx.numero_tienda || '(no detectado en el ticket — búscalo)';
       hintDominio =
-        'IMPORTANTE: Portal de Alsea. Pasos exactos:\n' +
-        '1. Selecciona la marca: ' + ctx.establecimiento + ' (ej: Starbucks, VIPS)\n' +
-        '2. Número de Tienda: busca en el ticket un número de 4-5 dígitos que identifica la sucursal\n' +
-        '3. Número de Ticket: el folio del ticket es ' + ctx.folio + '\n' +
-        '4. Fecha de Consumo: ' + ctx.fecha + '\n' +
-        '5. Llena RFC: ' + ctx.perfil.rfc + ', CP: ' + ctx.perfil.cp + ', Email: ' + ctx.perfil.email + '\n\n' +
-        'El folio ' + ctx.folio + ' puede ser el número de ticket completo o solo parte de él.\n\n';
+        'Pasos exactos para alsea.interfactura.com - llena estos campos y presiona Enviar:\n' +
+        '1. RFC: ' + ctx.perfil.rfc + '\n' +
+        '2. Número de ticket (9 dígitos): ' + ctx.folio + '\n' +
+        '3. Número de tienda (5 dígitos): ' + tienda + '\n' +
+        '4. Fecha de consumo: ' + ctx.fecha + '\n' +
+        '5. Monto total: ' + ctx.total + '\n' +
+        'NO presiones F11, Escape ni teclas de sistema.\n' +
+        'Solo llena los 5 campos visibles y presiona Enviar.\n\n';
     }
 
     // Loop de Computer Use

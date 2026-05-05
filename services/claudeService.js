@@ -70,6 +70,15 @@ INSTRUCCIONES:
    Shopify (parte antes de ".myshopify.com"). Si el dominio en el ticket es
    "bandeja.mx" responde "bandeja-mx". Si es "moft.mx" responde "moft". Si es
    "tienda.com" responde "tienda". Si no estás seguro responde null.
+10. NUMERO_TIENDA: Para cadenas de restaurantes y comercios que identifican
+    sucursal por número (especialmente Alsea: VIPS, Starbucks, Domino's,
+    Chili's, P.F. Chang's, etc.), número de 5 dígitos que aparece como
+    "Tienda", "Sucursal", "Store" o similar. Devuelve solo los dígitos.
+    Si no aparece o no aplica, null.
+11. NUMERO_TICKET: Número de 9 dígitos del ticket cuando aparece como
+    "No. Ticket", "Ticket #" o similar. Es complementario al folio: en
+    algunos portales (como Alsea) se usa específicamente el número de
+    9 dígitos. Devuelve solo dígitos. Si no aparece, null.
 
 Responde SOLO JSON sin backticks:
 {
@@ -82,7 +91,9 @@ Responde SOLO JSON sin backticks:
   "no_estacion": "numero de estacion para gasolineras o null",
   "web_id": "Web ID para Petro 7 o null",
   "sistema_facturacion": "facturama_shopify/facturama_hd/konesh/wansoft/oxxo_gas/otro",
-  "shop_name": "handle de Shopify si aplica, null si no"
+  "shop_name": "handle de Shopify si aplica, null si no",
+  "numero_tienda": "5 digitos de sucursal o null",
+  "numero_ticket": "9 digitos del ticket o null"
 }`;
 
   const response = await axios.post(CLAUDE_API, {
