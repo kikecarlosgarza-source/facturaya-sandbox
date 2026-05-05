@@ -16,6 +16,39 @@ const insertScript = db.prepare(`
   VALUES (?, ?, ?, ?, ?, 0)
 `);
 
+// Valida sintaxis sin ejecutar el código. AsyncFunction acepta tanto código
+// sync como con await — match de lo que page.evaluate puede tragar.
+function isValidJs(code) {
+  if (!code || typeof code !== 'string') return { valid: false, error: 'patch vacío' };
+  try {
+    const AsyncFunction = (async function(){}).constructor;
+    new AsyncFunction(code);
+    return { valid: true };
+  } catch (e) {
+    return { valid: false, error: e.message };
+  }
+}
+
+async function pedirParche(systemPrompt, userMsg) {
+  const resp = await axios.post(CLAUDE_API, {
+    model: MODEL,
+    max_tokens: 800,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userMsg }]
+  }, { headers: HEADERS, timeout: 30000 });
+
+  const text = resp.data.content
+    .filter(b => b.type === 'text')
+    .map(b => b.text)
+    .join('')
+    .replace(/```[\w]*\n?/g, '')
+    .trim();
+
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('Respuesta de Claude sin JSON');
+  return JSON.parse(match[0]);
+}
+
 /**
  * Analiza un paso fallido del flujo de un portal, pide a Anthropic un parche JS,
  * lo persiste en portal_scripts con active=1 y lo devuelve al caller.
@@ -45,23 +78,26 @@ Error: ${error}
 HTML (truncado a 6000 chars):
 ${(html || '').slice(0, 6000)}`;
 
-  const resp = await axios.post(CLAUDE_API, {
-    model: MODEL,
-    max_tokens: 800,
-    system: systemPrompt,
-    messages: [{ role: 'user', content: userMsg }]
-  }, { headers: HEADERS, timeout: 30000 });
+  let fix = await pedirParche(systemPrompt, userMsg);
+  let validation = isValidJs(fix.patch);
 
-  const text = resp.data.content
-    .filter(b => b.type === 'text')
-    .map(b => b.text)
-    .join('')
-    .replace(/```[\w]*\n?/g, '')
-    .trim();
-
-  const match = text.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error('Respuesta de Claude sin JSON');
-  const fix = JSON.parse(match[0]);
+  // Si el primer parche no parsea, reintentamos UNA vez pasándole el
+  // SyntaxError y el código previo como contexto. Si vuelve a fallar,
+  // persistimos igual con active=0 (default del INSERT) y saltamos
+  // testRunner — no tiene sentido ejecutar algo que ni siquiera parsea.
+  if (!validation.valid) {
+    console.warn(`[claudeAgent] parche con SyntaxError: ${validation.error} — reintentando`);
+    const retryMsg = userMsg +
+      '\n\nIMPORTANTE: tu parche anterior tuvo un SyntaxError: ' + validation.error +
+      '\nParche anterior:\n' + (fix.patch || '') +
+      '\nGenera uno corregido sintácticamente válido.';
+    fix = await pedirParche(systemPrompt, retryMsg);
+    validation = isValidJs(fix.patch);
+    if (!validation.valid) {
+      console.warn(`[claudeAgent] reintento también SyntaxError: ${validation.error} — guardando inactivo`);
+      fix.descripcion = `[INVÁLIDO: ${validation.error}] ${fix.descripcion || ''}`;
+    }
+  }
 
   try {
     const info = insertScript.run(
@@ -72,8 +108,10 @@ ${(html || '').slice(0, 6000)}`;
       typeof fix.confidence === 'number' ? fix.confidence : null
     );
     fix.id = info.lastInsertRowid;
-    testRunner.validateAndActivate(info.lastInsertRowid)
-      .catch(err => console.warn(`[testRunner] validateAndActivate falló id=${info.lastInsertRowid}:`, err.message));
+    if (validation.valid) {
+      testRunner.validateAndActivate(info.lastInsertRowid)
+        .catch(err => console.warn(`[testRunner] validateAndActivate falló id=${info.lastInsertRowid}:`, err.message));
+    }
   } catch (dbErr) {
     console.warn('[claudeAgent] no se pudo persistir el parche:', dbErr.message);
   }
