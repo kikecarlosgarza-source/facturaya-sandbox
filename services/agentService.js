@@ -209,11 +209,13 @@ module.exports = { procesarConAgente: async function(solicitudId) {
     let hintDominio = '';
     if (url.includes('alsea.interfactura.com')) {
       hintDominio =
-        'IMPORTANTE: Este portal es de Alsea. Marcas: VIPS, Starbucks, Domino\'s, etc.\n' +
-        'El ticket es de ' + ctx.establecimiento + '.\n' +
-        'El portal probablemente pide primero un código de autorización o número de ticket.\n' +
-        'Usa el folio: ' + ctx.folio + '\n' +
-        'Si pide código de autorización, usa también el folio.\n\n';
+        'IMPORTANTE: Portal de Alsea. Pasos exactos:\n' +
+        '1. Selecciona la marca: ' + ctx.establecimiento + ' (ej: Starbucks, VIPS)\n' +
+        '2. Número de Tienda: busca en el ticket un número de 4-5 dígitos que identifica la sucursal\n' +
+        '3. Número de Ticket: el folio del ticket es ' + ctx.folio + '\n' +
+        '4. Fecha de Consumo: ' + ctx.fecha + '\n' +
+        '5. Llena RFC: ' + ctx.perfil.rfc + ', CP: ' + ctx.perfil.cp + ', Email: ' + ctx.perfil.email + '\n\n' +
+        'El folio ' + ctx.folio + ' puede ser el número de ticket completo o solo parte de él.\n\n';
     }
 
     // Loop de Computer Use
