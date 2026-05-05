@@ -330,6 +330,15 @@ async function ejecutarConPage(page, url, perfil, ticketData) {
   // waitForLoadState deja que esas navegaciones se asienten antes de tocar el DOM.
   await page.waitForLoadState('networkidle', { timeout: NAV_TIMEOUT_MS }).catch(() => {});
 
+  // Esperar a que aparezca al menos un input antes de intentar detectar campos.
+  // Si el form se renderiza tarde (SPA, lazy load), networkidle puede resolverse
+  // antes de que el DOM tenga los inputs. Si timeout, seguimos con lo que haya.
+  try {
+    await page.waitForSelector('input', { timeout: 15000 });
+  } catch (e) {
+    console.log('[universal] waitForSelector(input) timeout — sigo con campos disponibles');
+  }
+
   // Detectar archetypes problemáticos antes de intentar nada
   const sitState = await safeEvaluate(page, () => ({
     hasPasswordField: !!document.querySelector('input[type=password]'),
