@@ -57,6 +57,38 @@ async function fillAngular(page, selector, value) {
   await page.dispatchEvent(selector, 'change');
 }
 
+// Setea un campo del FormGroup por su formControlName. Detecta tag (input vs
+// select) y elige fill+events o selectOption+change. Dispara input y change
+// siempre para que ngModel marque dirty/touched y reactive validación.
+async function setAngularField(page, formControlName, value) {
+  const sel = `[formcontrolname="${formControlName}"]`;
+  const tag = await page.evaluate((s) => {
+    const el = document.querySelector(s);
+    return el ? el.tagName.toLowerCase() : null;
+  }, sel);
+  if (!tag) throw new Error(`Alsea: campo formControlName="${formControlName}" no encontrado en DOM`);
+  if (tag === 'select') {
+    await page.selectOption(sel, String(value));
+    await page.dispatchEvent(sel, 'change');
+  } else {
+    await page.fill(sel, String(value));
+    await page.dispatchEvent(sel, 'input');
+    await page.dispatchEvent(sel, 'change');
+  }
+}
+
+// Splitea "JUAN PEREZ LOPEZ" → { nombres: "JUAN", apellidos: "PEREZ LOPEZ" }.
+// Para 4+ tokens, los últimos 2 son apellidos. Para Persona Moral devuelve
+// el nombre completo en nombres y apellidos vacío.
+function splitNombre(fullName, esPersonaMoral) {
+  const tokens = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+  if (esPersonaMoral) return { nombres: tokens.join(' '), apellidos: '' };
+  if (tokens.length === 0) return { nombres: '', apellidos: '' };
+  if (tokens.length === 1) return { nombres: tokens[0], apellidos: '' };
+  if (tokens.length === 2) return { nombres: tokens[0], apellidos: tokens[1] };
+  return { nombres: tokens.slice(0, -2).join(' '), apellidos: tokens.slice(-2).join(' ') };
+}
+
 // El form pide dd/mm/aaaa. La solicitud puede traer YYYY-MM-DD o DD/MM/YYYY.
 function formatFechaDDMMYYYY(s) {
   if (!s) return '';
@@ -177,12 +209,13 @@ async function ejecutar(page, perfil, ticketData, solicitudId) {
     const popup = document.querySelector('#popup');
     const popupVisible = popup && popup.offsetParent !== null;
     const popupText = popupVisible ? (popup.innerText || '').substring(0, 500) : '';
-    const regimenSel = document.querySelector('select[name*=regimen i], select[id*=regimen i]');
-    const usoSel     = document.querySelector('select[name*=uso i], select[name*=cfdi i], select[id*=uso i], select[id*=cfdi i]');
-    const emailEl    = document.querySelector('input[type=email], input[name*=email i][type=text]');
-    return { popupVisible, popupText,
-             hasRegimen: !!regimenSel, hasUsoCfdi: !!usoSel, hasEmail: !!emailEl,
-             bodyText: document.body.innerText.substring(0, 600) };
+    return {
+      popupVisible, popupText,
+      hasRegimen: !!document.querySelector('[formcontrolname="regimenFiscal"]'),
+      hasUsoCfdi: !!document.querySelector('[formcontrolname="usoCfdi"]'),
+      hasEmail:   !!document.querySelector('[formcontrolname="correoElectronico"]'),
+      bodyText: document.body.innerText.substring(0, 600)
+    };
   });
 
   if (estado.popupVisible && /error|inv[áa]lid|incorrect|no\s+(existe|encontrad)/i.test(estado.popupText)) {
@@ -192,21 +225,20 @@ async function ejecutar(page, perfil, ticketData, solicitudId) {
   // 6. Paso 2 — datos fiscales (aparece como continuación o modal)
   if (estado.hasRegimen && estado.hasUsoCfdi && estado.hasEmail) {
     try {
-      // Persona Física: best-effort sobre varios selectores conocidos
-      await page.evaluate(() => {
-        const candidates = [
-          'input[type=radio][value*="fisica" i]',
-          'input[name*="persona" i][value*="fis" i]',
-          'input[name="tipoPersona"][value*="F"]'
-        ];
-        for (const sel of candidates) {
-          const el = document.querySelector(sel);
-          if (el && el.offsetParent !== null) { el.click(); return; }
-        }
-      });
-      await page.selectOption('select[name*=regimen i], select[id*=regimen i]', perfil.regimen || '612').catch(() => {});
-      await page.selectOption('select[name*=uso i], select[name*=cfdi i], select[id*=uso i], select[id*=cfdi i]', perfil.uso_cfdi || 'G03').catch(() => {});
-      await page.fill('input[type=email], input[name*=email i][type=text]', perfil.email);
+      // persona: 'F' (Física, RFC 13 chars) o 'M' (Moral, RFC 12 chars).
+      // El bundle Angular auto-deriva esto del RFC, pero lo seteamos
+      // explícito por si el evento de input no llegó a disparar la lógica.
+      const personaCode = (perfil.rfc || '').length === 13 ? 'F' : 'M';
+      const esMoral = personaCode === 'M';
+      const { nombres, apellidos } = splitNombre(perfil.nombre_sat || perfil.nombre || '', esMoral);
+
+      await setAngularField(page, 'persona', personaCode);
+      await setAngularField(page, 'nombres', nombres);
+      if (apellidos) await setAngularField(page, 'apellidos', apellidos);
+      await setAngularField(page, 'codigoPostal', perfil.cp || '');
+      await setAngularField(page, 'regimenFiscal', perfil.regimen || '612');
+      await setAngularField(page, 'usoCfdi', perfil.uso_cfdi || 'G03');
+      await setAngularField(page, 'correoElectronico', perfil.email || '');
 
       // Submit paso 2 — el último botón submit visible
       await page.evaluate(() => {
