@@ -2,6 +2,7 @@ const { chromium } = require('playwright');
 const db = require('../db/database');
 const path = require('path');
 const fs = require('fs');
+const claudeAgent = require('./claudeAgent');
 
 // Directorio para guardar captchas
 const CAPTCHA_DIR = '/data/captchas';
@@ -568,6 +569,17 @@ const PORTALES = {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const BASE = 'https://tarjetapetro-7.com.mx:8443';
 
+      // OTA: dispara diagnóstico Claude en background para cada falla HTTP
+      const reportApi = (endpoint, request, e) =>
+        claudeAgent.analyzeApiFailure({
+          portal: 'petro',
+          endpoint,
+          request,
+          responseStatus: e.response?.status,
+          responseBody: e.response?.data,
+          error: e.message
+        }).catch(err => console.warn(`[OTA petro] analyzeApiFailure falló (${endpoint}):`, err.message));
+
       // Cookie jar manual
       const jar = {};
       const parseCookies = h => {
@@ -596,6 +608,7 @@ const PORTALES = {
         parseCookies(r.headers);
         console.log('[AUTO] Petro7 - sesión:', Object.keys(jar).join(','));
       } catch (e) {
+        reportApi(BASE + '/KPortalExterno/', null, e);
         return { success: false, mensaje: 'Petro7: error sesión - ' + e.message };
       }
 
@@ -708,6 +721,7 @@ const PORTALES = {
           return { success: false, mensaje: 'Petro7: captcha rechazado - ' + (r.data?.mensaje || captchaText) };
         }
       } catch (e) {
+        reportApi(BASE + '/KPortalExterno/kaptcha', { kaptcha: captchaText }, e);
         return { success: false, mensaje: 'Petro7: error validando captcha - ' + e.message };
       }
 
@@ -783,6 +797,7 @@ const PORTALES = {
         // Verificar consultando findLastCfdi (poll hasta 60s) que el CFDI realmente
         // se generó. Si después del timeout sigue sin existir, marcar fallo.
         console.log(`[AUTO] Petro7 - FacturaExpress sin uuid/cfdiDisponible (status=${r.status}). Verificando con findLastCfdi...`);
+        let findLastCfdiReported = false;
         for (let intento = 0; intento < 12; intento++) {
           await new Promise(r => setTimeout(r, 5000));
           try {
@@ -799,11 +814,20 @@ const PORTALES = {
             }
           } catch (e) {
             console.log(`[AUTO] Petro7 - findLastCfdi[${intento}] excepción: ${e.message}`);
+            if (!findLastCfdiReported) {
+              findLastCfdiReported = true;
+              reportApi(
+                BASE + '/KJServices/webapi/FacturacionService/findLastCfdi',
+                { noTicket: ticket.noTicket, estacion: ticket.noEstacion },
+                e
+              );
+            }
           }
         }
         return { success: false, mensaje: `Petro7: la solicitud fue aceptada (status=${r.status}) pero el CFDI no se generó en 60s. ${data.respuesta || data.mensaje || 'Probable rechazo silencioso por validación interna o delay del backend de Petro 7.'}` };
       } catch (e) {
         console.log(`[AUTO] Petro7 - FacturaExpress EXCEPCIÓN: ${e.message} status=${e.response?.status} data=${JSON.stringify(e.response?.data).substring(0,500)}`);
+        reportApi(BASE + '/KJServices/webapi/FacturaExpressService', paramsStr, e);
         return { success: false, mensaje: 'Petro7: error FacturaExpress - ' + e.message };
       }
     }
