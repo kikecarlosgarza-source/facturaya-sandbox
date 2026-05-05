@@ -28,12 +28,26 @@ function toIsoFechaPetro(s) {
   return s;
 }
 
+// OTA: factory que cada portal usa para reportar fallos HTTP a Claude en background.
+function makeReportApi(portal) {
+  return (endpoint, request, e) =>
+    claudeAgent.analyzeApiFailure({
+      portal,
+      endpoint,
+      request,
+      responseStatus: e.response?.status,
+      responseBody: e.response?.data,
+      error: e.message
+    }).catch(err => console.warn(`[OTA ${portal}] analyzeApiFailure falló (${endpoint}):`, err.message));
+}
+
 const PORTALES = {
   'home depot': {
     httpOnly: true,
     async ejecutar(perfil, ticketData) {
       const axios = require('axios');
       const BASE = 'https://facturacion.homedepot.com.mx:2053/CFDiConnectFacturacion/facturacion';
+      const reportApi = makeReportApi('home depot');
       const TURNSTILE_SITEKEY = '0x4AAAAAAB6nsteTRVZ39dGq';
       const headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -83,6 +97,7 @@ const PORTALES = {
           return { success: false, mensaje: 'HD: Turnstile rechazado por backend - ' + (r.data?.mensaje || 'inválido') };
         }
       } catch (e) {
+        reportApi(`${BASE}/validarRecaptcha`, { recaptchaToken: turnstileToken }, e);
         return { success: false, mensaje: 'HD: error validarRecaptcha - ' + e.message };
       }
 
@@ -102,6 +117,7 @@ const PORTALES = {
         }
         datosTicket = r.data;
       } catch (e) {
+        reportApi(`${BASE}/agregarTicket`, { noTicket: folio }, e);
         return { success: false, mensaje: 'HD: error agregarTicket - ' + e.message };
       }
 
@@ -114,6 +130,7 @@ const PORTALES = {
           return { success: false, mensaje: 'HD: RFC bloqueado - ' + (r.data?.mensaje || '') };
         }
       } catch (e) {
+        reportApi(`${BASE}/validarEstadoCliente`, { rfcCliente: perfil.rfc }, e);
         return { success: false, mensaje: 'HD: error validarEstadoCliente - ' + e.message };
       }
 
@@ -125,7 +142,10 @@ const PORTALES = {
         if (r.data?.codigo === 200 && (r.data?.uuid || r.data?.uuidExistente)) {
           return { success: true, mensaje: 'HD: ticket ya facturado anteriormente, UUID ' + (r.data.uuid || r.data.uuidExistente) };
         }
-      } catch (e) { /* no crítico */ }
+      } catch (e) {
+        reportApi(`${BASE}/verificarComprobantePrevio`, { rfcReceptor: perfil.rfc, noTicket: folio }, e);
+        /* no crítico */
+      }
 
       // 6. Buscar cliente existente por RFC; si no existe, guardar uno nuevo
       const nombreFiscal = perfil.nombre_sat || perfil.nombre;
@@ -137,7 +157,10 @@ const PORTALES = {
         // Respuesta exitosa puede venir como {codigo:200, cliente:...} o el cliente directo
         if (r.data?.codigo === 200 && r.data.cliente) clienteFacturama = r.data.cliente;
         else if (r.data && typeof r.data === 'object' && r.data.id && r.data.rfc) clienteFacturama = r.data;
-      } catch (e) { /* puede no existir */ }
+      } catch (e) {
+        reportApi(`${BASE}/getClientePorRFC`, { rfcCliente: perfil.rfc }, e);
+        /* puede no existir */
+      }
 
       const datosCliente = {
         rfc: perfil.rfc,
@@ -163,6 +186,7 @@ const PORTALES = {
           await axios.put(`${BASE}/actualizarCliente`, update, opts).catch(() => {});
         }
       } catch (e) {
+        reportApi(`${BASE}/guardarCliente`, datosCliente, e);
         return { success: false, mensaje: 'HD: error guardar/actualizar cliente - ' + e.message };
       }
 
@@ -176,7 +200,10 @@ const PORTALES = {
           console.log(`[AUTO] HD - obtenerTiendaPorNumero(${noTienda}) status=${r.status} body=${bs.substring(0,400)}`);
           if (r.data?.codigo === 200) tienda = r.data.tienda || r.data;
           else if (r.data && typeof r.data === 'object' && (r.data.emisorRfc || r.data.id)) tienda = r.data;
-        } catch (e) { /* opcional */ }
+        } catch (e) {
+          reportApi(`${BASE}/obtenerTiendaPorNumero`, { noTienda: String(noTienda) }, e);
+          /* opcional */
+        }
       }
 
       // 8. Calcular totales desde los conceptos del ticket
@@ -275,11 +302,15 @@ const PORTALES = {
         if (uuid && perfil.email) {
           try {
             await axios.get(`${BASE}/enviarCorreo`, { ...opts, params: { uuid, email: perfil.email, tipo: 'cfdi.vigentes' } });
-          } catch (e) { /* el CFDI ya está timbrado, fallo de correo no es bloqueante */ }
+          } catch (e) {
+            reportApi(`${BASE}/enviarCorreo`, { uuid, email: perfil.email, tipo: 'cfdi.vigentes' }, e);
+            /* el CFDI ya está timbrado, fallo de correo no es bloqueante */
+          }
         }
 
         return { success: true, mensaje: `Factura HD generada exitosamente${uuid ? ' UUID ' + uuid : ''}` };
       } catch (e) {
+        reportApi(`${BASE}/timbrado`, { comprobante }, e);
         return { success: false, mensaje: 'HD: error timbrado - ' + e.message };
       }
     }
@@ -568,17 +599,7 @@ const PORTALES = {
       const https = require('https');
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const BASE = 'https://tarjetapetro-7.com.mx:8443';
-
-      // OTA: dispara diagnóstico Claude en background para cada falla HTTP
-      const reportApi = (endpoint, request, e) =>
-        claudeAgent.analyzeApiFailure({
-          portal: 'petro',
-          endpoint,
-          request,
-          responseStatus: e.response?.status,
-          responseBody: e.response?.data,
-          error: e.message
-        }).catch(err => console.warn(`[OTA petro] analyzeApiFailure falló (${endpoint}):`, err.message));
+      const reportApi = makeReportApi('petro');
 
       // Cookie jar manual
       const jar = {};
