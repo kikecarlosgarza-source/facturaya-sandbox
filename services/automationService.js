@@ -6,6 +6,7 @@ const claudeAgent = require('./claudeAgent');
 const handlerUniversal = require('./handlerUniversal');
 const scout = require('./scout');
 const { procesarConAgente } = require('./agentService');
+const alseaHandler = require('./handlers/alseaHandler');
 
 // Directorio para guardar captchas
 const CAPTCHA_DIR = '/data/captchas';
@@ -902,6 +903,15 @@ const PORTALES = {
     }
   },
 
+  'alsea': {
+    url: 'https://alsea.interfactura.com',
+    brands: [
+      'vips','starbucks','dominos',"domino's",'burger king',
+      'chilis',"chili's",'p.f. chang','pf chang','pfchangs','italianni'
+    ],
+    ejecutar: alseaHandler.ejecutar
+  },
+
   // Fallback: detección heurística + IA para portales sin handler bespoke (lee ticketData.portal_url)
   'universal': {
     httpOnly: true,
@@ -1045,7 +1055,10 @@ function detectarPortal(establecimiento, sistemaFacturacion) {
   const n = establecimiento.toLowerCase();
   for (const [key, config] of Object.entries(PORTALES)) {
     if (key === 'facturama-shopify') continue; // skip el genérico en match por nombre
-    if (n.includes(key)) return { key, ...config };
+    // Si el portal sirve a múltiples marcas (Alsea), usa config.brands.
+    // Si no, fallback al match clásico por la key del portal.
+    const brands = config.brands || [key];
+    if (brands.some(b => n.includes(b))) return { key, ...config };
   }
   return null;
 }
