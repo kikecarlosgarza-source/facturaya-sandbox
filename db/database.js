@@ -113,6 +113,17 @@ db.exec(`
     active      INTEGER DEFAULT 1
   );
 `);
+
+// Cuando la automatización falla, el usuario elige cómo facturar (whatsapp,
+// email, portal web, no_se). Cacheamos por rfc_emisor para que la próxima vez
+// que llegue ese mismo emisor podamos saltar directo al método que ya funcionó.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS metodo_facturacion_manual (
+    rfc_emisor      TEXT PRIMARY KEY,
+    metodo          TEXT NOT NULL,
+    actualizado_en  TEXT DEFAULT (datetime('now'))
+  );
+`);
 module.exports = db;
 module.exports.db = db;
 module.exports.uuid = require('uuid').v4;
