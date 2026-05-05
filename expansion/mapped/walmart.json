@@ -1,0 +1,21 @@
+{
+  "id": "walmart_mx",
+  "name": "Walmart México Facturación",
+  "url_pattern": "walmart.com.mx/facturacion",
+  "detection": {
+    "ticket_keywords": [
+      "walmart",
+      "bodega aurrera",
+      "superama",
+      "mi bodega"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://walmart.com.mx/facturacion",
+    "flow": []
+  },
+  "notas_arquitecto": "Portal bloqueado por PerimeterX (px-captcha) con desafío de presión de botón tipo CAPTCHA interactivo; imposible automatizar sin handler humano o servicio de resolución de desafíos."
+}

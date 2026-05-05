@@ -1,0 +1,22 @@
+{
+  "id": "petro7",
+  "name": "Facturación Petro Seven",
+  "url_pattern": "petro7.mx/facturacion",
+  "detection": {
+    "ticket_keywords": [
+      "petro",
+      "seven",
+      "petro7",
+      "gasolina",
+      "combustible"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "http://petro7.mx/facturacion",
+    "flow": []
+  },
+  "notas_arquitecto": "Portal AngularJS SPA con navegación por ng-click/setSelected y login previo requerido; las vistas de factura express se renderizan dinámicamente sin cambio de URL, imposible automatizar con flow estático — requiere handler personalizado."
+}
