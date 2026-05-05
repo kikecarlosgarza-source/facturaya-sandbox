@@ -70,11 +70,10 @@ INSTRUCCIONES:
    Shopify (parte antes de ".myshopify.com"). Si el dominio en el ticket es
    "bandeja.mx" responde "bandeja-mx". Si es "moft.mx" responde "moft". Si es
    "tienda.com" responde "tienda". Si no estás seguro responde null.
-10. NUMERO_TIENDA: Para cadenas de restaurantes y comercios que identifican
-    sucursal por número (especialmente Alsea: VIPS, Starbucks, Domino's,
-    Chili's, P.F. Chang's, etc.), número de 5 dígitos que aparece como
-    "Tienda", "Sucursal", "Store" o similar. Devuelve solo los dígitos.
-    Si no aparece o no aplica, null.
+10. NUMERO_TIENDA: Para cadenas que identifican sucursal por número
+    (Alsea: VIPS, Starbucks, Domino's, Chili's, P.F. Chang's, etc.;
+    HEB; otros con campo "Sucursal"/"Tienda"/"Store"). Pueden ser 3-5
+    dígitos. Devuelve solo los dígitos. Si no aparece o no aplica, null.
 11. NUMERO_TICKET: Número de 9 dígitos del ticket cuando aparece como
     "No. Ticket", "Ticket #" o similar. Es complementario al folio: en
     algunos portales (como Alsea) se usa específicamente el número de

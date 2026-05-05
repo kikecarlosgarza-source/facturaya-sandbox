@@ -112,6 +112,41 @@ async function captureSelectorAt(page, coord) {
   }
 }
 
+// Hints específicos por portal. El agente entra a ciegas; cada hint le da
+// los campos exactos del form, su orden y el valor que debe inyectar.
+// Reglas comunes (NO presionar F11/Escape, usar valores literales) las
+// repetimos por hint en lugar de un system prompt para que estén siempre
+// junto a los pasos.
+function buildHintForPortal(url, ctx) {
+  if (url.includes('alsea.interfactura.com')) {
+    const tienda = ctx.numero_tienda || '(no detectado en el ticket — búscalo)';
+    return (
+      'Pasos exactos para alsea.interfactura.com - llena estos campos y presiona Enviar:\n' +
+      '1. RFC: ' + ctx.perfil.rfc + '\n' +
+      '2. Número de ticket (9 dígitos): ' + ctx.folio + '\n' +
+      '3. Número de tienda (5 dígitos): ' + tienda + '\n' +
+      '4. Fecha de consumo: ' + ctx.fecha + '\n' +
+      '5. Monto total: ' + ctx.total + '\n' +
+      'NO presiones F11, Escape ni teclas de sistema.\n' +
+      'Solo llena los 5 campos visibles y presiona Enviar.\n\n'
+    );
+  }
+  if (url.includes('heb.com.mx')) {
+    const tienda = ctx.numero_tienda || '(busca el número de Sucursal en el ticket)';
+    return (
+      'Pasos exactos para facturacion.heb.com.mx - llena los 4 campos del form "Agregar ticket":\n' +
+      '1. Sucursal: ' + tienda + ' (es un autocomplete: escribe el número, espera la opción y selecciónala)\n' +
+      '2. Ticket: ' + ctx.folio + ' (campo numérico)\n' +
+      '3. Fecha: ' + ctx.fecha + ' (datepicker, formato dd/mm/aaaa)\n' +
+      '4. Venta (Total): ' + ctx.total + '\n' +
+      'Después presiona el botón "Agregar ticket". Luego el portal pedirá datos fiscales:\n' +
+      'RFC ' + ctx.perfil.rfc + ', CP ' + ctx.perfil.cp + ', Email ' + ctx.perfil.email + '.\n' +
+      'NO presiones F11, Escape ni teclas de sistema.\n\n'
+    );
+  }
+  return '';
+}
+
 async function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
 
 async function screenshot(page) {
@@ -207,19 +242,7 @@ module.exports = { procesarConAgente: async function(solicitudId) {
     // Hint específico por dominio: el agente entra a ciegas, así que cuando
     // sabemos algo del portal (multi-marca, flujo de código de autorización,
     // etc.) se lo decimos en el prompt para que no lo descubra desde cero.
-    let hintDominio = '';
-    if (url.includes('alsea.interfactura.com')) {
-      const tienda = ctx.numero_tienda || '(no detectado en el ticket — búscalo)';
-      hintDominio =
-        'Pasos exactos para alsea.interfactura.com - llena estos campos y presiona Enviar:\n' +
-        '1. RFC: ' + ctx.perfil.rfc + '\n' +
-        '2. Número de ticket (9 dígitos): ' + ctx.folio + '\n' +
-        '3. Número de tienda (5 dígitos): ' + tienda + '\n' +
-        '4. Fecha de consumo: ' + ctx.fecha + '\n' +
-        '5. Monto total: ' + ctx.total + '\n' +
-        'NO presiones F11, Escape ni teclas de sistema.\n' +
-        'Solo llena los 5 campos visibles y presiona Enviar.\n\n';
-    }
+    const hintDominio = buildHintForPortal(url, ctx);
 
     // Loop de Computer Use
     const messages = [{
