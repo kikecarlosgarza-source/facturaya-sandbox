@@ -1,6 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const db      = require('../db/database');
+const authMiddleware = require('../middleware/auth');
 
 const selectActive = db.prepare(`
   SELECT id, portal, step, patch_js, descripcion, confidence, created_at, active
@@ -22,6 +23,24 @@ const selectPrevious = db.prepare(`
 
 const deactivate = db.prepare(`UPDATE portal_scripts SET active = 0 WHERE id = ?`);
 const activate   = db.prepare(`UPDATE portal_scripts SET active = 1 WHERE id = ?`);
+
+// GET /api/scripts/patch/:id — endpoint admin temporal: devuelve el parche
+// completo (incluyendo patch_js) por id. Debe ir ANTES de /:portal porque
+// Express matchea por orden y "patch" caería bajo el catch-all de :portal.
+router.get('/patch/:id', authMiddleware, (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isFinite(id)) return res.status(400).json({ error: 'id inválido' });
+    const r = db.prepare(`
+      SELECT id, portal, step, patch_js, descripcion, confidence, created_at, active
+      FROM portal_scripts WHERE id = ?
+    `).get(id);
+    if (!r) return res.status(404).json({ error: 'parche no encontrado' });
+    res.json(r);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 // GET /api/scripts/:portal
 router.get('/:portal', (req, res) => {
