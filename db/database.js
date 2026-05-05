@@ -83,6 +83,19 @@ try { db.exec('ALTER TABLE perfiles_fiscales ADD COLUMN nombre_sat TEXT'); } cat
 try { db.exec('ALTER TABLE solicitudes ADD COLUMN sistema_facturacion TEXT'); } catch(e) {}
 // shop_name: handle de Shopify para Facturama-Shopify (ej: "bandeja-mx", "moft")
 try { db.exec('ALTER TABLE solicitudes ADD COLUMN shop_name TEXT'); } catch(e) {}
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS portal_scripts (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    portal      TEXT NOT NULL,
+    step        TEXT,
+    patch_js    TEXT NOT NULL,
+    descripcion TEXT,
+    confidence  REAL,
+    created_at  TEXT DEFAULT (datetime('now')),
+    active      INTEGER DEFAULT 1
+  );
+`);
 module.exports = db;
 module.exports.db = db;
 module.exports.uuid = require('uuid').v4;

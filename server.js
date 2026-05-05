@@ -14,6 +14,7 @@ app.use('/api/facturas', require('./routes/facturas'));
 app.use('/api/perfil',   require('./routes/perfil'));
 
 app.use('/api/constancia', require('./routes/constancia'));
+app.use('/api/scripts',    require('./routes/scripts'));
 app.get('/health', (req, res) => res.json({ status: 'ok', version: '1.0.0' }));
 
 
