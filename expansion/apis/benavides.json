@@ -1,0 +1,1471 @@
+{
+  "inspected_at": "2026-05-05T22:09:53.100Z",
+  "requested_url": "https://e-facturate.com/benavides/",
+  "final_url": "https://e-facturate.com/benavides/",
+  "nav_error": null,
+  "total_requests": 53,
+  "by_resource_type": {
+    "document": 1,
+    "stylesheet": 5,
+    "script": 23,
+    "image": 18,
+    "font": 1,
+    "xhr": 5
+  },
+  "by_host": {
+    "e-facturate.com": 52,
+    "services.lexblog.com": 1
+  },
+  "requests": [
+    {
+      "n": 1,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/",
+      "resourceType": "document",
+      "headers": {
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "cache-control": "private",
+        "content-length": "345509",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-aspnet-version": "4.0.30319",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "\r\n\r\n<!DOCTYPE html>\r\n<!--[if IE 8]>    <html class=\"no-js ie8 ie\" lang=\"en\"> <![endif]-->\r\n<!--[if IE 9]>    <html class=\"no-js ie9 ie\" lang=\"en\"> <![endif]-->\r\n<!--[if gt IE 9]><!-->\r\n<html class=\"no-js\" lang=\"en\">\r\n<!--<![endif]-->\r\n<head><meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\" /><title>\r\n\tEDX Retail V.3.22.43.6 | Generador de factura\r\n</title><meta name=\"description\" content=\" Aquí podrás facturar tu consumo en 4 sencillos pasos, sólo debes tener a la mano tu ticket de compra.\" /><meta name=\"robots\" content=\"index, follow\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\r\n    <style>\r\n        .custom-combobox {\r\n            position: relative;\r\n            display: inline-block;\r\n        }\r\n\r\n        .custom-combobox-toggle {\r\n            position: absolute;\r\n            top: 0;\r\n            bottom: 0;\r\n            margin-left: -1px;\r\n            padding: 0;\r\n        }\r\n\r\n        .custom-combobox-input {\r\n            margin: 0;\r\n            padding: 5px 10px;\r\n        }\r\n    </style>\r\n    <!-- jQuery Snippet Styles -->\r\n    <link id=\"ctl00_linkSnippet\" rel=\"stylesheet\" type=\"text/css\" href=\"https://e-facturate.com/benavides/Client/benavides/css/plugins/jquery.snippet.css\" />\r\n    <!-- CSS styles -->\r\n    <link id=\"ctl00_linkRetail\" rel=\"stylesheet\" type=\"text/css\" href=\"https://e-facturate.com/benavides/Client/benavides/css/retail-neutral.css\" /><link id=\"ctl00_linkRetail1\" rel=\"stylesheet\" type=\"text/css\" href=\"https://e-facturate.com/benavides/Client/benavides/css/responsivenav.css\" /><link id=\"ctl00_linkRetail2\" rel=\"stylesheet\" type=\"text/css\" href=\"https://e-facturate.com/benavides/Client/benavides/css/slicknav.css\" />\r\n    <!-- Fav and touch icons -->\r\n    <link id=\"ctl00_linkFavicon\" rel=\"shortcut icon\" href=\"https://e-facturate.com/benavides/Client/Default/img/icons/favicon.ico\" /><link id=\"ctl00_linkTIP1\" rel=\"apple-touch-icon-precomposed\" sizes=\"114x114\" href=\"https://e-facturate.com/benavides/Client/Default/img/icons/apple-touch-icon-114-precomposed.png\" /><link id=\"ctl00_linkTIP2\" rel=\"apple-touch-icon-precomposed\" sizes=\"72x72\" href=\"https://e-facturate.com/benavides/Client/Default/img/icons/apple-touch-icon-72-precomposed.png\" /><link id=\"ctl00_linkTIP3\" rel=\"apple-touch-icon-precomposed\" href=\"https://e-facturate.com/benavides/Client/Default/img/icons/apple-touch-icon-57-precomposed.png\" />\r\n    <!-- JS Libs -->\r\n    <script>        window.jQuery || document.write('<script src=\"Client/Default/js/libs/jquery.js\"><\\/script>')</script>\r\n    <script type=\"text/javascript\">\r\n        $(document).ready(function () {\r\n\r\n            // Tooltips\r\n            $('[title]').tooltip({\r\n                placement: 'top'\r\n            });\r\n\r\n            // Dropdowns\r\n            $('.dropdown-toggle').dropdown();\r\n\r\n            // Tabs\r\n            $('.demoTabs a').click(function (e) {\r\n                e.preventDefault();\r\n                $(this).tab('show');\r\n            })\r\n\r\n            if ($.browser.msie) {\r\n                VerifyCompatibility();\r\n            }\r\n            else if ($.browser.mozilla) {\r\n\r\n            }\r\n            else if ($.browser.webkit) {\r\n\r\n            }\r\n            else if ($.browser.opera) {\r\n\r\n            }\r\n\r\n            //Ejecuta menú responsive\r\n            $('#menu').slicknav();\r\n        });\r\n\r\n        function VerifyCompatibility() {\r\n            if (document.documentMode) {\r\n                if (document.documentMode <= 7) {\r\n                    $('#modalvistacompatibilidad').modal('toggle');\r\n                }\r\n            }\r\n        }\r\n\r\n    </script>\r\n    <style type=\"text/css\">\r\n        #scrollable-dropdown-menu .tt-dropdown-menu {\r\n            max-height: 150px;\r\n        }\r\n    </style>\r\n<script type='text/javascript' src='https://e-facturate.com/benavides/Client/benavides/js/libs/modernizr.js'></script><script type='text/javascript' src='https://e-facturate.com/benavides/Client/benavides/js/libs/selectivizr.js'></script><script type=",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 2,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/css/plugins/jquery.snippet.css",
+      "resourceType": "stylesheet",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "content-encoding": "gzip",
+        "etag": "\"0399b816f52d71:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "6372",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "text/css",
+        "last-modified": "Wed, 26 May 2021 20:41:30 GMT",
+        "vary": "Accept-Encoding",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": ".sh_acid .sh_sourceCode{background-color:#eee;color:#000;font-weight:400;font-style:normal;}.sh_acid .sh_sourceCode .sh_type{color:#8080c0;font-weight:700;font-style:normal;}.sh_acid .sh_sourceCode .sh_comment{color:#ff8000;font-weight:400;font-style:normal;}.sh_acid .sh_sourceCode .sh_number{color:purple;font-weight:700;font-style:normal;}.sh_acid .sh_sourceCode .sh_preproc{color:#0080c0;font-weight:700;font-style:normal;}.sh_acid .sh_sourceCode .sh_function{color:#046;font-weight:400;font-style:normal;}.sh_berries-dark .sh_sourceCode{background-color:#80bfff;color:#400080;font-weight:400;font-style:normal;}.sh_berries-dark .sh_sourceCode .sh_type{color:#3f2bf0;font-weight:400;font-style:normal;}.sh_berries-dark .sh_sourceCode .sh_comment{color:#df0959;font-weight:400;font-style:italic;}.sh_berries-light .sh_sourceCode{background-color:#d7ffff;color:#47406d;font-weight:400;font-style:normal;}.sh_berries-light .sh_sourceCode .sh_type{color:#8b51c0;font-weight:400;font-style:normal;}.sh_berries-light .sh_sourceCode .sh_comment{color:#9c3caf;font-weight:400;font-style:italic;}.sh_bipolar .sh_sourceCode{background-color:#000;color:#d149a6;font-weight:400;font-style:normal;}.sh_bipolar .sh_sourceCode .sh_type{color:#aadd8b;font-weight:700;font-style:normal;}.sh_bipolar .sh_sourceCode .sh_comment{color:#35d6e5;font-weight:400;font-style:italic;}.sh_bipolar .sh_sourceCode .sh_preproc{color:#07f6bf;font-weight:400;font-style:normal;}.sh_bipolar .sh_sourceCode .sh_function{color:#d51993;font-weight:700;font-style:normal;}.sh_blacknblue .sh_sourceCode{background-color:#000;color:#2346d5;font-weight:400;font-style:normal;}.sh_blacknblue .sh_sourceCode .sh_type{color:#c06cf8;font-weight:700;font-style:normal;}.sh_blacknblue .sh_sourceCode .sh_comment{color:#6fb2c4;font-weight:400;font-style:italic;}.sh_blacknblue .sh_sourceCode .sh_number{color:#c4ac60;font-weight:400;font-style:normal;}.sh_blacknblue .sh_sourceCode .sh_preproc{color:#8080ff;font-weight:400;font-style:normal;}.sh_blacknblue .sh_sourceCode .sh_function{color:#1c96ed;font-weight:400;font-style:normal;}.sh_bright .sh_sourceCode{background-color:#fff;color:#401e7a;font-weight:400;font-style:normal;}.sh_bright .sh_sourceCode .sh_type{color:#f7b92c;font-weight:400;font-style:normal;}.sh_bright .sh_sourceCode .sh_comment{color:#38ad24;font-weight:400;font-style:normal;}.sh_bright .sh_sourceCode .sh_number{color:#32ba06;font-weight:400;font-style:normal;}.sh_bright .sh_sourceCode .sh_preproc{color:#5374b0;font-weight:400;font-style:normal;}.sh_bright .sh_sourceCode .sh_function{color:#d11ced;font-weight:400;font-style:normal;}.sh_contrast .sh_sourceCode{background-color:#ed6104;color:#00f;font-weight:400;font-style:normal;}.sh_contrast .sh_sourceCode .sh_number{color:#971ad8;font-weight:400;font-style:normal;}.sh_contrast .sh_sourceCode .sh_preproc{color:#7b44e0;font-weight:400;font-style:normal;}.sh_contrast .sh_sourceCode .sh_function{color:#fff700;font-weight:700;font-style:normal;}.sh_darkblue .sh_sourceCode{background-color:#000040;color:#C7C7C7;font-weight:400;font-style:normal;}.sh_darkblue .sh_sourceCode .sh_type{color:#60ff60;font-weight:400;font-style:normal;}.sh_darkblue .sh_sourceCode .sh_comment{color:#80a0ff;font-weight:400;font-style:normal;}.sh_darkblue .sh_sourceCode .sh_number{color:#42cad9;font-weight:400;font-style:normal;}.sh_darkblue .sh_sourceCode .sh_preproc{color:#ff80ff;font-weight:400;font-style:normal;}.sh_darkness .sh_sourceCode .sh_number{color:#619de7;font-weight:400;font-style:normal;}.sh_darkness .sh_sourceCode .sh_preproc{color:#1da3cf;font-weight:400;font-style:normal;}.sh_darkness .sh_sourceCode .sh_function{color:#f34627;font-weight:400;font-style:normal;}.sh_desert .sh_sourceCode{background-color:#af947e;color:#fffdec;font-weight:400;font-style:normal;}.sh_desert .sh_sourceCode .sh_type{color:#fef8bc;font-weight:400;font-style:normal;}.sh_desert .sh_sourceCode .sh_comment{color:#a00000;font-weight:400;font-style:italic;}.sh_desert .sh_source",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 3,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/css/retail-neutral.css",
+      "resourceType": "stylesheet",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "content-encoding": "gzip",
+        "etag": "\"80a22816f52d71:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "43911",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "text/css",
+        "last-modified": "Wed, 26 May 2021 20:41:29 GMT",
+        "vary": "Accept-Encoding",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/*!\r\n * Walkin Pixels - Huraga v1.3\r\n * www.walkingpixels.com\r\n * \r\n * Dark color\r\n * \r\n */\r\n\r\n/* retail Ads */\r\n.side-banner img { \r\n                width:100%;\r\n}\r\n.top-banner { \r\n                margin-bottom:30px;\r\n}\r\n.top-banner img { \r\n                width:100%;\r\n}\r\n\r\n@import url(\"http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold\");\r\narticle,\r\naside,\r\ndetails,\r\nfigcaption,\r\nfigure,\r\nfooter,\r\nheader,\r\nhgroup,\r\nnav,\r\nsection {\r\n  display: block;\r\n}\r\naudio,\r\ncanvas,\r\nvideo {\r\n  display: inline-block;\r\n  *display: inline;\r\n  *zoom: 1;\r\n}\r\naudio:not([controls]) {\r\n  display: none;\r\n}\r\nhtml {\r\n  font-size: 100%;\r\n  -webkit-text-size-adjust: 100%;\r\n  -ms-text-size-adjust: 100%;\r\n}\r\na:focus {\r\n  outline: thin dotted #333;\r\n  outline: 5px auto -webkit-focus-ring-color;\r\n  outline-offset: -2px;\r\n}\r\na:hover,\r\na:active {\r\n  outline: 0;\r\n}\r\nsub,\r\nsup {\r\n  position: relative;\r\n  font-size: 75%;\r\n  line-height: 0;\r\n  vertical-align: baseline;\r\n}\r\nsup {\r\n  top: -0.5em;\r\n}\r\nsub {\r\n  bottom: -0.25em;\r\n}\r\nimg {\r\n  /* Responsive images (ensure images don't scale beyond their parents) */\r\n\r\n  max-width: 100%;\r\n  /* Part 1: Set a maxium relative to the parent */\r\n\r\n  width: auto\\9;\r\n  /* IE7-8 need help adjusting responsive images */\r\n\r\n  height: auto;\r\n  /* Part 2: Scale the height according to the width, otherwise you get stretching */\r\n\r\n  vertical-align: middle;\r\n  border: 0;\r\n  -ms-interpolation-mode: bicubic;\r\n}\r\n#map_canvas img {\r\n  max-width: none;\r\n}\r\nbutton,\r\ninput,\r\nselect,\r\ntextarea {\r\n  margin: 0;\r\n  font-size: 100%;\r\n  vertical-align: middle;\r\n}\r\nbutton,\r\ninput {\r\n  *overflow: visible;\r\n  line-height: normal;\r\n}\r\nbutton::-moz-focus-inner,\r\ninput::-moz-focus-inner {\r\n  padding: 0;\r\n  border: 0;\r\n}\r\nbutton,\r\ninput[type=\"button\"],\r\ninput[type=\"reset\"],\r\ninput[type=\"submit\"] {\r\n  cursor: pointer;\r\n  -webkit-appearance: button;\r\n}\r\ninput[type=\"search\"] {\r\n  -webkit-box-sizing: content-box;\r\n  -moz-box-sizing: content-box;\r\n  box-sizing: content-box;\r\n  -webkit-appearance: textfield;\r\n}\r\ninput[type=\"search\"]::-webkit-search-decoration,\r\ninput[type=\"search\"]::-webkit-search-cancel-button {\r\n  -webkit-appearance: none;\r\n}\r\ntextarea {\r\n  overflow: auto;\r\n  vertical-align: top;\r\n}\r\n.clearfix {\r\n  *zoom: 1;\r\n}\r\n.clearfix:before,\r\n.clearfix:after {\r\n  display: table;\r\n  content: \"\";\r\n  line-height: 0;\r\n}\r\n.clearfix:after {\r\n  clear: both;\r\n}\r\n.hide-text {\r\n  font: 0/0 a;\r\n  color: transparent;\r\n  text-shadow: none;\r\n  background-color: transparent;\r\n  border: 0;\r\n}\r\n.input-block-level {\r\n  display: block;\r\n  width: 100%;\r\n  min-height: 30px;\r\n  -webkit-box-sizing: border-box;\r\n  -moz-box-sizing: border-box;\r\n  box-sizing: border-box;\r\n}\r\nbody {\r\n  margin: 0;\r\n  font-family: \"PT Sans\", Arial, sans-serif;\r\n  font-size: 13px;\r\n  line-height: 18px;\r\n  color: #939699;\r\n  background-color: #f5f5f5;\r\n}\r\na {\r\n\tcolor: #40444d;\r\n\ttext-decoration: none;\r\n}\r\na:hover {\r\n  color: #121315;\r\n  text-decoration: underline;\r\n}\r\n.img-rounded {\r\n  -webkit-border-radius: 6px;\r\n  -moz-border-radius: 6px;\r\n  border-radius: 6px;\r\n}\r\n.img-polaroid {\r\n  padding: 4px;\r\n  background-color: #fff;\r\n  border: 1px solid #ccc;\r\n  border: 1px solid rgba(0, 0, 0, 0.2);\r\n  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\r\n  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\r\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\r\n}\r\n.img-circle {\r\n  -webkit-border-radius: 500px;\r\n  -moz-border-radius: 500px;\r\n  border-radius: 500px;\r\n}\r\n.row {\r\n  margin-left: -20px;\r\n  *zoom: 1;\r\n}\r\n.row:before,\r\n.row:after {\r\n  display: table;\r\n  content: \"\";\r\n  line-height: 0;\r\n}\r\n.row:after {\r\n  clear: both;\r\n}\r\n[class*=\"span\"] {\r\n  float: left;\r\n  min-height: 1px;\r\n  margin-left: 20px;\r\n}\r\n.container,\r\n.navbar-static-top .container,\r\n.navbar-fixed-top .container,\r\n.navbar-fixed-bottom .container {\r\n  width: 940px;\r\n}\r\n.span12 {\r\n  width: 940px;\r\n}\r\n.span11 {\r\n  width: 860px;\r\n}\r\n.span10 {\r\n  width: 780px;\r\n}\r\n.span9 {\r\n  width: 700px;\r\n}\r\n.span8 {\r\n  width: 620px;\r\n}\r\n.span7 {\r\n  width",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 4,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/css/responsivenav.css",
+      "resourceType": "stylesheet",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"136e83816f52d71:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "232",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "text/css",
+        "last-modified": "Wed, 26 May 2021 20:41:29 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "\r\n\r\n.slicknav_menu {\r\n\tdisplay:none;\r\n}\r\n\r\n@media screen and (max-width: 767px) {\r\n\t.js #menu {\r\n\t\tdisplay:none;\r\n\t}\r\n\t\r\n\t#banner{display:none;}\r\n\t\r\n\t.js .slicknav_menu {\r\n\t\tdisplay:block;\r\n\t}\r\n\t\r\n\t.centrado { text-align:center;}\r\n}",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 5,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/css/slicknav.css",
+      "resourceType": "stylesheet",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"499b89816f52d71:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "2878",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "text/css",
+        "last-modified": "Wed, 26 May 2021 20:41:29 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/*\n    Mobile Menu Core Style\n*/\n\n.slicknav_btn { position: relative; display: block; vertical-align: middle; float: right; padding: 0.438em 0.625em 0.438em 0.625em; line-height: 1.125em; cursor: pointer; }\n.slicknav_menu  .slicknav_menutxt { display: block; line-height: 1.188em; float: left; }\n.slicknav_menu .slicknav_icon { float: left; margin: 0.188em 0 0 0.438em; }\n.slicknav_menu .slicknav_no-text { margin: 0 }\n.slicknav_menu .slicknav_icon-bar { display: block; width: 1.125em; height: 0.125em; -webkit-border-radius: 1px; -moz-border-radius: 1px; border-radius: 1px; -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); -moz-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); }\n.slicknav_btn .slicknav_icon-bar + .slicknav_icon-bar { margin-top: 0.188em }\n.slicknav_nav { clear: both }\n.slicknav_nav ul,\n.slicknav_nav li { display: block }\n.slicknav_nav .slicknav_arrow { font-size: 0.8em; margin: 0 0 0 0.4em; }\n.slicknav_nav .slicknav_item { cursor: pointer; }\n.slicknav_nav .slicknav_row { display: block; }\n.slicknav_nav a { display: block }\n.slicknav_nav .slicknav_item a,\n.slicknav_nav .slicknav_parent-link a { display: inline }\n.slicknav_menu:before,\n.slicknav_menu:after { content: \" \"; display: table; }\n.slicknav_menu:after { clear: both }\n/* IE6/7 support */\n.slicknav_menu { *zoom: 1 }\n\n/* \n    User Default Style\n    Change the following styles to modify the appearance of the menu.\n*/\n\n.slicknav_menu {\n    font-size:16px;\n}\n/* Button */\n.slicknav_btn {\n    margin: 5px 5px 6px;\n    text-decoration:none;\n    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);\n    -webkit-border-radius: 4px;\n    -moz-border-radius: 4px;\n    border-radius: 4px;  \n    background-color: #222222;\n}\n/* Button Text */\n.slicknav_menu  .slicknav_menutxt {\n    color: #FFF;\n    font-weight: bold;\n    text-shadow: 0 1px 3px #000;\n}\n/* Button Lines */\n.slicknav_menu .slicknav_icon-bar {\n  background-color: #f5f5f5;\n}\n.slicknav_menu {\n    background:#4c4c4c;\n    padding:5px;\n}\n.slicknav_nav {\n    color:#fff;\n    margin:0;\n    padding:0;\n    font-size:0.875em;\n}\n.slicknav_nav, .slicknav_nav ul {\n    list-style: none;\n    overflow:hidden;\n}\n.slicknav_nav ul {\n    padding:0;\n    margin:0 0 0 20px;\n}\n.slicknav_nav .slicknav_row {\n    padding:5px 10px;\n    margin:2px 5px;\n}\n.slicknav_nav a{\n    padding:5px 10px;\n    margin:2px 5px;\n    text-decoration:none;\n    color:#fff;\n}\n.slicknav_nav .slicknav_item a,\n.slicknav_nav .slicknav_parent-link a {\n    padding:0;\n    margin:0;\n}\n.slicknav_nav .slicknav_row:hover {\n    -webkit-border-radius: 6px;\n    -moz-border-radius: 6px;\n    border-radius: 6px;\n    background:#ccc;\n    color:#fff;\n}\n.slicknav_nav a:hover{\n    -webkit-border-radius: 6px;\n    -moz-border-radius: 6px;\n    border-radius: 6px;\n    background:#ccc;\n    color:#222;\n}\n.slicknav_nav .slicknav_txtnode {\n     margin-left:15px;   \n}",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 6,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/libs/modernizr.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "8516",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/* Modernizr 2.5.3 (Custom Build) | MIT & BSD\r\n * Build: http://www.modernizr.com/download/#-borderradius-boxshadow-multiplebgs-opacity-rgba-textshadow-draganddrop-shiv-cssclasses-testprop-testallprops-hasevent-prefixes-domprefixes-load\r\n */\r\n;window.Modernizr=function(a,b,c){function z(a){j.cssText=a}function A(a,b){return z(m.join(a+\";\")+(b||\"\"))}function B(a,b){return typeof a===b}function C(a,b){return!!~(\"\"+a).indexOf(b)}function D(a,b){for(var d in a)if(j[a[d]]!==c)return b==\"pfx\"?a[d]:!0;return!1}function E(a,b,d){for(var e in a){var f=b[a[e]];if(f!==c)return d===!1?a[e]:B(f,\"function\")?f.bind(d||b):f}return!1}function F(a,b,c){var d=a.charAt(0).toUpperCase()+a.substr(1),e=(a+\" \"+o.join(d+\" \")+d).split(\" \");return B(b,\"string\")||B(b,\"undefined\")?D(e,b):(e=(a+\" \"+p.join(d+\" \")+d).split(\" \"),E(e,b,c))}var d=\"2.5.3\",e={},f=!0,g=b.documentElement,h=\"modernizr\",i=b.createElement(h),j=i.style,k,l={}.toString,m=\" -webkit- -moz- -o- -ms- \".split(\" \"),n=\"Webkit Moz O ms\",o=n.split(\" \"),p=n.toLowerCase().split(\" \"),q={},r={},s={},t=[],u=t.slice,v,w=function(){function d(d,e){e=e||b.createElement(a[d]||\"div\"),d=\"on\"+d;var f=d in e;return f||(e.setAttribute||(e=b.createElement(\"div\")),e.setAttribute&&e.removeAttribute&&(e.setAttribute(d,\"\"),f=B(e[d],\"function\"),B(e[d],\"undefined\")||(e[d]=c),e.removeAttribute(d))),e=null,f}var a={select:\"input\",change:\"input\",submit:\"form\",reset:\"form\",error:\"img\",load:\"img\",abort:\"img\"};return d}(),x={}.hasOwnProperty,y;!B(x,\"undefined\")&&!B(x.call,\"undefined\")?y=function(a,b){return x.call(a,b)}:y=function(a,b){return b in a&&B(a.constructor.prototype[b],\"undefined\")},Function.prototype.bind||(Function.prototype.bind=function(b){var c=this;if(typeof c!=\"function\")throw new TypeError;var d=u.call(arguments,1),e=function(){if(this instanceof e){var a=function(){};a.prototype=c.prototype;var f=new a,g=c.apply(f,d.concat(u.call(arguments)));return Object(g)===g?g:f}return c.apply(b,d.concat(u.call(arguments)))};return e}),q.draganddrop=function(){var a=b.createElement(\"div\");return\"draggable\"in a||\"ondragstart\"in a&&\"ondrop\"in a},q.rgba=function(){return z(\"background-color:rgba(150,255,150,.5)\"),C(j.backgroundColor,\"rgba\")},q.multiplebgs=function(){return z(\"background:url(https://),url(https://),red url(https://)\"),/(url\\s*\\(.*?){3}/.test(j.background)},q.borderradius=function(){return F(\"borderRadius\")},q.boxshadow=function(){return F(\"boxShadow\")},q.textshadow=function(){return b.createElement(\"div\").style.textShadow===\"\"},q.opacity=function(){return A(\"opacity:.55\"),/^0.55$/.test(j.opacity)};for(var G in q)y(q,G)&&(v=G.toLowerCase(),e[v]=q[G](),t.push((e[v]?\"\":\"no-\")+v));return z(\"\"),i=k=null,function(a,b){function g(a,b){var c=a.createElement(\"p\"),d=a.getElementsByTagName(\"head\")[0]||a.documentElement;return c.innerHTML=\"x<style>\"+b+\"</style>\",d.insertBefore(c.lastChild,d.firstChild)}function h(){var a=k.elements;return typeof a==\"string\"?a.split(\" \"):a}function i(a){var b={},c=a.createElement,e=a.createDocumentFragment,f=e();a.createElement=function(a){var e=(b[a]||(b[a]=c(a))).cloneNode();return k.shivMethods&&e.canHaveChildren&&!d.test(a)?f.appendChild(e):e},a.createDocumentFragment=Function(\"h,f\",\"return function(){var n=f.cloneNode(),c=n.createElement;h.shivMethods&&(\"+h().join().replace(/\\w+/g,function(a){return b[a]=c(a),f.createElement(a),'c(\"'+a+'\")'})+\");return n}\")(k,f)}function j(a){var b;return a.documentShived?a:(k.shivCSS&&!e&&(b=!!g(a,\"article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block}audio{display:none}canvas,video{display:inline-block;*display:inline;*zoom:1}[hidden]{display:none}audio[controls]{display:inline-block;*display:inline;*zoom:1}mark{background:#FF0;color:#000}\")),f||(b=!i(a)),b&&(a.documentShived=b),a)}var c=a.html5||{},d=/^<|^(?:button|form|map|select|textarea)$/i,e,f;(function(){var a=b.createElement(\"a\");a.innerHTML=\"<xyz></xyz>\",e=\"hidden\"in a,f=a.childNodes.length==1||function(){try{b.createElement(\"a\")}catch(a){return!0}var",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 7,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/libs/selectivizr.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "4840",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/*!\r\n * selectivizr v1.0.2 - (c) Keith Clark, freely distributable under the terms of the MIT license.\r\n * selectivizr.com\r\n */\r\n(function(j){function A(a){return a.replace(B,h).replace(C,function(a,d,b){for(var a=b.split(\",\"),b=0,e=a.length;b<e;b++){var s=D(a[b].replace(E,h).replace(F,h))+o,l=[];a[b]=s.replace(G,function(a,b,c,d,e){if(b){if(l.length>0){var a=l,f,e=s.substring(0,e).replace(H,i);if(e==i||e.charAt(e.length-1)==o)e+=\"*\";try{f=t(e)}catch(k){}if(f){e=0;for(c=f.length;e<c;e++){for(var d=f[e],h=d.className,j=0,m=a.length;j<m;j++){var g=a[j];if(!RegExp(\"(^|\\\\s)\"+g.className+\"(\\\\s|$)\").test(d.className)&&g.b&&(g.b===!0||g.b(d)===!0))h=u(h,g.className,!0)}d.className=h}}l=[]}return b}else{if(b=c?I(c):!v||v.test(d)?{className:w(d),b:!0}:null)return l.push(b),\".\"+b.className;return a}})}return d+a.join(\",\")})}function I(a){var c=!0,d=w(a.slice(1)),b=a.substring(0,5)==\":not(\",e,f;b&&(a=a.slice(5,-1));var l=a.indexOf(\"(\");l>-1&&(a=a.substring(0,l));if(a.charAt(0)==\":\")switch(a.slice(1)){case \"root\":c=function(a){return b?a!=p:a==p};break;case \"target\":if(m==8){c=function(a){function c(){var d=location.hash,e=d.slice(1);return b?d==i||a.id!=e:d!=i&&a.id==e}k(j,\"hashchange\",function(){g(a,d,c())});return c()};break}return!1;case \"checked\":c=function(a){J.test(a.type)&&k(a,\"propertychange\",function(){event.propertyName==\"checked\"&&g(a,d,a.checked!==b)});return a.checked!==b};break;case \"disabled\":b=!b;case \"enabled\":c=function(c){if(K.test(c.tagName))return k(c,\"propertychange\",function(){event.propertyName==\"$disabled\"&&g(c,d,c.a===b)}),q.push(c),c.a=c.disabled,c.disabled===b;return a==\":enabled\"?b:!b};break;case \"focus\":e=\"focus\",f=\"blur\";case \"hover\":e||(e=\"mouseenter\",f=\"mouseleave\");c=function(a){k(a,b?f:e,function(){g(a,d,!0)});k(a,b?e:f,function(){g(a,d,!1)});return b};break;default:if(!L.test(a))return!1}return{className:d,b:c}}function w(a){return M+\"-\"+(m==6&&N?O++:a.replace(P,function(a){return a.charCodeAt(0)}))}function D(a){return a.replace(x,h).replace(Q,o)}function g(a,c,d){var b=a.className,c=u(b,c,d);if(c!=b)a.className=c,a.parentNode.className+=i}function u(a,c,d){var b=RegExp(\"(^|\\\\s)\"+c+\"(\\\\s|$)\"),e=b.test(a);return d?e?a:a+o+c:e?a.replace(b,h).replace(x,h):a}function k(a,c,d){a.attachEvent(\"on\"+c,d)}function r(a,c){if(/^https?:\\/\\//i.test(a))return c.substring(0,c.indexOf(\"/\",8))==a.substring(0,a.indexOf(\"/\",8))?a:null;if(a.charAt(0)==\"/\")return c.substring(0,c.indexOf(\"/\",8))+a;var d=c.split(/[?#]/)[0];a.charAt(0)!=\"?\"&&d.charAt(d.length-1)!=\"/\"&&(d=d.substring(0,d.lastIndexOf(\"/\")+1));return d+a}function y(a){if(a)return n.open(\"GET\",a,!1),n.send(),(n.status==200?n.responseText:i).replace(R,i).replace(S,function(c,d,b,e,f){return y(r(b||f,a))}).replace(T,function(c,d,b){d=d||i;return\" url(\"+d+r(b,a)+d+\") \"});return i}function U(){var a,c;a=f.getElementsByTagName(\"BASE\");for(var d=a.length>0?a[0].href:f.location.href,b=0;b<f.styleSheets.length;b++)if(c=f.styleSheets[b],c.href!=i&&(a=r(c.href,d)))c.cssText=A(y(a));q.length>0&&setInterval(function(){for(var a=0,c=q.length;a<c;a++){var b=q[a];if(b.disabled!==b.a)b.disabled?(b.disabled=!1,b.a=!0,b.disabled=!0):b.a=b.disabled}},250)}if(!/*@cc_on!@*/true){var f=document,p=f.documentElement,n=function(){if(j.XMLHttpRequest)return new XMLHttpRequest;try{return new ActiveXObject(\"Microsoft.XMLHTTP\")}catch(a){return null}}(),m=/MSIE (\\d+)/.exec(navigator.userAgent)[1];if(!(f.compatMode!=\"CSS1Compat\"||m<6||m>8||!n)){var z={NW:\"*.Dom.select\",MooTools:\"$$\",DOMAssistant:\"*.$\",Prototype:\"$$\",YAHOO:\"*.util.Selector.query\",Sizzle:\"*\",jQuery:\"*\",dojo:\"*.query\"},t,q=[],O=0,N=!0,M=\"slvzr\",R=/(\\/\\*[^*]*\\*+([^\\/][^*]*\\*+)*\\/)\\s*/g,S=/@import\\s*(?:(?:(?:url\\(\\s*(['\"]?)(.*)\\1)\\s*\\))|(?:(['\"])(.*)\\3))[^;]*;/g,T=/\\burl\\(\\s*([\"']?)(?!data:)([^\"')]+)\\1\\s*\\)/g,L=/^:(empty|(first|last|only|nth(-last)?)-(child|of-type))$/,B=/:(:first-(?:line|letter))/g,C=/(^|})\\s*([^\\{]*?[\\[:][^{]+)/g,G=/([ +~>])|(:[a-z-]+(?:\\(.*?\\)+)?)|(\\[.*?\\])/g,H=/(:not\\()?:(hover|enabled|disabled|focus|checked|ta",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 8,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/Fn/GeneralFunction.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "1377",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "function rfcregex(RFC) {\r\n\r\n    RFC = $.trim(RFC).toUpperCase();\r\n    if (RFC != \"XEXX010101000\") {\r\n        var regex = new RegExp(/^[A-Z,Ñ,&]{3,4}[0-9]{2}[0-1][0-9][0-3][0-9][A-Z,0-9]?[A-Z,0-9]?[0-9,A-Z]?/);\r\n        if (!regex.test(RFC)) {\r\n            return false;\r\n        }\r\n    }\r\n    return true;\r\n}\r\n\r\nfunction validarInt(valor) {\r\n    var error = '';\r\n    var re = /^(-)?[0-9]*$/;\r\n    if (!re.test(valor)) {\r\n        return false;\r\n    }\r\n    return true;\r\n}\r\n\r\nfunction validarFloat(valor) {\r\n    var error = '';\r\n    var re = /^[0-9]*[.][0-9]+$/;\r\n    if (!re.test(valor)) {\r\n        return false;\r\n    }\r\n    return true;\r\n}\r\n\r\nfunction validarFecha(fecha) {\r\n\r\n    if (fecha == \"\")\r\n        return false;\r\n\r\n    //valida fecha en formato aaaa-mm-dd\r\n    var fechaArr = fecha.split('/');\r\n    var aho = fechaArr[0];\r\n    var mes = fechaArr[1];\r\n    var dia = fechaArr[2];\r\n\r\n    var plantilla = new Date(aho, mes - 1, dia);\r\n\r\n    if (!plantilla || plantilla.getFullYear() == aho && plantilla.getMonth() == mes - 1 && plantilla.getDate() == dia) {\r\n        return true;\r\n    } else {\r\n        return false;\r\n    }\r\n}\r\n\r\nfunction RegexEmail(emailInputBox) {\r\n    var emailRegexStr = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$/;\r\n    var isvalid = emailRegexStr.test(emailInputBox);\r\n    if (!isvalid) {\r\n        return false;\r\n    }\r\n    return true;\r\n}",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 9,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/json2.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "18028",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/*\r\n    http://www.JSON.org/json2.js\r\n    2011-10-19\r\n\r\n    Public Domain.\r\n\r\n    NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.\r\n\r\n    See http://www.JSON.org/js.html\r\n\r\n\r\n    This code should be minified before deployment.\r\n    See http://javascript.crockford.com/jsmin.html\r\n\r\n    USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO\r\n    NOT CONTROL.\r\n\r\n\r\n    This file creates a global JSON object containing two methods: stringify\r\n    and parse.\r\n\r\n        JSON.stringify(value, replacer, space)\r\n            value       any JavaScript value, usually an object or array.\r\n\r\n            replacer    an optional parameter that determines how object\r\n                        values are stringified for objects. It can be a\r\n                        function or an array of strings.\r\n\r\n            space       an optional parameter that specifies the indentation\r\n                        of nested structures. If it is omitted, the text will\r\n                        be packed without extra whitespace. If it is a number,\r\n                        it will specify the number of spaces to indent at each\r\n                        level. If it is a string (such as '\\t' or '&nbsp;'),\r\n                        it contains the characters used to indent at each level.\r\n\r\n            This method produces a JSON text from a JavaScript value.\r\n\r\n            When an object value is found, if the object contains a toJSON\r\n            method, its toJSON method will be called and the result will be\r\n            stringified. A toJSON method does not serialize: it returns the\r\n            value represented by the name/value pair that should be serialized,\r\n            or undefined if nothing should be serialized. The toJSON method\r\n            will be passed the key associated with the value, and this will be\r\n            bound to the value\r\n\r\n            For example, this would serialize Dates as ISO strings.\r\n\r\n                Date.prototype.toJSON = function (key) {\r\n                    function f(n) {\r\n                        // Format integers to have at least two digits.\r\n                        return n < 10 ? '0' + n : n;\r\n                    }\r\n\r\n                    return this.getUTCFullYear()   + '-' +\r\n                         f(this.getUTCMonth() + 1) + '-' +\r\n                         f(this.getUTCDate())      + 'T' +\r\n                         f(this.getUTCHours())     + ':' +\r\n                         f(this.getUTCMinutes())   + ':' +\r\n                         f(this.getUTCSeconds())   + 'Z';\r\n                };\r\n\r\n            You can provide an optional replacer method. It will be passed the\r\n            key and value of each member, with this bound to the containing\r\n            object. The value that is returned from your method will be\r\n            serialized. If your method returns undefined, then the member will\r\n            be excluded from the serialization.\r\n\r\n            If the replacer parameter is an array of strings, then it will be\r\n            used to select the members to be serialized. It filters the results\r\n            such that only members with keys listed in the replacer array are\r\n            stringified.\r\n\r\n            Values that do not have JSON representations, such as undefined or\r\n            functions, will not be serialized. Such values in objects will be\r\n            dropped; in arrays they will be replaced with null. You can use\r\n            a replacer function to replace those with JSON values.\r\n            JSON.stringify(undefined) returns undefined.\r\n\r\n            The optional space parameter produces a stringification of the\r\n            value that is filled with line breaks and indentation to make it\r\n            easier to read.\r\n\r\n            If the space parameter is a non-empty string, then that string will\r\n            be used for indentation. If the space parameter is a number, then\r\n            the indentation will be that many spaces.\r\n\r\n            Example:\r\n\r\n          ",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 10,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/libs/jquery.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "92792",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/*! jQuery v@1.8.1 jquery.com | jquery.org/license */\r\n(function(a,b){function G(a){var b=F[a]={};return p.each(a.split(s),function(a,c){b[c]=!0}),b}function J(a,c,d){if(d===b&&a.nodeType===1){var e=\"data-\"+c.replace(I,\"-$1\").toLowerCase();d=a.getAttribute(e);if(typeof d==\"string\"){try{d=d===\"true\"?!0:d===\"false\"?!1:d===\"null\"?null:+d+\"\"===d?+d:H.test(d)?p.parseJSON(d):d}catch(f){}p.data(a,c,d)}else d=b}return d}function K(a){var b;for(b in a){if(b===\"data\"&&p.isEmptyObject(a[b]))continue;if(b!==\"toJSON\")return!1}return!0}function ba(){return!1}function bb(){return!0}function bh(a){return!a||!a.parentNode||a.parentNode.nodeType===11}function bi(a,b){do a=a[b];while(a&&a.nodeType!==1);return a}function bj(a,b,c){b=b||0;if(p.isFunction(b))return p.grep(a,function(a,d){var e=!!b.call(a,d,a);return e===c});if(b.nodeType)return p.grep(a,function(a,d){return a===b===c});if(typeof b==\"string\"){var d=p.grep(a,function(a){return a.nodeType===1});if(be.test(b))return p.filter(b,d,!c);b=p.filter(b,d)}return p.grep(a,function(a,d){return p.inArray(a,b)>=0===c})}function bk(a){var b=bl.split(\"|\"),c=a.createDocumentFragment();if(c.createElement)while(b.length)c.createElement(b.pop());return c}function bC(a,b){return a.getElementsByTagName(b)[0]||a.appendChild(a.ownerDocument.createElement(b))}function bD(a,b){if(b.nodeType!==1||!p.hasData(a))return;var c,d,e,f=p._data(a),g=p._data(b,f),h=f.events;if(h){delete g.handle,g.events={};for(c in h)for(d=0,e=h[c].length;d<e;d++)p.event.add(b,c,h[c][d])}g.data&&(g.data=p.extend({},g.data))}function bE(a,b){var c;if(b.nodeType!==1)return;b.clearAttributes&&b.clearAttributes(),b.mergeAttributes&&b.mergeAttributes(a),c=b.nodeName.toLowerCase(),c===\"object\"?(b.parentNode&&(b.outerHTML=a.outerHTML),p.support.html5Clone&&a.innerHTML&&!p.trim(b.innerHTML)&&(b.innerHTML=a.innerHTML)):c===\"input\"&&bv.test(a.type)?(b.defaultChecked=b.checked=a.checked,b.value!==a.value&&(b.value=a.value)):c===\"option\"?b.selected=a.defaultSelected:c===\"input\"||c===\"textarea\"?b.defaultValue=a.defaultValue:c===\"script\"&&b.text!==a.text&&(b.text=a.text),b.removeAttribute(p.expando)}function bF(a){return typeof a.getElementsByTagName!=\"undefined\"?a.getElementsByTagName(\"*\"):typeof a.querySelectorAll!=\"undefined\"?a.querySelectorAll(\"*\"):[]}function bG(a){bv.test(a.type)&&(a.defaultChecked=a.checked)}function bY(a,b){if(b in a)return b;var c=b.charAt(0).toUpperCase()+b.slice(1),d=b,e=bW.length;while(e--){b=bW[e]+c;if(b in a)return b}return d}function bZ(a,b){return a=b||a,p.css(a,\"display\")===\"none\"||!p.contains(a.ownerDocument,a)}function b$(a,b){var c,d,e=[],f=0,g=a.length;for(;f<g;f++){c=a[f];if(!c.style)continue;e[f]=p._data(c,\"olddisplay\"),b?(!e[f]&&c.style.display===\"none\"&&(c.style.display=\"\"),c.style.display===\"\"&&bZ(c)&&(e[f]=p._data(c,\"olddisplay\",cc(c.nodeName)))):(d=bH(c,\"display\"),!e[f]&&d!==\"none\"&&p._data(c,\"olddisplay\",d))}for(f=0;f<g;f++){c=a[f];if(!c.style)continue;if(!b||c.style.display===\"none\"||c.style.display===\"\")c.style.display=b?e[f]||\"\":\"none\"}return a}function b_(a,b,c){var d=bP.exec(b);return d?Math.max(0,d[1]-(c||0))+(d[2]||\"px\"):b}function ca(a,b,c,d){var e=c===(d?\"border\":\"content\")?4:b===\"width\"?1:0,f=0;for(;e<4;e+=2)c===\"margin\"&&(f+=p.css(a,c+bV[e],!0)),d?(c===\"content\"&&(f-=parseFloat(bH(a,\"padding\"+bV[e]))||0),c!==\"margin\"&&(f-=parseFloat(bH(a,\"border\"+bV[e]+\"Width\"))||0)):(f+=parseFloat(bH(a,\"padding\"+bV[e]))||0,c!==\"padding\"&&(f+=parseFloat(bH(a,\"border\"+bV[e]+\"Width\"))||0));return f}function cb(a,b,c){var d=b===\"width\"?a.offsetWidth:a.offsetHeight,e=!0,f=p.support.boxSizing&&p.css(a,\"boxSizing\")===\"border-box\";if(d<=0||d==null){d=bH(a,b);if(d<0||d==null)d=a.style[b];if(bQ.test(d))return d;e=f&&(p.support.boxSizingReliable||d===a.style[b]),d=parseFloat(d)||0}return d+ca(a,b,c||(f?\"border\":\"content\"),e)+\"px\"}function cc(a){if(bS[a])return bS[a];var b=p(\"<\"+a+\">\").appendTo(e.body),c=b.css(\"display\");b.remove();if(c===\"none\"||c===\"\"){bI=e.body.appendChild(bI||p.extend(e.createElement(\"iframe\"),{fra",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 11,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/jquery.slicknav.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "15529",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/*!\n    SlickNav Responsive Mobile Menu v1.0.0\n    (c) 2014 Josh Cope\n    licensed under MIT\n*/\n;(function ($, document, window) {\n    var\n    // default settings object.\n    defaults = {\n        label: 'MENU',\n        duplicate: true,\n        duration: 200,\n        easingOpen: 'swing',\n        easingClose: 'swing',\n        closedSymbol: '&#9658;',\n        openedSymbol: '&#9660;',\n        prependTo: 'body',\n        parentTag: 'a',\n        closeOnClick: false,\n        allowParentLinks: false,\n        nestedParentLinks: true,\n        showChildren: false,\n        init: function(){},\n        open: function(){},\n        close: function(){}\n    },\n    mobileMenu = 'slicknav',\n    prefix = 'slicknav';\n    \n    function Plugin( element, options ) {\n        this.element = element;\n\n        // jQuery has an extend method which merges the contents of two or\n        // more objects, storing the result in the first object. The first object\n        // is generally empty as we don't want to alter the default options for\n        // future instances of the plugin\n        this.settings = $.extend( {}, defaults, options) ;\n        \n        this._defaults = defaults;\n        this._name = mobileMenu;\n        \n        this.init();\n    }\n    \n    Plugin.prototype.init = function () {\n        var $this = this;\n        var menu = $(this.element);\n        var settings = this.settings;\n        \n        // clone menu if needed\n        if (settings.duplicate) {\n            $this.mobileNav = menu.clone();\n            //remove ids from clone to prevent css issues\n            $this.mobileNav.removeAttr('id');\n            $this.mobileNav.find('*').each(function(i,e){\n                $(e).removeAttr('id');\n            });\n        }\n        else\n            $this.mobileNav = menu;\n        \n        // styling class for the button\n        var iconClass = prefix+'_icon';\n        \n        if (settings.label === '') {\n            iconClass += ' '+prefix+'_no-text';\n        }\n        \n        if (settings.parentTag == 'a') {\n            settings.parentTag = 'a href=\"#\"';\n        }\n        \n        // create menu bar\n        $this.mobileNav.attr('class', prefix+'_nav');\n        var menuBar = $('<div class=\"'+prefix+'_menu\"></div>');\n        $this.btn = $('<'+settings.parentTag+' aria-haspopup=\"true\" tabindex=\"0\" class=\"'+prefix+'_btn '+prefix+'_collapsed\"><span class=\"'+prefix+'_menutxt\">'+settings.label+'</span><span class=\"'+iconClass+'\"><span class=\"'+prefix+'_icon-bar\"></span><span class=\"'+prefix+'_icon-bar\"></span><span class=\"'+prefix+'_icon-bar\"></span></span></a>');\n        $(menuBar).append($this.btn);        \n        $(settings.prependTo).prepend(menuBar);\n        menuBar.append($this.mobileNav);\n        \n        // iterate over structure adding additional structure\n        var items = $this.mobileNav.find('li');\n        $(items).each(function () {\n            var item = $(this);\n            var data = {};\n            data.children = item.children('ul').attr('role','menu');\n            item.data(\"menu\", data);\n            \n            // if a list item has a nested menu\n            if (data.children.length > 0) {\n            \n                // select all text before the child menu\n                // check for anchors\n                \n                var a = item.contents();\n                var containsAnchor = false;\n                \n                var nodes = [];\n                $(a).each(function(){\n                    if(!$(this).is(\"ul\")) {\n                        nodes.push(this);\n                    }\n                    else {\n                        return false;\n                    }\n                    \n                    if($(this).is(\"a\")) {\n                        containsAnchor = true;\n                    }\n                });\n                \n                var wrapElement = $('<'+settings.parentTag+' role=\"menuitem\" aria-haspopup=\"true\" tabindex=\"-1\" class=\"'+prefix+'_item\"/>');\n                \n                // wrap item text with tag",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 12,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/navigation.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "812",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "$(document).ready(function() {\r\n\t\r\n\t// Menu scroll fix\r\n\t$('.navigation-block').affix({\r\n\t\toffset: {\r\n\t\t\ttop: 95,\r\n\t\t\tbottom: 60\r\n\t\t}\r\n\t});\r\n\t\r\n\t// Menu Dropdown\r\n\t$('.main-navigation li ul').hide(); //Hide all sub menus\r\n\t$('.main-navigation li.current a').parent().find('ul').slideToggle('slow'); // Slide down the current sub menu\r\n\t$('.main-navigation li a').click(\r\n\t\tfunction () {\r\n\t\t\t$(this).parent().siblings().find('ul').slideUp('normal'); // Slide up all menus except the one clicked\r\n\t\t\t$(this).parent().find('ul').slideToggle('normal'); // Slide down the clicked sub menu\r\n\t\t\treturn false;\r\n\t\t}\r\n\t);\r\n\t$('.main-navigation li a.no-submenu, .main-navigation li li a').click(\r\n\t\tfunction () {\r\n\t\t\twindow.location.href=(this.href); // Open link instead of a sub menu\r\n\t\t\treturn false;\r\n\t\t}\r\n\t);\r\n\t\r\n});\r\n",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 13,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/bootstrap/bootstrap-affix.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "3308",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/* ==========================================================\r\n * bootstrap-affix.js v2.1.1\r\n * http://twitter.github.com/bootstrap/javascript.html#affix\r\n * ==========================================================\r\n * Copyright 2012 Twitter, Inc.\r\n *\r\n * Licensed under the Apache License, Version 2.0 (the \"License\");\r\n * you may not use this file except in compliance with the License.\r\n * You may obtain a copy of the License at\r\n *\r\n * http://www.apache.org/licenses/LICENSE-2.0\r\n *\r\n * Unless required by applicable law or agreed to in writing, software\r\n * distributed under the License is distributed on an \"AS IS\" BASIS,\r\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\r\n * See the License for the specific language governing permissions and\r\n * limitations under the License.\r\n * ========================================================== */\r\n\r\n\r\n!function ($) {\r\n\r\n  \"use strict\"; // jshint ;_;\r\n\r\n\r\n /* AFFIX CLASS DEFINITION\r\n  * ====================== */\r\n\r\n  var Affix = function (element, options) {\r\n    this.options = $.extend({}, $.fn.affix.defaults, options)\r\n    this.$window = $(window).on('scroll.affix.data-api', $.proxy(this.checkPosition, this))\r\n    this.$element = $(element)\r\n    this.checkPosition()\r\n  }\r\n\r\n  Affix.prototype.checkPosition = function () {\r\n    if (!this.$element.is(':visible')) return\r\n\r\n    var scrollHeight = $(document).height()\r\n      , scrollTop = this.$window.scrollTop()\r\n      , position = this.$element.offset()\r\n      , offset = this.options.offset\r\n      , offsetBottom = offset.bottom\r\n      , offsetTop = offset.top\r\n      , reset = 'affix affix-top affix-bottom'\r\n      , affix\r\n\r\n    if (typeof offset != 'object') offsetBottom = offsetTop = offset\r\n    if (typeof offsetTop == 'function') offsetTop = offset.top()\r\n    if (typeof offsetBottom == 'function') offsetBottom = offset.bottom()\r\n\r\n    affix = this.unpin != null && (scrollTop + this.unpin <= position.top) ?\r\n      false    : offsetBottom != null && (position.top + this.$element.height() >= scrollHeight - offsetBottom) ?\r\n      'bottom' : offsetTop != null && scrollTop <= offsetTop ?\r\n      'top'    : false\r\n\r\n    if (this.affixed === affix) return\r\n\r\n    this.affixed = affix\r\n    this.unpin = affix == 'bottom' ? position.top - scrollTop : null\r\n\r\n    this.$element.removeClass(reset).addClass('affix' + (affix ? '-' + affix : ''))\r\n  }\r\n\r\n\r\n /* AFFIX PLUGIN DEFINITION\r\n  * ======================= */\r\n\r\n  $.fn.affix = function (option) {\r\n    return this.each(function () {\r\n      var $this = $(this)\r\n        , data = $this.data('affix')\r\n        , options = typeof option == 'object' && option\r\n      if (!data) $this.data('affix', (data = new Affix(this, options)))\r\n      if (typeof option == 'string') data[option]()\r\n    })\r\n  }\r\n\r\n  $.fn.affix.Constructor = Affix\r\n\r\n  $.fn.affix.defaults = {\r\n    offset: 0\r\n  }\r\n\r\n\r\n /* AFFIX DATA-API\r\n  * ============== */\r\n\r\n  $(window).on('load', function () {\r\n    $('[data-spy=\"affix\"]').each(function () {\r\n      var $spy = $(this)\r\n        , data = $spy.data()\r\n\r\n      data.offset = data.offset || {}\r\n\r\n      data.offsetBottom && (data.offset.bottom = data.offsetBottom)\r\n      data.offsetTop && (data.offset.top = data.offsetTop)\r\n\r\n      $spy.affix(data)\r\n    })\r\n  })\r\n\r\n\r\n}(window.jQuery);",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 14,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/bootstrap/bootstrap-tooltip.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "7971",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/* ===========================================================\r\n * bootstrap-tooltip.js v2.1.1\r\n * http://twitter.github.com/bootstrap/javascript.html#tooltips\r\n * Inspired by the original jQuery.tipsy by Jason Frame\r\n * ===========================================================\r\n * Copyright 2012 Twitter, Inc.\r\n *\r\n * Licensed under the Apache License, Version 2.0 (the \"License\");\r\n * you may not use this file except in compliance with the License.\r\n * You may obtain a copy of the License at\r\n *\r\n * http://www.apache.org/licenses/LICENSE-2.0\r\n *\r\n * Unless required by applicable law or agreed to in writing, software\r\n * distributed under the License is distributed on an \"AS IS\" BASIS,\r\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\r\n * See the License for the specific language governing permissions and\r\n * limitations under the License.\r\n * ========================================================== */\r\n\r\n\r\n!function ($) {\r\n\r\n  \"use strict\"; // jshint ;_;\r\n\r\n\r\n /* TOOLTIP PUBLIC CLASS DEFINITION\r\n  * =============================== */\r\n\r\n  var Tooltip = function (element, options) {\r\n    this.init('tooltip', element, options)\r\n  }\r\n\r\n  Tooltip.prototype = {\r\n\r\n    constructor: Tooltip\r\n\r\n  , init: function (type, element, options) {\r\n      var eventIn\r\n        , eventOut\r\n\r\n      this.type = type\r\n      this.$element = $(element)\r\n      this.options = this.getOptions(options)\r\n      this.enabled = true\r\n\r\n      if (this.options.trigger == 'click') {\r\n        this.$element.on('click.' + this.type, this.options.selector, $.proxy(this.toggle, this))\r\n      } else if (this.options.trigger != 'manual') {\r\n        eventIn = this.options.trigger == 'hover' ? 'mouseenter' : 'focus'\r\n        eventOut = this.options.trigger == 'hover' ? 'mouseleave' : 'blur'\r\n        this.$element.on(eventIn + '.' + this.type, this.options.selector, $.proxy(this.enter, this))\r\n        this.$element.on(eventOut + '.' + this.type, this.options.selector, $.proxy(this.leave, this))\r\n      }\r\n\r\n      this.options.selector ?\r\n        (this._options = $.extend({}, this.options, { trigger: 'manual', selector: '' })) :\r\n        this.fixTitle()\r\n    }\r\n\r\n  , getOptions: function (options) {\r\n      options = $.extend({}, $.fn[this.type].defaults, options, this.$element.data())\r\n\r\n      if (options.delay && typeof options.delay == 'number') {\r\n        options.delay = {\r\n          show: options.delay\r\n        , hide: options.delay\r\n        }\r\n      }\r\n\r\n      return options\r\n    }\r\n\r\n  , enter: function (e) {\r\n      var self = $(e.currentTarget)[this.type](this._options).data(this.type)\r\n\r\n      if (!self.options.delay || !self.options.delay.show) return self.show()\r\n\r\n      clearTimeout(this.timeout)\r\n      self.hoverState = 'in'\r\n      this.timeout = setTimeout(function() {\r\n        if (self.hoverState == 'in') self.show()\r\n      }, self.options.delay.show)\r\n    }\r\n\r\n  , leave: function (e) {\r\n      var self = $(e.currentTarget)[this.type](this._options).data(this.type)\r\n\r\n      if (this.timeout) clearTimeout(this.timeout)\r\n      if (!self.options.delay || !self.options.delay.hide) return self.hide()\r\n\r\n      self.hoverState = 'out'\r\n      this.timeout = setTimeout(function() {\r\n        if (self.hoverState == 'out') self.hide()\r\n      }, self.options.delay.hide)\r\n    }\r\n\r\n  , show: function () {\r\n      var $tip\r\n        , inside\r\n        , pos\r\n        , actualWidth\r\n        , actualHeight\r\n        , placement\r\n        , tp\r\n\r\n      if (this.hasContent() && this.enabled) {\r\n        $tip = this.tip()\r\n        this.setContent()\r\n\r\n        if (this.options.animation) {\r\n          $tip.addClass('fade')\r\n        }\r\n\r\n        placement = typeof this.options.placement == 'function' ?\r\n          this.options.placement.call(this, $tip[0], this.$element[0]) :\r\n          this.options.placement\r\n\r\n        inside = /in/.test(placement)\r\n\r\n        $tip\r\n          .remove()\r\n          .css({ top: 0, left: 0, display: 'block' })\r\n          .appendTo(",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 15,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/bootstrap/bootstrap-dropdown.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "4124",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/* ============================================================\r\n * bootstrap-dropdown.js v2.1.1\r\n * http://twitter.github.com/bootstrap/javascript.html#dropdowns\r\n * ============================================================\r\n * Copyright 2012 Twitter, Inc.\r\n *\r\n * Licensed under the Apache License, Version 2.0 (the \"License\");\r\n * you may not use this file except in compliance with the License.\r\n * You may obtain a copy of the License at\r\n *\r\n * http://www.apache.org/licenses/LICENSE-2.0\r\n *\r\n * Unless required by applicable law or agreed to in writing, software\r\n * distributed under the License is distributed on an \"AS IS\" BASIS,\r\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\r\n * See the License for the specific language governing permissions and\r\n * limitations under the License.\r\n * ============================================================ */\r\n\r\n\r\n!function ($) {\r\n\r\n  \"use strict\"; // jshint ;_;\r\n\r\n\r\n /* DROPDOWN CLASS DEFINITION\r\n  * ========================= */\r\n\r\n  var toggle = '[data-toggle=dropdown]'\r\n    , Dropdown = function (element) {\r\n        var $el = $(element).on('click.dropdown.data-api', this.toggle)\r\n        $('html').on('click.dropdown.data-api', function () {\r\n          $el.parent().removeClass('open')\r\n        })\r\n      }\r\n\r\n  Dropdown.prototype = {\r\n\r\n    constructor: Dropdown\r\n\r\n  , toggle: function (e) {\r\n      var $this = $(this)\r\n        , $parent\r\n        , isActive\r\n\r\n      if ($this.is('.disabled, :disabled')) return\r\n\r\n      $parent = getParent($this)\r\n\r\n      isActive = $parent.hasClass('open')\r\n\r\n      clearMenus()\r\n\r\n      if (!isActive) {\r\n        $parent.toggleClass('open')\r\n        $this.focus()\r\n      }\r\n\r\n      return false\r\n    }\r\n\r\n  , keydown: function (e) {\r\n      var $this\r\n        , $items\r\n        , $active\r\n        , $parent\r\n        , isActive\r\n        , index\r\n\r\n      if (!/(38|40|27)/.test(e.keyCode)) return\r\n\r\n      $this = $(this)\r\n\r\n      e.preventDefault()\r\n      e.stopPropagation()\r\n\r\n      if ($this.is('.disabled, :disabled')) return\r\n\r\n      $parent = getParent($this)\r\n\r\n      isActive = $parent.hasClass('open')\r\n\r\n      if (!isActive || (isActive && e.keyCode == 27)) return $this.click()\r\n\r\n      $items = $('[role=menu] li:not(.divider) a', $parent)\r\n\r\n      if (!$items.length) return\r\n\r\n      index = $items.index($items.filter(':focus'))\r\n\r\n      if (e.keyCode == 38 && index > 0) index--                                        // up\r\n      if (e.keyCode == 40 && index < $items.length - 1) index++                        // down\r\n      if (!~index) index = 0\r\n\r\n      $items\r\n        .eq(index)\r\n        .focus()\r\n    }\r\n\r\n  }\r\n\r\n  function clearMenus() {\r\n    getParent($(toggle))\r\n      .removeClass('open')\r\n  }\r\n\r\n  function getParent($this) {\r\n    var selector = $this.attr('data-target')\r\n      , $parent\r\n\r\n    if (!selector) {\r\n      selector = $this.attr('href')\r\n      selector = selector && /#/.test(selector) && selector.replace(/.*(?=#[^\\s]*$)/, '') //strip for ie7\r\n    }\r\n\r\n    $parent = $(selector)\r\n    $parent.length || ($parent = $this.parent())\r\n\r\n    return $parent\r\n  }\r\n\r\n\r\n  /* DROPDOWN PLUGIN DEFINITION\r\n   * ========================== */\r\n\r\n  $.fn.dropdown = function (option) {\r\n    return this.each(function () {\r\n      var $this = $(this)\r\n        , data = $this.data('dropdown')\r\n      if (!data) $this.data('dropdown', (data = new Dropdown(this)))\r\n      if (typeof option == 'string') data[option].call($this)\r\n    })\r\n  }\r\n\r\n  $.fn.dropdown.Constructor = Dropdown\r\n\r\n\r\n  /* APPLY TO STANDARD DROPDOWN ELEMENTS\r\n   * =================================== */\r\n\r\n  $(function () {\r\n    $('html')\r\n      .on('click.dropdown.data-api touchstart.dropdown.data-api', clearMenus)\r\n    $('body')\r\n      .on('click.dropdown touchstart.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })\r\n      .on('click.dropdown.data-api touchstart.dropdown.data-api'  , toggle, Dropdown.prototype.toggle)\r\n      .on('keydown.dropdo",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 16,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/bootstrap/bootstrap-tab.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "3516",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/* ========================================================\r\n * bootstrap-tab.js v2.1.1\r\n * http://twitter.github.com/bootstrap/javascript.html#tabs\r\n * ========================================================\r\n * Copyright 2012 Twitter, Inc.\r\n *\r\n * Licensed under the Apache License, Version 2.0 (the \"License\");\r\n * you may not use this file except in compliance with the License.\r\n * You may obtain a copy of the License at\r\n *\r\n * http://www.apache.org/licenses/LICENSE-2.0\r\n *\r\n * Unless required by applicable law or agreed to in writing, software\r\n * distributed under the License is distributed on an \"AS IS\" BASIS,\r\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\r\n * See the License for the specific language governing permissions and\r\n * limitations under the License.\r\n * ======================================================== */\r\n\r\n\r\n!function ($) {\r\n\r\n  \"use strict\"; // jshint ;_;\r\n\r\n\r\n /* TAB CLASS DEFINITION\r\n  * ==================== */\r\n\r\n  var Tab = function (element) {\r\n    this.element = $(element)\r\n  }\r\n\r\n  Tab.prototype = {\r\n\r\n    constructor: Tab\r\n\r\n  , show: function () {\r\n      var $this = this.element\r\n        , $ul = $this.closest('ul:not(.dropdown-menu)')\r\n        , selector = $this.attr('data-target')\r\n        , previous\r\n        , $target\r\n        , e\r\n\r\n      if (!selector) {\r\n        selector = $this.attr('href')\r\n        selector = selector && selector.replace(/.*(?=#[^\\s]*$)/, '') //strip for ie7\r\n      }\r\n\r\n      if ( $this.parent('li').hasClass('active') ) return\r\n\r\n      previous = $ul.find('.active a').last()[0]\r\n\r\n      e = $.Event('show', {\r\n        relatedTarget: previous\r\n      })\r\n\r\n      $this.trigger(e)\r\n\r\n      if (e.isDefaultPrevented()) return\r\n\r\n      $target = $(selector)\r\n\r\n      this.activate($this.parent('li'), $ul)\r\n      this.activate($target, $target.parent(), function () {\r\n        $this.trigger({\r\n          type: 'shown'\r\n        , relatedTarget: previous\r\n        })\r\n      })\r\n    }\r\n\r\n  , activate: function ( element, container, callback) {\r\n      var $active = container.find('> .active')\r\n        , transition = callback\r\n            && $.support.transition\r\n            && $active.hasClass('fade')\r\n\r\n      function next() {\r\n        $active\r\n          .removeClass('active')\r\n          .find('> .dropdown-menu > .active')\r\n          .removeClass('active')\r\n\r\n        element.addClass('active')\r\n\r\n        if (transition) {\r\n          element[0].offsetWidth // reflow for transition\r\n          element.addClass('in')\r\n        } else {\r\n          element.removeClass('fade')\r\n        }\r\n\r\n        if ( element.parent('.dropdown-menu') ) {\r\n          element.closest('li.dropdown').addClass('active')\r\n        }\r\n\r\n        callback && callback()\r\n      }\r\n\r\n      transition ?\r\n        $active.one($.support.transition.end, next) :\r\n        next()\r\n\r\n      $active.removeClass('in')\r\n    }\r\n  }\r\n\r\n\r\n /* TAB PLUGIN DEFINITION\r\n  * ===================== */\r\n\r\n  $.fn.tab = function ( option ) {\r\n    return this.each(function () {\r\n      var $this = $(this)\r\n        , data = $this.data('tab')\r\n      if (!data) $this.data('tab', (data = new Tab(this)))\r\n      if (typeof option == 'string') data[option]()\r\n    })\r\n  }\r\n\r\n  $.fn.tab.Constructor = Tab\r\n\r\n\r\n /* TAB DATA-API\r\n  * ============ */\r\n\r\n  $(function () {\r\n    $('body').on('click.tab.data-api', '[data-toggle=\"tab\"], [data-toggle=\"pill\"]', function (e) {\r\n      e.preventDefault()\r\n      $(this).tab('show')\r\n    })\r\n  })\r\n\r\n}(window.jQuery);",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 17,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/bootstrap/bootstrap-collapse.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "4657",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/* =============================================================\r\n * bootstrap-collapse.js v2.1.1\r\n * http://twitter.github.com/bootstrap/javascript.html#collapse\r\n * =============================================================\r\n * Copyright 2012 Twitter, Inc.\r\n *\r\n * Licensed under the Apache License, Version 2.0 (the \"License\");\r\n * you may not use this file except in compliance with the License.\r\n * You may obtain a copy of the License at\r\n *\r\n * http://www.apache.org/licenses/LICENSE-2.0\r\n *\r\n * Unless required by applicable law or agreed to in writing, software\r\n * distributed under the License is distributed on an \"AS IS\" BASIS,\r\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\r\n * See the License for the specific language governing permissions and\r\n * limitations under the License.\r\n * ============================================================ */\r\n\r\n\r\n!function ($) {\r\n\r\n  \"use strict\"; // jshint ;_;\r\n\r\n\r\n /* COLLAPSE PUBLIC CLASS DEFINITION\r\n  * ================================ */\r\n\r\n  var Collapse = function (element, options) {\r\n    this.$element = $(element)\r\n    this.options = $.extend({}, $.fn.collapse.defaults, options)\r\n\r\n    if (this.options.parent) {\r\n      this.$parent = $(this.options.parent)\r\n    }\r\n\r\n    this.options.toggle && this.toggle()\r\n  }\r\n\r\n  Collapse.prototype = {\r\n\r\n    constructor: Collapse\r\n\r\n  , dimension: function () {\r\n      var hasWidth = this.$element.hasClass('width')\r\n      return hasWidth ? 'width' : 'height'\r\n    }\r\n\r\n  , show: function () {\r\n      var dimension\r\n        , scroll\r\n        , actives\r\n        , hasData\r\n\r\n      if (this.transitioning) return\r\n\r\n      dimension = this.dimension()\r\n      scroll = $.camelCase(['scroll', dimension].join('-'))\r\n      actives = this.$parent && this.$parent.find('> .accordion-group > .in')\r\n\r\n      if (actives && actives.length) {\r\n        hasData = actives.data('collapse')\r\n        if (hasData && hasData.transitioning) return\r\n        actives.collapse('hide')\r\n        hasData || actives.data('collapse', null)\r\n      }\r\n\r\n      this.$element[dimension](0)\r\n      this.transition('addClass', $.Event('show'), 'shown')\r\n      $.support.transition && this.$element[dimension](this.$element[0][scroll])\r\n    }\r\n\r\n  , hide: function () {\r\n      var dimension\r\n      if (this.transitioning) return\r\n      dimension = this.dimension()\r\n      this.reset(this.$element[dimension]())\r\n      this.transition('removeClass', $.Event('hide'), 'hidden')\r\n      this.$element[dimension](0)\r\n    }\r\n\r\n  , reset: function (size) {\r\n      var dimension = this.dimension()\r\n\r\n      this.$element\r\n        .removeClass('collapse')\r\n        [dimension](size || 'auto')\r\n        [0].offsetWidth\r\n\r\n      this.$element[size !== null ? 'addClass' : 'removeClass']('collapse')\r\n\r\n      return this\r\n    }\r\n\r\n  , transition: function (method, startEvent, completeEvent) {\r\n      var that = this\r\n        , complete = function () {\r\n            if (startEvent.type == 'show') that.reset()\r\n            that.transitioning = 0\r\n            that.$element.trigger(completeEvent)\r\n          }\r\n\r\n      this.$element.trigger(startEvent)\r\n\r\n      if (startEvent.isDefaultPrevented()) return\r\n\r\n      this.transitioning = 1\r\n\r\n      this.$element[method]('in')\r\n\r\n      $.support.transition && this.$element.hasClass('collapse') ?\r\n        this.$element.one($.support.transition.end, complete) :\r\n        complete()\r\n    }\r\n\r\n  , toggle: function () {\r\n      this[this.$element.hasClass('in') ? 'hide' : 'show']()\r\n    }\r\n\r\n  }\r\n\r\n\r\n /* COLLAPSIBLE PLUGIN DEFINITION\r\n  * ============================== */\r\n\r\n  $.fn.collapse = function (option) {\r\n    return this.each(function () {\r\n      var $this = $(this)\r\n        , data = $this.data('collapse')\r\n        , options = typeof option == 'object' && option\r\n      if (!data) $this.data('collapse', (data = new Collapse(this, options)))\r\n      if (typeof option == 'string') data[option]()\r\n    })\r\n  }\r\n\r\n  $.fn.collapse.defaults = {\r\n   ",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 18,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/bootstrap/jquery.bootstrap.wizard.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "6889",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/*!\n * jQuery twitter bootstrap wizard plugin\n * Examples and documentation at: http://github.com/VinceG/twitter-bootstrap-wizard\n * version 1.0\n * Requires jQuery v1.3.2 or later\n * Dual licensed under the MIT and GPL licenses:\n * http://www.opensource.org/licenses/mit-license.php\n * http://www.gnu.org/licenses/gpl.html\n * Authors: Vadim Vincent Gabriel (http://vadimg.com), Jason Gill (www.gilluminate.com)\n */\n;(function($) {\nvar bootstrapWizardCreate = function(element, options) {\n\tvar element = $(element);\n\tvar obj = this;\n\n\t// Merge options with defaults\n\t//var $settings = $.extend($.fn.bootstrapWizard.defaults, options || {});\n\tvar $settings = $.extend({}, $.fn.bootstrapWizard.defaults, options);\n\tvar $activeTab = null;\n\tvar $navigation = null;\n\n\tthis.fixNavigationButtons = function() {\n\t\t// Get the current active tab\n\t\tif(!$activeTab.length) {\n\t\t\t// Select first one\n\t\t\t$navigation.find('a:first').tab('show');\n\t\t\t$activeTab = $navigation.find('li:first');\n\t\t}\n\n\t\t// See if we're currently in the first/last then disable the previous and last buttons\n\t\tif(obj.firstIndex() >= obj.currentIndex()) {\n\t\t\t$('li.previous', element).addClass('disabled');\n\t\t} else{\n\t\t\t$('li.previous', element).removeClass('disabled');\n\t\t}\n\n\t\tif(obj.currentIndex() >= obj.navigationLength()) {\n\t\t\t$('li.next', element).addClass('disabled');\n\t\t} else {\n\t\t\t$('li.next', element).removeClass('disabled');\n\t\t}\n\n\t\tif($settings.onTabShow && typeof $settings.onTabShow === 'function' && $settings.onTabShow($activeTab, $navigation, obj.currentIndex())===false){\n\t\t\treturn false;\n\t\t}\n\t};\n\n\tthis.next = function(e) {\n            if (!validaSteps) {\n                return false;\n            }\n\t\t// If we clicked the last then dont activate this\n\t\tif(element.hasClass('last')) {\n\t\t\treturn false;\n\t\t}\n\n\t\tif($settings.onNext && typeof $settings.onNext === 'function' && $settings.onNext($activeTab, $navigation, obj.nextIndex())===false){\n\t\t\treturn false;\n\t\t}\n\n\t\t// Did we click the last button\n\t\t$index = obj.nextIndex();\n\t\tif($index > obj.navigationLength()) {\n\t\t} else {\n\t\t\t$navigation.find('li:eq('+$index+') a').tab('show');\n\t\t}\n\t};\n\n\tthis.previous = function(e) {\n\n\t\t// If we clicked the first then dont activate this\n\t\tif(element.hasClass('first')) {\n\t\t\treturn false;\n\t\t}\n\n\t\tif($settings.onPrevious && typeof $settings.onPrevious === 'function' && $settings.onPrevious($activeTab, $navigation, obj.previousIndex())===false){\n\t\t\treturn false;\n\t\t}\n\n\t\t$index = obj.previousIndex();\n\t\tif($index < 0) {\n\t\t} else {\n\t\t\t$navigation.find('li:eq('+$index+') a').tab('show');\n\t\t}\n\t};\n\n\tthis.first = function(e) {\n\t\tif($settings.onFirst && typeof $settings.onFirst === 'function' && $settings.onFirst($activeTab, $navigation, obj.firstIndex())===false){\n\t\t\treturn false;\n\t\t}\n\n\t\t// If the element is disabled then we won't do anything\n\t\tif(element.hasClass('disabled')) {\n\t\t\treturn false;\n\t\t}\n\t\t$navigation.find('li:eq(0) a').tab('show');\n\n\t};\n\tthis.last = function(e) {\n\t\tif($settings.onLast && typeof $settings.onLast === 'function' && $settings.onLast($activeTab, $navigation, obj.lastIndex())===false){\n\t\t\treturn false;\n\t\t}\n\n\t\t// If the element is disabled then we won't do anything\n\t\tif(element.hasClass('disabled')) {\n\t\t\treturn false;\n\t\t}\n\t\t$navigation.find('li:eq('+obj.navigationLength()+') a').tab('show');\n\t};\n\tthis.currentIndex = function() {\n\t\treturn $navigation.find('li').index($activeTab);\n\t};\n\tthis.firstIndex = function() {\n\t\treturn 0;\n\t};\n\tthis.lastIndex = function() {\n\t\treturn obj.navigationLength();\n\t};\n\tthis.getIndex = function(e) {\n\t\treturn $navigation.find('li').index(e);\n\t};\n\tthis.nextIndex = function() {\n\t\treturn $navigation.find('li').index($activeTab) + 1;\n\t};\n\tthis.previousIndex = function() {\n\t\treturn $navigation.find('li').index($activeTab) - 1;\n\t};\n\tthis.navigationLength = function() {\n\t\treturn $navigation.find('li').length - 1;\n\t};\n\tthis.activeTab = function() {\n\t\treturn $activeTab;\n\t};\n\tthis.nextTab = function() {\n\t\treturn $navigation.find('li:eq('+(obj.currentIndex()+1)+')').len",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 19,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/bootstrap/bootstrap-alert.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "2481",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/* ==========================================================\r\n * bootstrap-alert.js v2.1.1\r\n * http://twitter.github.com/bootstrap/javascript.html#alerts\r\n * ==========================================================\r\n * Copyright 2012 Twitter, Inc.\r\n *\r\n * Licensed under the Apache License, Version 2.0 (the \"License\");\r\n * you may not use this file except in compliance with the License.\r\n * You may obtain a copy of the License at\r\n *\r\n * http://www.apache.org/licenses/LICENSE-2.0\r\n *\r\n * Unless required by applicable law or agreed to in writing, software\r\n * distributed under the License is distributed on an \"AS IS\" BASIS,\r\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\r\n * See the License for the specific language governing permissions and\r\n * limitations under the License.\r\n * ========================================================== */\r\n\r\n\r\n!function ($) {\r\n\r\n  \"use strict\"; // jshint ;_;\r\n\r\n\r\n /* ALERT CLASS DEFINITION\r\n  * ====================== */\r\n\r\n  var dismiss = '[data-dismiss=\"alert\"]'\r\n    , Alert = function (el) {\r\n        $(el).on('click', dismiss, this.close)\r\n      }\r\n\r\n  Alert.prototype.close = function (e) {\r\n    var $this = $(this)\r\n      , selector = $this.attr('data-target')\r\n      , $parent\r\n\r\n    if (!selector) {\r\n      selector = $this.attr('href')\r\n      selector = selector && selector.replace(/.*(?=#[^\\s]*$)/, '') //strip for ie7\r\n    }\r\n\r\n    $parent = $(selector)\r\n\r\n    e && e.preventDefault()\r\n\r\n    $parent.length || ($parent = $this.hasClass('alert') ? $this : $this.parent())\r\n\r\n    $parent.trigger(e = $.Event('close'))\r\n\r\n    if (e.isDefaultPrevented()) return\r\n\r\n    $parent.removeClass('in')\r\n\r\n    function removeElement() {\r\n      $parent\r\n        .trigger('closed')\r\n        .remove()\r\n    }\r\n\r\n    $.support.transition && $parent.hasClass('fade') ?\r\n      $parent.on($.support.transition.end, removeElement) :\r\n      removeElement()\r\n  }\r\n\r\n\r\n /* ALERT PLUGIN DEFINITION\r\n  * ======================= */\r\n\r\n  $.fn.alert = function (option) {\r\n    return this.each(function () {\r\n      var $this = $(this)\r\n        , data = $this.data('alert')\r\n      if (!data) $this.data('alert', (data = new Alert(this)))\r\n      if (typeof option == 'string') data[option].call($this)\r\n    })\r\n  }\r\n\r\n  $.fn.alert.Constructor = Alert\r\n\r\n\r\n /* ALERT DATA-API\r\n  * ============== */\r\n\r\n  $(function () {\r\n    $('body').on('click.alert.data-api', dismiss, Alert.prototype.close)\r\n  })\r\n\r\n}(window.jQuery);",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 20,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/bootstrap/bootstrap-modal.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "9249",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/* ===========================================================\n * bootstrap-modal.js v2.1\n * ===========================================================\n * Copyright 2012 Jordan Schroter\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n * ========================================================== */\n\n\n!function ($) {\n\n\t\"use strict\"; // jshint ;_;\n\n\t/* MODAL CLASS DEFINITION\n\t* ====================== */\n\n\tvar Modal = function (element, options) {\n\t\tthis.init(element, options);\n\t};\n\n\tModal.prototype = {\n\n\t\tconstructor: Modal,\n\n\t\tinit: function (element, options) {\n\t\t\tthis.options = options;\n\n\t\t\tthis.$element = $(element)\n\t\t\t\t.delegate('[data-dismiss=\"modal\"]', 'click.dismiss.modal', $.proxy(this.hide, this));\n\n\t\t\tthis.options.remote && this.$element.find('.modal-body').load(this.options.remote);\n\n\t\t\tvar manager = typeof this.options.manager === 'function' ?\n\t\t\t\tthis.options.manager.call(this) : this.options.manager;\n\n\t\t\tmanager = manager.appendModal ?\n\t\t\t\tmanager : $(manager).modalmanager().data('modalmanager');\n\n\t\t\tmanager.appendModal(this);\n\t\t},\n\n\t\ttoggle: function () {\n\t\t\treturn this[!this.isShown ? 'show' : 'hide']();\n\t\t},\n\n\t\tshow: function () {\n\t\t\tvar e = $.Event('show');\n\n\t\t\tif (this.isShown) return;\n\n\t\t\tthis.$element.trigger(e);\n\n\t\t\tif (e.isDefaultPrevented()) return;\n\n\t\t\tthis.escape();\n\n\t\t\tthis.tab();\n\n\t\t\tthis.options.loading && this.loading();\n\t\t},\n\n\t\thide: function (e) {\n\t\t\te && e.preventDefault();\n\n\t\t\te = $.Event('hide');\n\n\t\t\tthis.$element.trigger(e);\n\n\t\t\tif (!this.isShown || e.isDefaultPrevented()) return (this.isShown = false);\n\n\t\t\tthis.isShown = false;\n\n\t\t\tthis.escape();\n\n\t\t\tthis.tab();\n\n\t\t\tthis.isLoading && this.loading();\n\n\t\t\t$(document).off('focusin.modal');\n\n\t\t\tthis.$element\n\t\t\t\t.removeClass('in')\n\t\t\t\t.removeClass('animated')\n\t\t\t\t.removeClass(this.options.attentionAnimation)\n\t\t\t\t.removeClass('modal-overflow')\n\t\t\t\t.attr('aria-hidden', true);\n\n\t\t\t$.support.transition && this.$element.hasClass('fade') ?\n\t\t\t\tthis.hideWithTransition() :\n\t\t\t\tthis.hideModal();\n\t\t},\n\n\t\tlayout: function () {\n\t\t\tvar prop = this.options.height ? 'height' : 'max-height',\n\t\t\t\tvalue = this.options.height || this.options.maxHeight;\n\n\t\t\tif (this.options.width){\n\t\t\t\tthis.$element.css('width', this.options.width);\n\n\t\t\t\tvar that = this;\n\t\t\t\tthis.$element.css('margin-left', function () {\n\t\t\t\t\tif (/%/ig.test(that.options.width)){\n\t\t\t\t\t\treturn -(parseInt(that.options.width) / 2) + '%';\n\t\t\t\t\t} else {\n\t\t\t\t\t\treturn -($(this).width() / 2) + 'px';\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t} else {\n\t\t\t\tthis.$element.css('width', '');\n\t\t\t\tthis.$element.css('margin-left', '');\n\t\t\t}\n\n\t\t\tthis.$element.find('.modal-body')\n\t\t\t\t.css('overflow', '')\n\t\t\t\t.css(prop, '');\n\n\t\t\tvar modalOverflow = $(window).height() - 10 < this.$element.height();\n\n\t\t\tif (value){\n\t\t\t\tthis.$element.find('.modal-body')\n\t\t\t\t\t.css('overflow', 'auto')\n\t\t\t\t\t.css(prop, value);\n\t\t\t}\n\n\t\t\tif (modalOverflow || this.options.modalOverflow) {\n\t\t\t\tthis.$element\n\t\t\t\t\t.css('margin-top', 0)\n\t\t\t\t\t.addClass('modal-overflow');\n\t\t\t} else {\n\t\t\t\tthis.$element\n\t\t\t\t\t.css('margin-top', 0 - this.$element.height() / 2)\n\t\t\t\t\t.removeClass('modal-overflow');\n\t\t\t}\n\t\t},\n\n\t\ttab: function () {\n\t\t\tvar that = this;\n\n\t\t\tif (this.isShown && this.options.consumeTab) {\n\t\t\t\tthis.$element.on('keydown.tabindex.modal', '[data-tabindex]', function (e) {\n\t\t\t    \tif (e.keyCode && e.keyCode == 9){\n\t\t\t\t\t\tvar $next = $(this),\n\t\t\t\t\t\t\t$rollover = $(this);\n\n\t\t\t\t\t\tthat.$element.find('[data-tabindex]:enabled:not([readonly])').each(function (e) {\n\t\t\t\t\t\t\tif (!e.shiftKey){",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 21,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/bootstrap/bootstrap-modalmanager.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "10652",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/* ===========================================================\n * bootstrap-modalmanager.js v2.1\n * ===========================================================\n * Copyright 2012 Jordan Schroter.\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n * ========================================================== */\n\n!function ($) {\n\n\t\"use strict\"; // jshint ;_;\n\n\t/* MODAL MANAGER CLASS DEFINITION\n\t* ====================== */\n\n\tvar ModalManager = function (element, options) {\n\t\tthis.init(element, options);\n\t};\n\n\tModalManager.prototype = {\n\n\t\tconstructor: ModalManager,\n\n\t\tinit: function (element, options) {\n\t\t\tthis.$element = $(element);\n\t\t\tthis.options = $.extend({}, $.fn.modalmanager.defaults, this.$element.data(), typeof options == 'object' && options);\n\t\t\tthis.stack = [];\n\t\t\tthis.backdropCount = 0;\n\n\t\t\tif (this.options.resize) {\n\t\t\t\tvar resizeTimeout,\n\t\t\t\t\tthat = this;\n\n\t\t\t\t$(window).on('resize.modal', function(){\n\t\t\t\t\tresizeTimeout && clearTimeout(resizeTimeout);\n\t\t\t\t\tresizeTimeout = setTimeout(function(){\n\t\t\t\t\t\tfor (var i = 0; i < that.stack.length; i++){\n\t\t\t\t\t\t\tthat.stack[i].isShown && that.stack[i].layout();\n\t\t\t\t\t\t}\n\t\t\t\t\t}, 10);\n\t\t\t\t});\n\t\t\t}\n\t\t},\n\n\t\tcreateModal: function (element, options) {\n\t\t\t$(element).modal($.extend({ manager: this }, options));\n\t\t},\n\n\t\tappendModal: function (modal) {\n\t\t\tthis.stack.push(modal);\n\n\t\t\tvar that = this;\n\n\t\t\tmodal.$element.on('show.modalmanager', targetIsSelf(function (e) {\n\n\t\t\t\tvar showModal = function(){\n\t\t\t\t\tmodal.isShown = true;\n\n\t\t\t\t\tvar transition = $.support.transition && modal.$element.hasClass('fade');\n\n\t\t\t\t\tthat.$element\n\t\t\t\t\t\t.toggleClass('modal-open', that.hasOpenModal())\n\t\t\t\t\t\t.toggleClass('page-overflow', $(window).height() < that.$element.height());\n\n\t\t\t\t\tmodal.$parent = modal.$element.parent();\n\n\t\t\t\t\tmodal.$container = that.createContainer(modal);\n\n\t\t\t\t\tmodal.$element.appendTo(modal.$container);\n\n\t\t\t\t\tthat.backdrop(modal, function () {\n\n\t\t\t\t\t\tmodal.$element.show();\n\n\t\t\t\t\t\tif (transition) {       \n\t\t\t\t\t\t\t//modal.$element[0].style.display = 'run-in';       \n\t\t\t\t\t\t\tmodal.$element[0].offsetWidth;\n\t\t\t\t\t\t\t//modal.$element.one($.support.transition.end, function () { modal.$element[0].style.display = 'block' });  \n\t\t\t\t\t\t}\n\t\t\t\t\t\t\n\t\t\t\t\t\tmodal.layout();\n\n\t\t\t\t\t\tmodal.$element\n\t\t\t\t\t\t\t.addClass('in')\n\t\t\t\t\t\t\t.attr('aria-hidden', false);\n\n\t\t\t\t\t\tvar complete = function () {\n\t\t\t\t\t\t\tthat.setFocus();\n\t\t\t\t\t\t\tmodal.$element.trigger('shown');\n\t\t\t\t\t\t};\n\n\t\t\t\t\t\ttransition ?\n\t\t\t\t\t\t\tmodal.$element.one($.support.transition.end, complete) :\n\t\t\t\t\t\t\tcomplete();\n\t\t\t\t\t});\n\t\t\t\t};\n\n\t\t\t\tmodal.options.replace ?\n\t\t\t\t\tthat.replace(showModal) :\n\t\t\t\t\tshowModal();\n\t\t\t}));\n\n\t\t\tmodal.$element.on('hidden.modalmanager', targetIsSelf(function (e) {\n\n\t\t\t\tthat.backdrop(modal);\n\n\t\t\t\tif (modal.$backdrop){\n\t\t\t\t\t$.support.transition && modal.$element.hasClass('fade') ?\n\t\t\t\t\t\tmodal.$backdrop.one($.support.transition.end, function () { that.destroyModal(modal) }) :\n\t\t\t\t\t\tthat.destroyModal(modal);\n\t\t\t\t} else {\n\t\t\t\t\tthat.destroyModal(modal);\n\t\t\t\t}\n\n\t\t\t}));\n\n\t\t\tmodal.$element.on('destroy.modalmanager', targetIsSelf(function (e) {\n\t\t\t\tthat.removeModal(modal);\n\t\t\t}));\n\n\t\t},\n\n\t\tdestroyModal: function (modal) {\n\n\t\t\tmodal.destroy();\n\n\t\t\tvar hasOpenModal = this.hasOpenModal();\n\n\t\t\tthis.$element.toggleClass('modal-open', hasOpenModal);\n\n\t\t\tif (!hasOpenModal){\n\t\t\t\tthis.$element.removeClass('page-overflow');\n\t\t\t}\n\n\t\t\tthis.removeContainer(modal);\n\n\t\t\tthis.setFocus();\n\t\t},\n\n\t\thasOpenModal: function () {\n\t\t\tfor (var i = 0; i < this.stack.length; i++){\n\t\t\t\t",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 22,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/plugins/snippet/jquery.snippet.min.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "68457",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/*\r\n * Snippet :: jQuery Syntax Highlighter v2.0.0\r\n * http://steamdev.com/snippet\r\n *\r\n * Copyright 2011, SteamDev\r\n * Released under the MIT license.\r\n * http://www.opensource.org/licenses/mit-license.php\r\n *\r\n * Date: Wed Jan 19, 2011\r\n */\r\n\r\n(function(a){window.log=function(){log.history=log.history||[];log.history.push(arguments);if(this.console){console.log(Array.prototype.slice.call(arguments))}};a.fn.snippet=function(e,c){if(typeof e==\"object\"){c=e}if(typeof e==\"string\"){e=e.toLowerCase()}var d={style:\"random\",showNum:true,transparent:false,collapse:false,menu:true,showMsg:\"Expand Code\",hideMsg:\"Collapse Code\",clipboard:\"\",startCollapsed:true,startText:false,box:\"\",boxColor:\"\",boxFill:\"\"};var b=[\"acid\",\"berries-dark\",\"berries-light\",\"bipolar\",\"blacknblue\",\"bright\",\"contrast\",\"darkblue\",\"darkness\",\"desert\",\"dull\",\"easter\",\"emacs\",\"golden\",\"greenlcd\",\"ide-anjuta\",\"ide-codewarrior\",\"ide-devcpp\",\"ide-eclipse\",\"ide-kdev\",\"ide-msvcpp\",\"kwrite\",\"matlab\",\"navy\",\"nedit\",\"neon\",\"night\",\"pablo\",\"peachpuff\",\"print\",\"rand01\",\"the\",\"typical\",\"vampire\",\"vim\",\"vim-dark\",\"whatis\",\"whitengrey\",\"zellner\"];if(c){a.extend(d,c)}return this.each(function(){var H=d.style.toLowerCase();if(d.style==\"random\"){var D=Math.floor(Math.random()*(b.length));H=b[D]}var u=a(this);var y=this.nodeName.toLowerCase();if(y==\"pre\"){if(u.data(\"orgHtml\")==undefined||u.data(\"orgHtml\")==null){var f=u.html();u.data(\"orgHtml\",f)}if(!u.parent().hasClass(\"snippet-wrap\")){if(typeof e!=\"string\"){if(u.attr(\"class\").length>0){var t=' class=\"'+u.attr(\"class\")+'\"'}else{var t=\"\"}if(u.attr(\"id\").length>0){var J=' id=\"'+u.attr(\"id\")+'\"'}else{var J=\"\"}var A=\"Snippet Error: You must specify a language on inital usage of Snippet. Reference <pre\"+t+J+\">\";console.log(A);return false}u.addClass(\"sh_\"+e).addClass(\"snippet-formatted\").wrap(\"<div class='snippet-container' style='\"+u.attr(\"style\")+\";'><div class='sh_\"+H+\" snippet-wrap'></div></div>\");u.removeAttr(\"style\");sh_highlightDocument();if(d.showNum){var v=u.html();v=v.replace(/\\n/g,\"</li><li>\");v=\"<ol class='snippet-num'><li>\"+v+\"</li></ol>\";while(v.indexOf(\"<li></li></ol>\")!=-1){v=v.replace(\"<li></li></ol>\",\"</ol>\")}}else{var v=u.html();v=v.replace(/\\n/g,\"</li><li>\");v=\"<ul class='snippet-no-num'><li>\"+v+\"</li></ul>\";while(v.indexOf(\"<li></li></ul>\")!=-1){v=v.replace(\"<li></li></ul>\",\"</ul>\")}}v=v.replace(/\\t/g,\"&nbsp;&nbsp;&nbsp;&nbsp;\");u.html(v);while(u.find(\"li\").eq(0).html()==\"\"){u.find(\"li\").eq(0).remove()}u.find(\"li\").each(function(){if(a(this).html().length<2){var i=(a(this).html()).replace(/\\s/g,\"\");if(i==\"\"){if(a.browser.opera){a(this).html(\"&nbsp;\")}else{a(this).html(\"<span style='display:none;'>&nbsp;</span>\")}}}});var w=\"<pre class='snippet-textonly sh_sourceCode' style='display:none;'>\"+u.data(\"orgHtml\")+\"</pre>\";var r=\"<div class='snippet-menu sh_sourceCode' style='display:none;'><pre><a class='snippet-copy' href='#'>copy</a><a class='snippet-text' href='#'>text</a><a class='snippet-window' href='#'>pop-up</a></pre></div>\";u.parent().append(w);u.parent().prepend(r);u.parent().hover(function(){a(this).find(\".snippet-menu\").fadeIn(\"fast\")},function(){a(this).find(\".snippet-menu\").fadeOut(\"fast\")});if(d.clipboard!=\"\"&&d.clipboard!=false){var j=u.parent().find(\"a.snippet-copy\");j.show();j.parents(\".snippet-menu\").show();var s=u.parents(\".snippet-wrap\").find(\".snippet-textonly\").text();ZeroClipboard.setMoviePath(d.clipboard);var G=new ZeroClipboard.Client();G.setText(s);G.glue(j[0],j.parents(\".snippet-menu\")[0]);G.addEventListener(\"complete\",function(i,o){if(o.length>500){o=o.substr(0,500)+\"...\\n\\n(\"+(o.length-500)+\" characters not shown)\"}alert(\"Copied text to clipboard:\\n\\n \"+o)});j.parents(\".snippet-menu\").hide()}else{u.parent().find(\"a.snippet-copy\").hide()}u.parent().find(\"a.snippet-text\").click(function(){var o=a(this).parents(\".snippet-wrap\").find(\".snippet-formatted\");var i=a(this).parents(\".snippet-wrap\").find(\".snippet-textonly\");o.toggle();i.toggle();if(i.is(\":visible\")){a(this).html(\"html\")}else{a(this).",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 23,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/plugins/datepicker/bootstrap-datepicker.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "12086",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/* =========================================================\r\n * bootstrap-datepicker.js \r\n * http://www.eyecon.ro/bootstrap-datepicker\r\n * =========================================================\r\n * Copyright 2012 Stefan Petre\r\n *\r\n * Licensed under the Apache License, Version 2.0 (the \"License\");\r\n * you may not use this file except in compliance with the License.\r\n * You may obtain a copy of the License at\r\n *\r\n * http://www.apache.org/licenses/LICENSE-2.0\r\n *\r\n * Unless required by applicable law or agreed to in writing, software\r\n * distributed under the License is distributed on an \"AS IS\" BASIS,\r\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\r\n * See the License for the specific language governing permissions and\r\n * limitations under the License.\r\n * ========================================================= */\r\n \r\n!function( $ ) {\r\n\t\r\n\t// Picker object\r\n\t\r\n\tvar Datepicker = function(element, options){\r\n\t\tthis.element = $(element);\r\n\t\tthis.format = DPGlobal.parseFormat(options.format||this.element.data('date-format')||'mm/dd/yyyy');\r\n\t\tthis.picker = $(DPGlobal.template)\r\n\t\t\t\t\t\t\t.appendTo('body')\r\n\t\t\t\t\t\t\t.on({\r\n\t\t\t\t\t\t\t\tclick: $.proxy(this.click, this),\r\n\t\t\t\t\t\t\t\tmousedown: $.proxy(this.mousedown, this)\r\n\t\t\t\t\t\t\t});\r\n\t\tthis.isInput = this.element.is('input');\r\n\t\tthis.component = this.element.is('.date') ? this.element.find('.add-on') : false;\r\n\t\t\r\n\t\tif (this.isInput) {\r\n\t\t\tthis.element.on({\r\n\t\t\t\tfocus: $.proxy(this.show, this),\r\n\t\t\t\tblur: $.proxy(this.hide, this),\r\n\t\t\t\tkeyup: $.proxy(this.update, this)\r\n\t\t\t});\r\n\t\t} else {\r\n\t\t\tif (this.component){\r\n\t\t\t\tthis.component.on('click', $.proxy(this.show, this));\r\n\t\t\t} else {\r\n\t\t\t\tthis.element.on('click', $.proxy(this.show, this));\r\n\t\t\t}\r\n\t\t}\r\n\t\t\r\n\t\tthis.viewMode = 0;\r\n\t\tthis.weekStart = options.weekStart||this.element.data('date-weekstart')||0;\r\n\t\tthis.weekEnd = this.weekStart == 0 ? 6 : this.weekStart - 1;\r\n\t\tthis.fillDow();\r\n\t\tthis.fillMonths();\r\n\t\tthis.update();\r\n\t\tthis.showMode();\r\n\t};\r\n\t\r\n\tDatepicker.prototype = {\r\n\t\tconstructor: Datepicker,\r\n\t\t\r\n\t\tshow: function(e) {\r\n\t\t\tthis.picker.show();\r\n\t\t\tthis.height = this.component ? this.component.outerHeight() : this.element.outerHeight();\r\n\t\t\tthis.place();\r\n\t\t\t$(window).on('resize', $.proxy(this.place, this));\r\n\t\t\tif (e ) {\r\n\t\t\t\te.stopPropagation();\r\n\t\t\t\te.preventDefault();\r\n\t\t\t}\r\n\t\t\tif (!this.isInput) {\r\n\t\t\t\t$(document).on('mousedown', $.proxy(this.hide, this));\r\n\t\t\t}\r\n\t\t\tthis.element.trigger({\r\n\t\t\t\ttype: 'show',\r\n\t\t\t\tdate: this.date\r\n\t\t\t});\r\n\t\t},\r\n\t\t\r\n\t\thide: function(){\r\n\t\t\tthis.picker.hide();\r\n\t\t\t$(window).off('resize', this.place);\r\n\t\t\tthis.viewMode = 0;\r\n\t\t\tthis.showMode();\r\n\t\t\tif (!this.isInput) {\r\n\t\t\t\t$(document).off('mousedown', this.hide);\r\n\t\t\t}\r\n\t\t\tthis.setValue();\r\n\t\t\tthis.element.trigger({\r\n\t\t\t\ttype: 'hide',\r\n\t\t\t\tdate: this.date\r\n\t\t\t});\r\n\t\t},\r\n\t\t\r\n\t\tsetValue: function() {\r\n\t\t\tvar formated = DPGlobal.formatDate(this.date, this.format);\r\n\t\t\tif (!this.isInput) {\r\n\t\t\t\tif (this.component){\r\n\t\t\t\t\tthis.element.find('input').prop('value', formated);\r\n\t\t\t\t}\r\n\t\t\t\tthis.element.data('date', formated);\r\n\t\t\t} else {\r\n\t\t\t\tthis.element.prop('value', formated);\r\n\t\t\t}\r\n\t\t},\r\n\t\t\r\n\t\tplace: function(){\r\n\t\t\tvar offset = this.component ? this.component.offset() : this.element.offset();\r\n\t\t\tthis.picker.css({\r\n\t\t\t\ttop: offset.top + this.height,\r\n\t\t\t\tleft: offset.left\r\n\t\t\t});\r\n\t\t},\r\n\t\t\r\n\t\tupdate: function(){\r\n\t\t\tthis.date = DPGlobal.parseDate(\r\n\t\t\t\tthis.isInput ? this.element.prop('value') : this.element.data('date'),\r\n\t\t\t\tthis.format\r\n\t\t\t);\r\n\t\t\tthis.viewDate = new Date(this.date);\r\n\t\t\tthis.fill();\r\n\t\t},\r\n\t\t\r\n\t\tfillDow: function(){\r\n\t\t\tvar dowCnt = this.weekStart;\r\n\t\t\tvar html = '<tr>';\r\n\t\t\twhile (dowCnt < this.weekStart + 7) {\r\n\t\t\t\thtml += '<th class=\"dow\">'+DPGlobal.dates.daysMin[(dowCnt++)%7]+'</th>';\r\n\t\t\t}\r\n\t\t\thtml += '</tr>';\r\n\t\t\tthis.picker.find('.datepicker-days thead').append(html);\r\n\t\t},\r\n\t\t\r\n\t\tfillMonths: function(){\r\n\t\t\tvar html = '';\r\n\t\t\tvar i = 0\r\n\t\t\twhile (i < 12) {\r\n\t\t\t\thtml += '<span class=\"month\">",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 24,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/plugins/jGrowl/jquery.jgrowl.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "14060",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/**\r\n * jGrowl 1.2.6\r\n *\r\n * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)\r\n * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.\r\n *\r\n * Written by Stan Lemon <stosh1985@gmail.com>\r\n * Last updated: 2011.03.27\r\n *\r\n * jGrowl is a jQuery plugin implementing unobtrusive userland notifications.  These \r\n * notifications function similarly to the Growl Framework available for\r\n * Mac OS X (http://growl.info).\r\n *\r\n * To Do:\r\n * - Move library settings to containers and allow them to be changed per container\r\n *\r\n * Changes in 1.2.6\r\n * - Fixed js error when a notification is opening and closing at the same time\r\n * \r\n * Changes in 1.2.5\r\n * - Changed wrapper jGrowl's options usage to \"o\" instead of $.jGrowl.defaults\r\n * - Added themeState option to control 'highlight' or 'error' for jQuery UI\r\n * - Ammended some CSS to provide default positioning for nested usage.\r\n * - Changed some CSS to be prefixed with jGrowl- to prevent namespacing issues\r\n * - Added two new options - openDuration and closeDuration to allow \r\n *   better control of notification open and close speeds, respectively \r\n *   Patch contributed by Jesse Vincet.\r\n * - Added afterOpen callback.  Patch contributed by Russel Branca.\r\n *\r\n * Changes in 1.2.4\r\n * - Fixed IE bug with the close-all button\r\n * - Fixed IE bug with the filter CSS attribute (special thanks to gotwic)\r\n * - Update IE opacity CSS\r\n * - Changed font sizes to use \"em\", and only set the base style\r\n *\r\n * Changes in 1.2.3\r\n * - The callbacks no longer use the container as context, instead they use the actual notification\r\n * - The callbacks now receive the container as a parameter after the options parameter\r\n * - beforeOpen and beforeClose now check the return value, if it's false - the notification does\r\n *   not continue.  The open callback will also halt execution if it returns false.\r\n * - Fixed bug where containers would get confused\r\n * - Expanded the pause functionality to pause an entire container.\r\n *\r\n * Changes in 1.2.2\r\n * - Notification can now be theme rolled for jQuery UI, special thanks to Jeff Chan!\r\n *\r\n * Changes in 1.2.1\r\n * - Fixed instance where the interval would fire the close method multiple times.\r\n * - Added CSS to hide from print media\r\n * - Fixed issue with closer button when div { position: relative } is set\r\n * - Fixed leaking issue with multiple containers.  Special thanks to Matthew Hanlon!\r\n *\r\n * Changes in 1.2.0\r\n * - Added message pooling to limit the number of messages appearing at a given time.\r\n * - Closing a notification is now bound to the notification object and triggered by the close button.\r\n *\r\n * Changes in 1.1.2\r\n * - Added iPhone styled example\r\n * - Fixed possible IE7 bug when determining if the ie6 class shoudl be applied.\r\n * - Added template for the close button, so that it's content could be customized.\r\n *\r\n * Changes in 1.1.1\r\n * - Fixed CSS styling bug for ie6 caused by a mispelling\r\n * - Changes height restriction on default notifications to min-height\r\n * - Added skinned examples using a variety of images\r\n * - Added the ability to customize the content of the [close all] box\r\n * - Added jTweet, an example of using jGrowl + Twitter\r\n *\r\n * Changes in 1.1.0\r\n * - Multiple container and instances.\r\n * - Standard $.jGrowl() now wraps $.fn.jGrowl() by first establishing a generic jGrowl container.\r\n * - Instance methods of a jGrowl container can be called by $.fn.jGrowl(methodName)\r\n * - Added glue preferenced, which allows notifications to be inserted before or after nodes in the container\r\n * - Added new log callback which is called before anything is done for the notification\r\n * - Corner's attribute are now applied on an individual notification basis.\r\n *\r\n * Changes in 1.0.4\r\n * - Various CSS fixes so that jGrowl renders correctly in IE6.\r\n *\r\n * Changes in 1.0.3\r\n * - Fixed bug with options persisting across notifications\r\n * - Fixed theme application bug\r\n * - Simplified some select",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 25,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/js/jquery.blockui.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "19270",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/*!\r\n * jQuery blockUI plugin\r\n * Version 2.53 (01-NOV-2012)\r\n * @requires jQuery v1.3 or later\r\n *\r\n * Examples at: http://malsup.com/jquery/block/\r\n * Copyright (c) 2007-2012 M. Alsup\r\n * Dual licensed under the MIT and GPL licenses:\r\n * http://www.opensource.org/licenses/mit-license.php\r\n * http://www.gnu.org/licenses/gpl.html\r\n *\r\n * Thanks to Amir-Hossein Sobhi for some excellent contributions!\r\n */\r\n\r\n;(function() {\r\n\"use strict\";\r\n\r\n\tfunction setup($) {\r\n\t\tif (/^1\\.(0|1|2)/.test($.fn.jquery)) {\r\n\t\t\t/*global alert:true */\r\n\t\t\talert('blockUI requires jQuery v1.3 or later!  You are using v' + $.fn.jquery);\r\n\t\t\treturn;\r\n\t\t}\r\n\r\n\t\t$.fn._fadeIn = $.fn.fadeIn;\r\n\r\n\t\tvar noOp = $.noop || function() {};\r\n\r\n\t\t// this bit is to ensure we don't call setExpression when we shouldn't (with extra muscle to handle\r\n\t\t// retarded userAgent strings on Vista)\r\n\t\tvar msie = /MSIE/.test(navigator.userAgent);\r\n\t\tvar ie6  = /MSIE 6.0/.test(navigator.userAgent);\r\n\t\tvar mode = document.documentMode || 0;\r\n\t\t// var setExpr = msie && (($.browser.version < 8 && !mode) || mode < 8);\r\n\t\tvar setExpr = $.isFunction( document.createElement('div').style.setExpression );\r\n\r\n\t\t// global $ methods for blocking/unblocking the entire page\r\n\t\t$.blockUI   = function(opts) { install(window, opts); };\r\n\t\t$.unblockUI = function(opts) { remove(window, opts); };\r\n\r\n\t\t// convenience method for quick growl-like notifications  (http://www.google.com/search?q=growl)\r\n\t\t$.growlUI = function(title, message, timeout, onClose) {\r\n\t\t\tvar $m = $('<div class=\"growlUI\"></div>');\r\n\t\t\tif (title) $m.append('<h1>'+title+'</h1>');\r\n\t\t\tif (message) $m.append('<h2>'+message+'</h2>');\r\n\t\t\tif (timeout === undefined) timeout = 3000;\r\n\t\t\t$.blockUI({\r\n\t\t\t\tmessage: $m, fadeIn: 700, fadeOut: 1000, centerY: false,\r\n\t\t\t\ttimeout: timeout, showOverlay: false,\r\n\t\t\t\tonUnblock: onClose,\r\n\t\t\t\tcss: $.blockUI.defaults.growlCSS\r\n\t\t\t});\r\n\t\t};\r\n\r\n\t\t// plugin method for blocking element content\r\n\t\t$.fn.block = function(opts) {\r\n\t\t\tvar fullOpts = $.extend({}, $.blockUI.defaults, opts || {});\r\n\t\t\tthis.each(function() {\r\n\t\t\t\tvar $el = $(this);\r\n\t\t\t\tif (fullOpts.ignoreIfBlocked && $el.data('blockUI.isBlocked'))\r\n\t\t\t\t\treturn;\r\n\t\t\t\t$el.unblock({ fadeOut: 0 });\r\n\t\t\t});\r\n\r\n\t\t\treturn this.each(function() {\r\n\t\t\t\tif ($.css(this,'position') == 'static')\r\n\t\t\t\t\tthis.style.position = 'relative';\r\n\t\t\t\tthis.style.zoom = 1; // force 'hasLayout' in ie\r\n\t\t\t\tinstall(this, opts);\r\n\t\t\t});\r\n\t\t};\r\n\r\n\t\t// plugin method for unblocking element content\r\n\t\t$.fn.unblock = function(opts) {\r\n\t\t\treturn this.each(function() {\r\n\t\t\t\tremove(this, opts);\r\n\t\t\t});\r\n\t\t};\r\n\r\n\t\t$.blockUI.version = 2.53; // 2nd generation blocking at no extra cost!\r\n\r\n\t\t// override these in your code to change the default behavior and style\r\n\t\t$.blockUI.defaults = {\r\n\t\t\t// message displayed when blocking (use null for no message)\r\n\t\t\tmessage:  '<h1>Please wait...</h1>',\r\n\r\n\t\t\ttitle: null,\t\t// title string; only used when theme == true\r\n\t\t\tdraggable: true,\t// only used when theme == true (requires jquery-ui.js to be loaded)\r\n\r\n\t\t\ttheme: false, // set to true to use with jQuery UI themes\r\n\r\n\t\t\t// styles for the message when blocking; if you wish to disable\r\n\t\t\t// these and use an external stylesheet then do this in your code:\r\n\t\t\t// $.blockUI.defaults.css = {};\r\n\t\t\tcss: {\r\n\t\t\t\tpadding:\t0,\r\n\t\t\t\tmargin:\t\t0,\r\n\t\t\t\twidth:\t\t'30%',\r\n\t\t\t\ttop:\t\t'40%',\r\n\t\t\t\tleft:\t\t'35%',\r\n\t\t\t\ttextAlign:\t'center',\r\n\t\t\t\tcolor:\t\t'#000',\r\n\t\t\t\tborder:\t\t'3px solid #aaa',\r\n\t\t\t\tbackgroundColor:'#fff',\r\n\t\t\t\tcursor:\t\t'wait'\r\n\t\t\t},\r\n\r\n\t\t\t// minimal style set used when themes are used\r\n\t\t\tthemedCSS: {\r\n\t\t\t\twidth:\t'30%',\r\n\t\t\t\ttop:\t'40%',\r\n\t\t\t\tleft:\t'35%'\r\n\t\t\t},\r\n\r\n\t\t\t// styles for the overlay\r\n\t\t\toverlayCSS:  {\r\n\t\t\t\tbackgroundColor:\t'#000',\r\n\t\t\t\topacity:\t\t\t\t0.6,\r\n\t\t\t\tcursor:\t\t\t\t'wait'\r\n\t\t\t},\r\n\r\n\t\t\t// style to replace wait cursor before unblocking to correct issue\r\n\t\t\t// of lingering wait cursor\r\n\t\t\tcursorReset: 'default',\r\n\r\n\t\t\t// styles applied when using $.growlUI\r\n\t\t\tgrowlCSS: {\r\n\t\t\t\twidth:\t\t'350px',\r\n\t\t\t\t",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 26,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/img/logo.png",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"02224f6e599d31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "11712",
+        "date": "Tue, 05 May 2026 22:09:39 GMT",
+        "content-type": "image/png",
+        "last-modified": "Tue, 30 Jan 2018 16:18:28 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "[skipped image/png]"
+    },
+    {
+      "n": 27,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/img/banner.png",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"f83f5dc4ef99dc1:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "359982",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "image/png",
+        "last-modified": "Mon, 09 Feb 2026 18:13:18 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "[skipped image/png]"
+    },
+    {
+      "n": 28,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/img/icons/help.png",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "911",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "image/png",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "[skipped image/png]"
+    },
+    {
+      "n": 29,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/Default/img/icons/help.png",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0c7c5963954d41:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "911",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "image/png",
+        "last-modified": "Mon, 24 Sep 2018 19:05:42 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "[skipped image/png]"
+    },
+    {
+      "n": 30,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/img/TicketNumber.jpg",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"09a64a13aed91:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "68699",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "image/jpeg",
+        "last-modified": "Mon, 03 Jul 2023 23:11:00 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "[skipped image/jpeg]"
+    },
+    {
+      "n": 31,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/img/TicketSucursal.jpg",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "67783",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "image/jpeg",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "[skipped image/jpeg]"
+    },
+    {
+      "n": 32,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/img/TicketDate.jpg",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "68146",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "image/jpeg",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "[skipped image/jpeg]"
+    },
+    {
+      "n": 33,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/img/TicketTotal.jpg",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"09a64a13aed91:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "68049",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "image/jpeg",
+        "last-modified": "Mon, 03 Jul 2023 23:11:00 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "[skipped image/jpeg]"
+    },
+    {
+      "n": 34,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/Default/img/TicketPRN.jpg",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 404,
+      "responseHeaders": {
+        "content-length": "1245",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "text/html",
+        "x-powered-by": "ASP.NET",
+        "server": "Microsoft-IIS/10.0"
+      },
+      "responseBody": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\r\n<title>404 - File or directory not found.</title>\r\n<style type=\"text/css\">\r\n<!--\r\nbody{margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;}\r\nfieldset{padding:0 15px 10px 15px;} \r\nh1{font-size:2.4em;margin:0;color:#FFF;}\r\nh2{font-size:1.7em;margin:0;color:#CC0000;} \r\nh3{font-size:1.2em;margin:10px 0 0 0;color:#000000;} \r\n#header{width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:\"trebuchet MS\", Verdana, sans-serif;color:#FFF;\r\nbackground-color:#555555;}\r\n#content{margin:0 0 0 2%;position:relative;}\r\n.content-container{background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;}\r\n-->\r\n</style>\r\n</head>\r\n<body>\r\n<div id=\"header\"><h1>Server Error</h1></div>\r\n<div id=\"content\">\r\n <div class=\"content-container\"><fieldset>\r\n  <h2>404 - File or directory not found.</h2>\r\n  <h3>The resource you are looking for might have been removed, had its name changed, or is temporarily unavailable.</h3>\r\n </fieldset></div>\r\n</div>\r\n</body>\r\n</html>\r\n",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 35,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/Default/js/libs/jquery.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0f4f6973954d41:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "92792",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Mon, 24 Sep 2018 19:05:44 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/*! jQuery v@1.8.1 jquery.com | jquery.org/license */\r\n(function(a,b){function G(a){var b=F[a]={};return p.each(a.split(s),function(a,c){b[c]=!0}),b}function J(a,c,d){if(d===b&&a.nodeType===1){var e=\"data-\"+c.replace(I,\"-$1\").toLowerCase();d=a.getAttribute(e);if(typeof d==\"string\"){try{d=d===\"true\"?!0:d===\"false\"?!1:d===\"null\"?null:+d+\"\"===d?+d:H.test(d)?p.parseJSON(d):d}catch(f){}p.data(a,c,d)}else d=b}return d}function K(a){var b;for(b in a){if(b===\"data\"&&p.isEmptyObject(a[b]))continue;if(b!==\"toJSON\")return!1}return!0}function ba(){return!1}function bb(){return!0}function bh(a){return!a||!a.parentNode||a.parentNode.nodeType===11}function bi(a,b){do a=a[b];while(a&&a.nodeType!==1);return a}function bj(a,b,c){b=b||0;if(p.isFunction(b))return p.grep(a,function(a,d){var e=!!b.call(a,d,a);return e===c});if(b.nodeType)return p.grep(a,function(a,d){return a===b===c});if(typeof b==\"string\"){var d=p.grep(a,function(a){return a.nodeType===1});if(be.test(b))return p.filter(b,d,!c);b=p.filter(b,d)}return p.grep(a,function(a,d){return p.inArray(a,b)>=0===c})}function bk(a){var b=bl.split(\"|\"),c=a.createDocumentFragment();if(c.createElement)while(b.length)c.createElement(b.pop());return c}function bC(a,b){return a.getElementsByTagName(b)[0]||a.appendChild(a.ownerDocument.createElement(b))}function bD(a,b){if(b.nodeType!==1||!p.hasData(a))return;var c,d,e,f=p._data(a),g=p._data(b,f),h=f.events;if(h){delete g.handle,g.events={};for(c in h)for(d=0,e=h[c].length;d<e;d++)p.event.add(b,c,h[c][d])}g.data&&(g.data=p.extend({},g.data))}function bE(a,b){var c;if(b.nodeType!==1)return;b.clearAttributes&&b.clearAttributes(),b.mergeAttributes&&b.mergeAttributes(a),c=b.nodeName.toLowerCase(),c===\"object\"?(b.parentNode&&(b.outerHTML=a.outerHTML),p.support.html5Clone&&a.innerHTML&&!p.trim(b.innerHTML)&&(b.innerHTML=a.innerHTML)):c===\"input\"&&bv.test(a.type)?(b.defaultChecked=b.checked=a.checked,b.value!==a.value&&(b.value=a.value)):c===\"option\"?b.selected=a.defaultSelected:c===\"input\"||c===\"textarea\"?b.defaultValue=a.defaultValue:c===\"script\"&&b.text!==a.text&&(b.text=a.text),b.removeAttribute(p.expando)}function bF(a){return typeof a.getElementsByTagName!=\"undefined\"?a.getElementsByTagName(\"*\"):typeof a.querySelectorAll!=\"undefined\"?a.querySelectorAll(\"*\"):[]}function bG(a){bv.test(a.type)&&(a.defaultChecked=a.checked)}function bY(a,b){if(b in a)return b;var c=b.charAt(0).toUpperCase()+b.slice(1),d=b,e=bW.length;while(e--){b=bW[e]+c;if(b in a)return b}return d}function bZ(a,b){return a=b||a,p.css(a,\"display\")===\"none\"||!p.contains(a.ownerDocument,a)}function b$(a,b){var c,d,e=[],f=0,g=a.length;for(;f<g;f++){c=a[f];if(!c.style)continue;e[f]=p._data(c,\"olddisplay\"),b?(!e[f]&&c.style.display===\"none\"&&(c.style.display=\"\"),c.style.display===\"\"&&bZ(c)&&(e[f]=p._data(c,\"olddisplay\",cc(c.nodeName)))):(d=bH(c,\"display\"),!e[f]&&d!==\"none\"&&p._data(c,\"olddisplay\",d))}for(f=0;f<g;f++){c=a[f];if(!c.style)continue;if(!b||c.style.display===\"none\"||c.style.display===\"\")c.style.display=b?e[f]||\"\":\"none\"}return a}function b_(a,b,c){var d=bP.exec(b);return d?Math.max(0,d[1]-(c||0))+(d[2]||\"px\"):b}function ca(a,b,c,d){var e=c===(d?\"border\":\"content\")?4:b===\"width\"?1:0,f=0;for(;e<4;e+=2)c===\"margin\"&&(f+=p.css(a,c+bV[e],!0)),d?(c===\"content\"&&(f-=parseFloat(bH(a,\"padding\"+bV[e]))||0),c!==\"margin\"&&(f-=parseFloat(bH(a,\"border\"+bV[e]+\"Width\"))||0)):(f+=parseFloat(bH(a,\"padding\"+bV[e]))||0,c!==\"padding\"&&(f+=parseFloat(bH(a,\"border\"+bV[e]+\"Width\"))||0));return f}function cb(a,b,c){var d=b===\"width\"?a.offsetWidth:a.offsetHeight,e=!0,f=p.support.boxSizing&&p.css(a,\"boxSizing\")===\"border-box\";if(d<=0||d==null){d=bH(a,b);if(d<0||d==null)d=a.style[b];if(bQ.test(d))return d;e=f&&(p.support.boxSizingReliable||d===a.style[b]),d=parseFloat(d)||0}return d+ca(a,b,c||(f?\"border\":\"content\"),e)+\"px\"}function cc(a){if(bS[a])return bS[a];var b=p(\"<\"+a+\">\").appendTo(e.body),c=b.css(\"display\");b.remove();if(c===\"none\"||c===\"\"){bI=e.body.appendChild(bI||p.extend(e.createElement(\"iframe\"),{fra",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 36,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/Default/js/bootstrap/bootstrap-typeahead.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0f4f6973954d41:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "7784",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Mon, 24 Sep 2018 19:05:44 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/* =============================================================\r\n * bootstrap-typeahead.js v2.1.1\r\n * http://twitter.github.com/bootstrap/javascript.html#typeahead\r\n * =============================================================\r\n * Copyright 2012 Twitter, Inc.\r\n *\r\n * Licensed under the Apache License, Version 2.0 (the \"License\");\r\n * you may not use this file except in compliance with the License.\r\n * You may obtain a copy of the License at\r\n *\r\n * http://www.apache.org/licenses/LICENSE-2.0\r\n *\r\n * Unless required by applicable law or agreed to in writing, software\r\n * distributed under the License is distributed on an \"AS IS\" BASIS,\r\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\r\n * See the License for the specific language governing permissions and\r\n * limitations under the License.\r\n * ============================================================ */\r\n\r\n\r\n!function($){\r\n\r\n  \"use strict\"; // jshint ;_;\r\n\r\n\r\n /* TYPEAHEAD PUBLIC CLASS DEFINITION\r\n  * ================================= */\r\n\r\n  var Typeahead = function (element, options) {\r\n    this.$element = $(element)\r\n    this.options = $.extend({}, $.fn.typeahead.defaults, options)\r\n    this.matcher = this.options.matcher || this.matcher\r\n    this.sorter = this.options.sorter || this.sorter\r\n    this.highlighter = this.options.highlighter || this.highlighter\r\n    this.updater = this.options.updater || this.updater\r\n    this.$menu = $(this.options.menu).appendTo('body')\r\n    this.source = this.options.source\r\n    this.shown = false\r\n    this.listen()\r\n  }\r\n\r\n  Typeahead.prototype = {\r\n\r\n    constructor: Typeahead\r\n\r\n  , select: function () {\r\n      var val = this.$menu.find('.active').attr('data-value')\r\n      this.$element\r\n        .val(this.updater(val))\r\n        .change()\r\n      return this.hide()\r\n    }\r\n\r\n  , updater: function (item) {\r\n      return item\r\n    }\r\n\r\n  , show: function () {\r\n      var pos = $.extend({}, this.$element.offset(), {\r\n        height: this.$element[0].offsetHeight\r\n      })\r\n\r\n      this.$menu.css({\r\n        top: pos.top + pos.height\r\n      , left: pos.left\r\n      })\r\n\r\n      this.$menu.show()\r\n      this.shown = true\r\n      return this\r\n    }\r\n\r\n  , hide: function () {\r\n      this.$menu.hide()\r\n      this.shown = false\r\n      return this\r\n    }\r\n\r\n  , lookup: function (event) {\r\n      var items\r\n\r\n      this.query = this.$element.val()\r\n\r\n      if (!this.query || this.query.length < this.options.minLength) {\r\n        return this.shown ? this.hide() : this\r\n      }\r\n\r\n      items = $.isFunction(this.source) ? this.source(this.query, $.proxy(this.process, this)) : this.source\r\n\r\n      return items ? this.process(items) : this\r\n    }\r\n\r\n  , process: function (items) {\r\n      var that = this\r\n\r\n      items = $.grep(items, function (item) {\r\n        return that.matcher(item)\r\n      })\r\n\r\n      items = this.sorter(items)\r\n\r\n      if (!items.length) {\r\n        return this.shown ? this.hide() : this\r\n      }\r\n\r\n      return this.render(items.slice(0, this.options.items)).show()\r\n    }\r\n\r\n  , matcher: function (item) {\r\n      return ~item.toLowerCase().indexOf(this.query.toLowerCase())\r\n    }\r\n\r\n  , sorter: function (items) {\r\n      var beginswith = []\r\n        , caseSensitive = []\r\n        , caseInsensitive = []\r\n        , item\r\n\r\n      while (item = items.shift()) {\r\n        if (!item.toLowerCase().indexOf(this.query.toLowerCase())) beginswith.push(item)\r\n        else if (~item.indexOf(this.query)) caseSensitive.push(item)\r\n        else caseInsensitive.push(item)\r\n      }\r\n\r\n      return beginswith.concat(caseSensitive, caseInsensitive)\r\n    }\r\n\r\n  , highlighter: function (item) {\r\n      var query = this.query.replace(/[\\-\\[\\]{}()*+?.,\\\\\\^$|#\\s]/g, '\\\\$&')\r\n      return item.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {\r\n        return '<strong>' + match + '</strong>'\r\n      })\r\n    }\r\n\r\n  , render: function (items) {\r\n      var that = this\r\n\r\n      items = $(items).map(function (i, item) {\r\n      ",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 37,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Js/plugins/autocomplete/jquery-ui.js",
+      "resourceType": "script",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"d3f94423b6e6d61:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "440454",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "application/javascript",
+        "last-modified": "Sat, 09 Jan 2021 18:35:00 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/*! jQuery UI - v1.12.1 - 2016-09-14\n* http://jqueryui.com\n* Includes: widget.js, position.js, data.js, disable-selection.js, effect.js, effects/effect-blind.js, effects/effect-bounce.js, effects/effect-clip.js, effects/effect-drop.js, effects/effect-explode.js, effects/effect-fade.js, effects/effect-fold.js, effects/effect-highlight.js, effects/effect-puff.js, effects/effect-pulsate.js, effects/effect-scale.js, effects/effect-shake.js, effects/effect-size.js, effects/effect-slide.js, effects/effect-transfer.js, focusable.js, form-reset-mixin.js, jquery-1-7.js, keycode.js, labels.js, scroll-parent.js, tabbable.js, unique-id.js, widgets/accordion.js, widgets/autocomplete.js, widgets/button.js, widgets/checkboxradio.js, widgets/controlgroup.js, widgets/datepicker.js, widgets/dialog.js, widgets/draggable.js, widgets/droppable.js, widgets/menu.js, widgets/mouse.js, widgets/progressbar.js, widgets/resizable.js, widgets/selectable.js, widgets/selectmenu.js, widgets/slider.js, widgets/sortable.js, widgets/spinner.js, widgets/tabs.js, widgets/tooltip.js\n* Copyright jQuery Foundation and other contributors; Licensed MIT */\n\n(function( factory ) {\n\tif ( typeof define === \"function\" && define.amd ) {\n\n\t\t// AMD. Register as an anonymous module.\n\t\tdefine([ \"jquery\" ], factory );\n\t} else {\n\n\t\t// Browser globals\n\t\tfactory( jQuery );\n\t}\n}(function( $ ) {\n\n$.ui = $.ui || {};\n\nvar version = $.ui.version = \"1.12.1\";\n\n\n/*!\n * jQuery UI Widget 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n */\n\n//>>label: Widget\n//>>group: Core\n//>>description: Provides a factory for creating stateful widgets with a common API.\n//>>docs: http://api.jqueryui.com/jQuery.widget/\n//>>demos: http://jqueryui.com/widget/\n\n\n\nvar widgetUuid = 0;\nvar widgetSlice = Array.prototype.slice;\n\n$.cleanData = ( function( orig ) {\n\treturn function( elems ) {\n\t\tvar events, elem, i;\n\t\tfor ( i = 0; ( elem = elems[ i ] ) != null; i++ ) {\n\t\t\ttry {\n\n\t\t\t\t// Only trigger remove when necessary to save time\n\t\t\t\tevents = $._data( elem, \"events\" );\n\t\t\t\tif ( events && events.remove ) {\n\t\t\t\t\t$( elem ).triggerHandler( \"remove\" );\n\t\t\t\t}\n\n\t\t\t// Http://bugs.jquery.com/ticket/8235\n\t\t\t} catch ( e ) {}\n\t\t}\n\t\torig( elems );\n\t};\n} )( $.cleanData );\n\n$.widget = function( name, base, prototype ) {\n\tvar existingConstructor, constructor, basePrototype;\n\n\t// ProxiedPrototype allows the provided prototype to remain unmodified\n\t// so that it can be used as a mixin for multiple widgets (#8876)\n\tvar proxiedPrototype = {};\n\n\tvar namespace = name.split( \".\" )[ 0 ];\n\tname = name.split( \".\" )[ 1 ];\n\tvar fullName = namespace + \"-\" + name;\n\n\tif ( !prototype ) {\n\t\tprototype = base;\n\t\tbase = $.Widget;\n\t}\n\n\tif ( $.isArray( prototype ) ) {\n\t\tprototype = $.extend.apply( null, [ {} ].concat( prototype ) );\n\t}\n\n\t// Create selector for plugin\n\t$.expr[ \":\" ][ fullName.toLowerCase() ] = function( elem ) {\n\t\treturn !!$.data( elem, fullName );\n\t};\n\n\t$[ namespace ] = $[ namespace ] || {};\n\texistingConstructor = $[ namespace ][ name ];\n\tconstructor = $[ namespace ][ name ] = function( options, element ) {\n\n\t\t// Allow instantiation without \"new\" keyword\n\t\tif ( !this._createWidget ) {\n\t\t\treturn new constructor( options, element );\n\t\t}\n\n\t\t// Allow instantiation without initializing for simple inheritance\n\t\t// must use \"new\" keyword (the code above always passes args)\n\t\tif ( arguments.length ) {\n\t\t\tthis._createWidget( options, element );\n\t\t}\n\t};\n\n\t// Extend with the existing constructor to carry over any static properties\n\t$.extend( constructor, existingConstructor, {\n\t\tversion: prototype.version,\n\n\t\t// Copy the object used to create the prototype in case we need to\n\t\t// redefine the widget later\n\t\t_proto: $.extend( {}, prototype ),\n\n\t\t// Track widgets that inherit from this widget in case this widget is\n\t\t// redefined after a widget inherits from it\n\t\t_childConstructors: []\n\t} );\n\n\tbasePrototype = new base();\n\n\t// We need to make the ",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 38,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/css/plugins/autocomplete/jquery-ui-1.8.22.custom.css",
+      "resourceType": "stylesheet",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"7f13f23b6e6d61:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "33170",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "text/css",
+        "last-modified": "Sat, 09 Jan 2021 18:35:00 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "/*!\n * jQuery UI CSS Framework 1.8.22\n *\n * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)\n * Dual licensed under the MIT or GPL Version 2 licenses.\n * http://jquery.org/license\n *\n * http://docs.jquery.com/UI/Theming/API\n */\n\n/* Layout helpers\n----------------------------------*/\n.ui-helper-hidden { display: none; }\n.ui-helper-hidden-accessible { position: absolute !important; clip: rect(1px 1px 1px 1px); clip: rect(1px,1px,1px,1px); }\n.ui-helper-reset { margin: 0; padding: 0; border: 0; outline: 0; line-height: 1.3; text-decoration: none; font-size: 100%; list-style: none; }\n.ui-helper-clearfix:before, .ui-helper-clearfix:after { content: \"\"; display: table; }\n.ui-helper-clearfix:after { clear: both; }\n.ui-helper-clearfix { zoom: 1; }\n.ui-helper-zfix { width: 100%; height: 100%; top: 0; left: 0; position: absolute; opacity: 0; filter:Alpha(Opacity=0); }\n\n\n/* Interaction Cues\n----------------------------------*/\n.ui-state-disabled { cursor: default !important; }\n\n\n/* Icons\n----------------------------------*/\n\n/* states and images */\n.ui-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }\n\n\n/* Misc visuals\n----------------------------------*/\n\n/* Overlays */\n.ui-widget-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }\n\n\n/*!\n * jQuery UI CSS Framework 1.8.22\n *\n * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)\n * Dual licensed under the MIT or GPL Version 2 licenses.\n * http://jquery.org/license\n *\n * http://docs.jquery.com/UI/Theming/API\n *\n * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Verdana,Arial,sans-serif&fwDefault=normal&fsDefault=1.1em&cornerRadius=0px&bgColorHeader=cccccc&bgTextureHeader=03_highlight_soft.png&bgImgOpacityHeader=75&borderColorHeader=aaaaaa&fcHeader=222222&iconColorHeader=222222&bgColorContent=ffffff&bgTextureContent=01_flat.png&bgImgOpacityContent=75&borderColorContent=aaaaaa&fcContent=222222&iconColorContent=222222&bgColorDefault=e6e6e6&bgTextureDefault=02_glass.png&bgImgOpacityDefault=75&borderColorDefault=d3d3d3&fcDefault=555555&iconColorDefault=888888&bgColorHover=dadada&bgTextureHover=02_glass.png&bgImgOpacityHover=75&borderColorHover=999999&fcHover=212121&iconColorHover=454545&bgColorActive=ffffff&bgTextureActive=02_glass.png&bgImgOpacityActive=65&borderColorActive=aaaaaa&fcActive=212121&iconColorActive=454545&bgColorHighlight=fbf9ee&bgTextureHighlight=02_glass.png&bgImgOpacityHighlight=55&borderColorHighlight=fcefa1&fcHighlight=363636&iconColorHighlight=2e83ff&bgColorError=fef1ec&bgTextureError=02_glass.png&bgImgOpacityError=95&borderColorError=cd0a0a&fcError=cd0a0a&iconColorError=cd0a0a&bgColorOverlay=aaaaaa&bgTextureOverlay=01_flat.png&bgImgOpacityOverlay=0&opacityOverlay=30&bgColorShadow=aaaaaa&bgTextureShadow=01_flat.png&bgImgOpacityShadow=0&opacityShadow=30&thicknessShadow=8px&offsetTopShadow=-8px&offsetLeftShadow=-8px&cornerRadiusShadow=8px\n */\n\n\n/* Component containers\n----------------------------------*/\n.ui-widget { font-family: Verdana,Arial,sans-serif; font-size: 9px; }\n.ui-widget .ui-widget { font-size: 1em; }\n.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: Verdana,Arial,sans-serif; font-size: 1em; }\n.ui-widget-content { border: 1px solid #aaaaaa; background: #ffffff url(images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x; color: #222222; }\n.ui-widget-content a { color: #222222; }\n.ui-widget-header { border: 1px solid #aaaaaa; background: #cccccc url(images/ui-bg_highlight-soft_75_cccccc_1x100.png) 50% 50% repeat-x; color: #222222; font-weight: bold; }\n.ui-widget-header a { color: #222222; }\n\n/* Interaction states\n----------------------------------*/\n.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { border: 1px solid #d3d3d3; background: #e6e6e6 url(images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #555555; }\n.ui-state-default a, .ui-",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 39,
+      "method": "GET",
+      "url": "https://services.lexblog.com/wp-content/uploads/sites/210/2013/05/ie8_compatibility.jpg",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false
+    },
+    {
+      "n": 40,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/img/browsers.jpg",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 404,
+      "responseHeaders": {
+        "content-length": "1245",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "text/html",
+        "x-powered-by": "ASP.NET",
+        "server": "Microsoft-IIS/10.0"
+      },
+      "responseBody": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\r\n<title>404 - File or directory not found.</title>\r\n<style type=\"text/css\">\r\n<!--\r\nbody{margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;}\r\nfieldset{padding:0 15px 10px 15px;} \r\nh1{font-size:2.4em;margin:0;color:#FFF;}\r\nh2{font-size:1.7em;margin:0;color:#CC0000;} \r\nh3{font-size:1.2em;margin:10px 0 0 0;color:#000000;} \r\n#header{width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:\"trebuchet MS\", Verdana, sans-serif;color:#FFF;\r\nbackground-color:#555555;}\r\n#content{margin:0 0 0 2%;position:relative;}\r\n.content-container{background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;}\r\n-->\r\n</style>\r\n</head>\r\n<body>\r\n<div id=\"header\"><h1>Server Error</h1></div>\r\n<div id=\"content\">\r\n <div class=\"content-container\"><fieldset>\r\n  <h2>404 - File or directory not found.</h2>\r\n  <h3>The resource you are looking for might have been removed, had its name changed, or is temporarily unavailable.</h3>\r\n </fieldset></div>\r\n</div>\r\n</body>\r\n</html>\r\n",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 41,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/img/chrome_menu.jpg",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 404,
+      "responseHeaders": {
+        "content-length": "1245",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "text/html",
+        "x-powered-by": "ASP.NET",
+        "server": "Microsoft-IIS/10.0"
+      },
+      "responseBody": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\r\n<title>404 - File or directory not found.</title>\r\n<style type=\"text/css\">\r\n<!--\r\nbody{margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;}\r\nfieldset{padding:0 15px 10px 15px;} \r\nh1{font-size:2.4em;margin:0;color:#FFF;}\r\nh2{font-size:1.7em;margin:0;color:#CC0000;} \r\nh3{font-size:1.2em;margin:10px 0 0 0;color:#000000;} \r\n#header{width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:\"trebuchet MS\", Verdana, sans-serif;color:#FFF;\r\nbackground-color:#555555;}\r\n#content{margin:0 0 0 2%;position:relative;}\r\n.content-container{background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;}\r\n-->\r\n</style>\r\n</head>\r\n<body>\r\n<div id=\"header\"><h1>Server Error</h1></div>\r\n<div id=\"content\">\r\n <div class=\"content-container\"><fieldset>\r\n  <h2>404 - File or directory not found.</h2>\r\n  <h3>The resource you are looking for might have been removed, had its name changed, or is temporarily unavailable.</h3>\r\n </fieldset></div>\r\n</div>\r\n</body>\r\n</html>\r\n",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 42,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/img/explorer_menu.jpg",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 404,
+      "responseHeaders": {
+        "content-length": "1245",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "text/html",
+        "x-powered-by": "ASP.NET",
+        "server": "Microsoft-IIS/10.0"
+      },
+      "responseBody": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\r\n<title>404 - File or directory not found.</title>\r\n<style type=\"text/css\">\r\n<!--\r\nbody{margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;}\r\nfieldset{padding:0 15px 10px 15px;} \r\nh1{font-size:2.4em;margin:0;color:#FFF;}\r\nh2{font-size:1.7em;margin:0;color:#CC0000;} \r\nh3{font-size:1.2em;margin:10px 0 0 0;color:#000000;} \r\n#header{width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:\"trebuchet MS\", Verdana, sans-serif;color:#FFF;\r\nbackground-color:#555555;}\r\n#content{margin:0 0 0 2%;position:relative;}\r\n.content-container{background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;}\r\n-->\r\n</style>\r\n</head>\r\n<body>\r\n<div id=\"header\"><h1>Server Error</h1></div>\r\n<div id=\"content\">\r\n <div class=\"content-container\"><fieldset>\r\n  <h2>404 - File or directory not found.</h2>\r\n  <h3>The resource you are looking for might have been removed, had its name changed, or is temporarily unavailable.</h3>\r\n </fieldset></div>\r\n</div>\r\n</body>\r\n</html>\r\n",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 43,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/img/firefox_menu.jpg",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 404,
+      "responseHeaders": {
+        "content-length": "1245",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "text/html",
+        "x-powered-by": "ASP.NET",
+        "server": "Microsoft-IIS/10.0"
+      },
+      "responseBody": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\r\n<title>404 - File or directory not found.</title>\r\n<style type=\"text/css\">\r\n<!--\r\nbody{margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;}\r\nfieldset{padding:0 15px 10px 15px;} \r\nh1{font-size:2.4em;margin:0;color:#FFF;}\r\nh2{font-size:1.7em;margin:0;color:#CC0000;} \r\nh3{font-size:1.2em;margin:10px 0 0 0;color:#000000;} \r\n#header{width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:\"trebuchet MS\", Verdana, sans-serif;color:#FFF;\r\nbackground-color:#555555;}\r\n#content{margin:0 0 0 2%;position:relative;}\r\n.content-container{background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;}\r\n-->\r\n</style>\r\n</head>\r\n<body>\r\n<div id=\"header\"><h1>Server Error</h1></div>\r\n<div id=\"content\">\r\n <div class=\"content-container\"><fieldset>\r\n  <h2>404 - File or directory not found.</h2>\r\n  <h3>The resource you are looking for might have been removed, had its name changed, or is temporarily unavailable.</h3>\r\n </fieldset></div>\r\n</div>\r\n</body>\r\n</html>\r\n",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 44,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/img/assets/bg_body.jpg",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/Client/benavides/css/retail-neutral.css",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "946",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "image/jpeg",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "[skipped image/jpeg]"
+    },
+    {
+      "n": 45,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/css/font/fontawesome-webfont.woff",
+      "resourceType": "font",
+      "headers": {
+        "origin": "https://e-facturate.com",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/Client/benavides/css/retail-neutral.css",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0efe7b7e531d51:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "98024",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "font/x-woff",
+        "last-modified": "Wed, 03 Jul 2019 21:24:38 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "[skipped font/x-woff]"
+    },
+    {
+      "n": 46,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/img/icons/glyphicons-halflings.png",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/Client/benavides/css/retail-neutral.css",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "12799",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "image/png",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "[skipped image/png]"
+    },
+    {
+      "n": 47,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/Client/benavides/img/assets/bg_footer.png",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/Client/benavides/css/retail-neutral.css",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "etag": "\"0b644c0a93ed31:0\"",
+        "accept-ranges": "bytes",
+        "content-length": "158",
+        "date": "Tue, 05 May 2026 22:09:40 GMT",
+        "content-type": "image/png",
+        "last-modified": "Fri, 06 Oct 2017 13:48:12 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "x-powered-by": "ASP.NET"
+      },
+      "responseBody": "[skipped image/png]"
+    },
+    {
+      "n": 48,
+      "method": "POST",
+      "url": "https://e-facturate.com/benavides/DataProcessor.aspx/GetCFDI",
+      "resourceType": "xhr",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0",
+        "x-requested-with": "XMLHttpRequest",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "application/json, text/javascript, */*; q=0.01",
+        "content-type": "application/json; charset=utf-8"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "cache-control": "private, max-age=0",
+        "content-length": "1581",
+        "date": "Tue, 05 May 2026 22:09:41 GMT",
+        "content-type": "application/json; charset=utf-8",
+        "x-powered-by": "ASP.NET",
+        "server": "Microsoft-IIS/10.0"
+      },
+      "responseBody": "{\"d\":[{\"Key\":\"G01\",\"Value\":\"G01 - Adquisición de mercancías.\"},{\"Key\":\"G02\",\"Value\":\"G02 - Devoluciones, descuentos o bonificaciones.\"},{\"Key\":\"G03\",\"Value\":\"G03 - Gastos en general.\"},{\"Key\":\"I01\",\"Value\":\"I01 - Construcciones.\"},{\"Key\":\"I02\",\"Value\":\"I02 - Mobiliario y equipo de oficina por inversiones.\"},{\"Key\":\"I03\",\"Value\":\"I03 - Equipo de transporte.\"},{\"Key\":\"I04\",\"Value\":\"I04 - Equipo de computo y accesorios.\"},{\"Key\":\"I05\",\"Value\":\"I05 - Dados, troqueles, moldes, matrices y herramental.\"},{\"Key\":\"I06\",\"Value\":\"I06 - Comunicaciones telefónicas.\"},{\"Key\":\"I07\",\"Value\":\"I07 - Comunicaciones satelitales.\"},{\"Key\":\"I08\",\"Value\":\"I08 - Otra maquinaria y equipo.\"},{\"Key\":\"D01\",\"Value\":\"D01 - Honorarios médicos, dentales y gastos hospitalarios.\"},{\"Key\":\"D02\",\"Value\":\"D02 - Gastos médicos por incapacidad o discapacidad.\"},{\"Key\":\"D03\",\"Value\":\"D03 - Gastos funerales.\"},{\"Key\":\"D04\",\"Value\":\"D04 - Donativos.\"},{\"Key\":\"D05\",\"Value\":\"D05 - Intereses reales efectivamente pagados por créditos hipotecarios (casa habitación).\"},{\"Key\":\"D06\",\"Value\":\"D06 - Aportaciones voluntarias al SAR.\"},{\"Key\":\"D07\",\"Value\":\"D07 - Primas por seguros de gastos médicos.\"},{\"Key\":\"D08\",\"Value\":\"D08 - Gastos de transportación escolar obligatoria.\"},{\"Key\":\"D09\",\"Value\":\"D09 - Depósitos en cuentas para el ahorro, primas que tengan como base planes de pensiones.\"},{\"Key\":\"D10\",\"Value\":\"D10 - Pagos por servicios educativos (colegiaturas).\"},{\"Key\":\"S01\",\"Value\":\"S01 - Sin efectos fiscales.  \"},{\"Key\":\"CP01\",\"Value\":\"CP01 - Pagos\"},{\"Key\":\"CN01\",\"Value\":\"CN01 - Nómina\"}]}",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 49,
+      "method": "GET",
+      "url": "https://e-facturate.com/benavides/css/plugins/autocomplete/images/ui-bg_flat_75_ffffff_40x100.png",
+      "resourceType": "image",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/css/plugins/autocomplete/jquery-ui-1.8.22.custom.css",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 404,
+      "responseHeaders": {
+        "content-length": "1245",
+        "date": "Tue, 05 May 2026 22:09:41 GMT",
+        "content-type": "text/html",
+        "x-powered-by": "ASP.NET",
+        "server": "Microsoft-IIS/10.0"
+      },
+      "responseBody": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\r\n<title>404 - File or directory not found.</title>\r\n<style type=\"text/css\">\r\n<!--\r\nbody{margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;}\r\nfieldset{padding:0 15px 10px 15px;} \r\nh1{font-size:2.4em;margin:0;color:#FFF;}\r\nh2{font-size:1.7em;margin:0;color:#CC0000;} \r\nh3{font-size:1.2em;margin:10px 0 0 0;color:#000000;} \r\n#header{width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:\"trebuchet MS\", Verdana, sans-serif;color:#FFF;\r\nbackground-color:#555555;}\r\n#content{margin:0 0 0 2%;position:relative;}\r\n.content-container{background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;}\r\n-->\r\n</style>\r\n</head>\r\n<body>\r\n<div id=\"header\"><h1>Server Error</h1></div>\r\n<div id=\"content\">\r\n <div class=\"content-container\"><fieldset>\r\n  <h2>404 - File or directory not found.</h2>\r\n  <h3>The resource you are looking for might have been removed, had its name changed, or is temporarily unavailable.</h3>\r\n </fieldset></div>\r\n</div>\r\n</body>\r\n</html>\r\n",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 50,
+      "method": "POST",
+      "url": "https://e-facturate.com/benavides/DataProcessor.aspx/GetPaymentMethods",
+      "resourceType": "xhr",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0",
+        "x-requested-with": "XMLHttpRequest",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "application/json, text/javascript, */*; q=0.01",
+        "content-type": "application/json;charset=UTF-8"
+      },
+      "requestBody": "{}",
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "cache-control": "private, max-age=0",
+        "content-length": "1042",
+        "date": "Tue, 05 May 2026 22:09:41 GMT",
+        "content-type": "application/json; charset=utf-8",
+        "x-powered-by": "ASP.NET",
+        "server": "Microsoft-IIS/10.0"
+      },
+      "responseBody": "{\"d\":[{\"Key\":\"01 - Efectivo\",\"Value\":\"01\"},{\"Key\":\"02 - Cheque Nominativo\",\"Value\":\"02\"},{\"Key\":\"03 - Transferencia electrónica de fondos\",\"Value\":\"03\"},{\"Key\":\"04 - Tarjeta de Crédito\",\"Value\":\"04\"},{\"Key\":\"05 - Monederos Electrónicos\",\"Value\":\"05\"},{\"Key\":\"06 - Dinero Electrónico\",\"Value\":\"06\"},{\"Key\":\"08 - Vales de Despensa\",\"Value\":\"08\"},{\"Key\":\"12 - Dación en pago\",\"Value\":\"12\"},{\"Key\":\"13 - Pago por subrogación\",\"Value\":\"13\"},{\"Key\":\"14 - Pago por consignación\",\"Value\":\"14\"},{\"Key\":\"15 - Condonación\",\"Value\":\"15\"},{\"Key\":\"17 - Compensación\",\"Value\":\"17\"},{\"Key\":\"23 - Novación\",\"Value\":\"23\"},{\"Key\":\"24 - Confusión\",\"Value\":\"24\"},{\"Key\":\"25 - Remisión de deuda\",\"Value\":\"25\"},{\"Key\":\"26 - Prescripción o caducidad\",\"Value\":\"26\"},{\"Key\":\"27 - A satisfacción del acreedor\",\"Value\":\"27\"},{\"Key\":\"28 - Tarjeta de Débito\",\"Value\":\"28\"},{\"Key\":\"29 - Tarjeta de Servicio\",\"Value\":\"29\"},{\"Key\":\"30 - Aplicación de anticipos\",\"Value\":\"30\"},{\"Key\":\"31 - Intermediario pagos\",\"Value\":\"31\"},{\"Key\":\"99 - Otros\",\"Value\":\"99\"}]}",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 51,
+      "method": "POST",
+      "url": "https://e-facturate.com/benavides/DataProcessor.aspx/GetCountries",
+      "resourceType": "xhr",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0",
+        "x-requested-with": "XMLHttpRequest",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "application/json, text/javascript, */*; q=0.01",
+        "content-type": "application/json; charset=UTF-8"
+      },
+      "requestBody": "{}",
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "cache-control": "private, max-age=0",
+        "content-length": "10897",
+        "date": "Tue, 05 May 2026 22:09:42 GMT",
+        "content-type": "application/json; charset=utf-8",
+        "x-powered-by": "ASP.NET",
+        "server": "Microsoft-IIS/10.0"
+      },
+      "responseBody": "{\"d\":[{\"Key\":\"AFG\",\"Value\":\"AFG - Afganistán\"},{\"Key\":\"ALA\",\"Value\":\"ALA - Islas Åland\"},{\"Key\":\"ALB\",\"Value\":\"ALB - Albania\"},{\"Key\":\"DEU\",\"Value\":\"DEU - Alemania\"},{\"Key\":\"AND\",\"Value\":\"AND - Andorra\"},{\"Key\":\"AGO\",\"Value\":\"AGO - Angola\"},{\"Key\":\"AIA\",\"Value\":\"AIA - Anguila\"},{\"Key\":\"ATA\",\"Value\":\"ATA - Antártida\"},{\"Key\":\"ATG\",\"Value\":\"ATG - Antigua y Barbuda\"},{\"Key\":\"SAU\",\"Value\":\"SAU - Arabia Saudita\"},{\"Key\":\"DZA\",\"Value\":\"DZA - Argelia\"},{\"Key\":\"ARG\",\"Value\":\"ARG - Argentina\"},{\"Key\":\"ARM\",\"Value\":\"ARM - Armenia\"},{\"Key\":\"ABW\",\"Value\":\"ABW - Aruba\"},{\"Key\":\"AUS\",\"Value\":\"AUS - Australia\"},{\"Key\":\"AUT\",\"Value\":\"AUT - Austria\"},{\"Key\":\"AZE\",\"Value\":\"AZE - Azerbaiyán\"},{\"Key\":\"BHS\",\"Value\":\"BHS - Bahamas (las)\"},{\"Key\":\"BGD\",\"Value\":\"BGD - Bangladés\"},{\"Key\":\"BRB\",\"Value\":\"BRB - Barbados\"},{\"Key\":\"BHR\",\"Value\":\"BHR - Baréin\"},{\"Key\":\"BEL\",\"Value\":\"BEL - Bélgica\"},{\"Key\":\"BLZ\",\"Value\":\"BLZ - Belice\"},{\"Key\":\"BEN\",\"Value\":\"BEN - Benín\"},{\"Key\":\"BMU\",\"Value\":\"BMU - Bermudas\"},{\"Key\":\"BLR\",\"Value\":\"BLR - Bielorrusia\"},{\"Key\":\"MMR\",\"Value\":\"MMR - Myanmar\"},{\"Key\":\"BOL\",\"Value\":\"BOL - Bolivia, Estado Plurinacional de\"},{\"Key\":\"BIH\",\"Value\":\"BIH - Bosnia y Herzegovina\"},{\"Key\":\"BWA\",\"Value\":\"BWA - Botsuana\"},{\"Key\":\"BRA\",\"Value\":\"BRA - Brasil\"},{\"Key\":\"BRN\",\"Value\":\"BRN - Brunéi Darussalam\"},{\"Key\":\"BGR\",\"Value\":\"BGR - Bulgaria\"},{\"Key\":\"BFA\",\"Value\":\"BFA - Burkina Faso\"},{\"Key\":\"BDI\",\"Value\":\"BDI - Burundi\"},{\"Key\":\"BTN\",\"Value\":\"BTN - Bután\"},{\"Key\":\"CPV\",\"Value\":\"CPV - Cabo Verde\"},{\"Key\":\"KHM\",\"Value\":\"KHM - Camboya\"},{\"Key\":\"CMR\",\"Value\":\"CMR - Camerún\"},{\"Key\":\"CAN\",\"Value\":\"CAN - Canadá\"},{\"Key\":\"QAT\",\"Value\":\"QAT - Catar\"},{\"Key\":\"BES\",\"Value\":\"BES - Bonaire, San Eustaquio y Saba\"},{\"Key\":\"TCD\",\"Value\":\"TCD - Chad\"},{\"Key\":\"CHL\",\"Value\":\"CHL - Chile\"},{\"Key\":\"CHN\",\"Value\":\"CHN - China\"},{\"Key\":\"CYP\",\"Value\":\"CYP - Chipre\"},{\"Key\":\"COL\",\"Value\":\"COL - Colombia\"},{\"Key\":\"COM\",\"Value\":\"COM - Comoras\"},{\"Key\":\"PRK\",\"Value\":\"PRK - Corea (la República Democrática Popular de)\"},{\"Key\":\"KOR\",\"Value\":\"KOR - Corea (la República de)\"},{\"Key\":\"CIV\",\"Value\":\"CIV - Côte d\\u0027Ivoire\"},{\"Key\":\"CRI\",\"Value\":\"CRI - Costa Rica\"},{\"Key\":\"HRV\",\"Value\":\"HRV - Croacia\"},{\"Key\":\"CUB\",\"Value\":\"CUB - Cuba\"},{\"Key\":\"CUW\",\"Value\":\"CUW - Curaçao\"},{\"Key\":\"DNK\",\"Value\":\"DNK - Dinamarca\"},{\"Key\":\"DMA\",\"Value\":\"DMA - Dominica\"},{\"Key\":\"ECU\",\"Value\":\"ECU - Ecuador\"},{\"Key\":\"EGY\",\"Value\":\"EGY - Egipto\"},{\"Key\":\"SLV\",\"Value\":\"SLV - El Salvador\"},{\"Key\":\"ARE\",\"Value\":\"ARE - Emiratos Árabes Unidos (Los)\"},{\"Key\":\"ERI\",\"Value\":\"ERI - Eritrea\"},{\"Key\":\"SVK\",\"Value\":\"SVK - Eslovaquia\"},{\"Key\":\"SVN\",\"Value\":\"SVN - Eslovenia\"},{\"Key\":\"ESP\",\"Value\":\"ESP - España\"},{\"Key\":\"USA\",\"Value\":\"USA - Estados Unidos (los)\"},{\"Key\":\"EST\",\"Value\":\"EST - Estonia\"},{\"Key\":\"ETH\",\"Value\":\"ETH - Etiopía\"},{\"Key\":\"PHL\",\"Value\":\"PHL - Filipinas (las)\"},{\"Key\":\"FIN\",\"Value\":\"FIN - Finlandia\"},{\"Key\":\"FJI\",\"Value\":\"FJI - Fiyi\"},{\"Key\":\"FRA\",\"Value\":\"FRA - Francia\"},{\"Key\":\"GAB\",\"Value\":\"GAB - Gabón\"},{\"Key\":\"GMB\",\"Value\":\"GMB - Gambia (La)\"},{\"Key\":\"GEO\",\"Value\":\"GEO - Georgia\"},{\"Key\":\"GHA\",\"Value\":\"GHA - Ghana\"},{\"Key\":\"GIB\",\"Value\":\"GIB - Gibraltar\"},{\"Key\":\"GRD\",\"Value\":\"GRD - Granada\"},{\"Key\":\"GRC\",\"Value\":\"GRC - Grecia\"},{\"Key\":\"GRL\",\"Value\":\"GRL - Groenlandia\"},{\"Key\":\"GLP\",\"Value\":\"GLP - Guadalupe\"},{\"Key\":\"GUM\",\"Value\":\"GUM - Guam\"},{\"Key\":\"GTM\",\"Value\":\"GTM - Guatemala\"},{\"Key\":\"GUF\",\"Value\":\"GUF - Guayana Francesa\"},{\"Key\":\"GGY\",\"Value\":\"GGY - Guernsey\"},{\"Key\":\"GIN\",\"Value\":\"GIN - Guinea\"},{\"Key\":\"GNB\",\"Value\":\"GNB - Guinea-Bisáu\"},{\"Key\":\"GNQ\",\"Value\":\"GNQ - Guinea Ecuatorial\"},{\"Key\":\"GUY\",\"Value\":\"GUY - Guyana\"},{\"Key\":\"HTI\",\"Value\":\"HTI - Haití\"},{\"Key\":\"HND\",\"Value\":\"HND - Honduras\"},{\"Key\":\"HKG\",\"Value\":\"HKG - Hong Kong\"},{\"Key\":\"HUN\",\"Value\":\"HUN - Hungría\"},{\"Key\":\"IND\",\"Value\":\"IND - India\"},{\"Key\":\"IDN\",\"Value\":\"IDN - Indonesia\"},{\"Key\":\"IRQ\",\"Value\":\"IRQ - Irak\"},{\"Key\":\"IRN\",\"Value\":\"IRN - Irán (la República Islámica de)\"},{\"Key\":\"IRL\",\"Value\":\"IRL - Irlanda",
+      "responseBodyTruncated": true
+    },
+    {
+      "n": 52,
+      "method": "POST",
+      "url": "https://e-facturate.com/benavides/DataProcessor.aspx/PoliticasCliente",
+      "resourceType": "xhr",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0",
+        "x-requested-with": "XMLHttpRequest",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "*/*",
+        "content-type": "application/json; charset=UTF-8"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "cache-control": "private, max-age=0",
+        "content-length": "1046",
+        "date": "Tue, 05 May 2026 22:09:42 GMT",
+        "content-type": "application/json; charset=utf-8",
+        "x-powered-by": "ASP.NET",
+        "server": "Microsoft-IIS/10.0"
+      },
+      "responseBody": "{\"d\":{\"__type\":\"EDXRetailV3._0.Classes.Politicas\",\"diasFacturacion\":30,\"servicio_Facturacion\":false,\"detalle_Facturacion\":true,\"recuerda_Facturacion\":true,\"cancelar_Facturacion\":false,\"display_Sucursal\":false,\"factura_ClientePropina\":false,\"busqueda_NoReferencia\":false,\"tipo_FacturaMostrador\":false,\"factura_MenorMonto\":false,\"tipo_FacturaGlobal\":false,\"multiticket\":false,\"ayuda\":true,\"seleccionarConceptos\":false,\"urlSuscriptor\":\"benavides\",\"declaracionIEPS\":true,\"busqueda_IdentificadorGlobal\":false,\"personalizarEtiquetas\":true,\"permitirIngresarComentarios\":false,\"permitirFacturarMensual\":false,\"connector\":\"benavides\",\"mostrarmonto\":true,\"marca\":null,\"facturaMultiple\":false,\"facturacionPosterior\":false,\"mostrarFecha\":false,\"autocompletarSucursal\":false,\"seleccionarDocumentosEmitir\":false,\"permitirFacturarTicketDeFacturaGlobal\":true,\"EditPayMent\":false,\"StepsToInvoice\":false,\"PermitirFacturarPorAnioFiscal\":false,\"PermitirConsultarTicketConOSinPropina\":false,\"AllowCancelTicket\":false,\"CancelTicket\":false,\"BusquedaNumeroTicket\":true}}",
+      "responseBodyTruncated": false
+    },
+    {
+      "n": 53,
+      "method": "POST",
+      "url": "https://e-facturate.com/benavides/DataProcessor.aspx/CustomLabelsCliente",
+      "resourceType": "xhr",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://e-facturate.com/benavides/",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0",
+        "x-requested-with": "XMLHttpRequest",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "*/*",
+        "content-type": "application/json; charset=UTF-8"
+      },
+      "requestBody": null,
+      "requestBodyTruncated": false,
+      "status": 200,
+      "responseHeaders": {
+        "cache-control": "private, max-age=0",
+        "content-length": "202",
+        "date": "Tue, 05 May 2026 22:09:42 GMT",
+        "content-type": "application/json; charset=utf-8",
+        "x-powered-by": "ASP.NET",
+        "server": "Microsoft-IIS/10.0"
+      },
+      "responseBody": "{\"d\":{\"__type\":\"EDXRetailV3._0.Classes.CustomLabels\",\"CustomLabel1\":\"Identificador Global\",\"CustomLabel2\":\"Sucursal\",\"CustomLabel3\":\"No. Referencia\",\"CustomLabel4\":\"Monto Total\",\"CustomLabel5\":\"Fecha\"}}",
+      "responseBodyTruncated": false
+    }
+  ]
+}
