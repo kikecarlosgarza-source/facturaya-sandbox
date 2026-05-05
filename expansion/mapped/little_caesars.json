@@ -1,0 +1,21 @@
+{
+  "id": "little_caesars",
+  "name": "Little Caesars México",
+  "url_pattern": "littlecaesars.com.mx/factura",
+  "detection": {
+    "ticket_keywords": [
+      "little caesars",
+      "pizza",
+      "crazy bread",
+      "hot-n-ready"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://littlecaesars.com.mx/factura",
+    "flow": []
+  },
+  "notas_arquitecto": "Portal SPA (Next.js) con lottie animations en carga inicial; no se detectaron inputs de facturación en el HTML capturado — requiere handler manual para interactuar con el flujo dinámico post-carga."
+}

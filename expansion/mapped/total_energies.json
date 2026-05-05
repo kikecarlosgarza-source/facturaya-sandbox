@@ -1,0 +1,21 @@
+{
+  "id": "total_energies",
+  "name": "TotalEnergies México Facturación",
+  "url_pattern": "totalenergies.com.mx/facturacion",
+  "detection": {
+    "ticket_keywords": [
+      "totalenergies",
+      "total energies",
+      "lubricantes",
+      "facturacion"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://totalenergies.com.mx/facturacion",
+    "flow": []
+  },
+  "notas_arquitecto": "El HTML capturado corresponde a la página principal del sitio corporativo, no al portal de facturación; no se detectaron campos de facturación electrónica ni formulario CFDI — se requiere handler manual para inspeccionar la URL real de facturación y sus campos."
+}

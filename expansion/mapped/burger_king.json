@@ -1,0 +1,21 @@
+{
+  "id": "burger_king",
+  "name": "Burger King México - Facturación",
+  "url_pattern": "burgerking.com.mx/facturacion",
+  "detection": {
+    "ticket_keywords": [
+      "burger king",
+      "bk",
+      "whopper",
+      "hamburguesa"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://burgerking.com.mx/facturacion",
+    "flow": []
+  },
+  "notas_arquitecto": "Portal SPA (React) que renderiza 'Page Not Found' en /facturacion; no se detectaron campos de facturación en el HTML — requiere handler manual para identificar la ruta correcta del módulo de facturación o un iframe externo."
+}

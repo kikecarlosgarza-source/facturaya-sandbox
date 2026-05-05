@@ -1,0 +1,21 @@
+{
+  "id": "chevron_mx",
+  "name": "Chevron con Techron México - Facturación",
+  "url_pattern": "chevroncontechron.com/es_mx/home/Facturacion",
+  "detection": {
+    "ticket_keywords": [
+      "chevron",
+      "techron",
+      "facturacion",
+      "gasolina"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://www.chevroncontechron.com/es_mx/home/Facturacion.html",
+    "flow": []
+  },
+  "notas_arquitecto": "El HTML capturado corresponde a la página principal/localizador de estaciones, NO al formulario de facturación real; la sección de Facturación enlaza a /es_mx/home/Facturacion.html cuyo contenido interno (posiblemente iFrame o SPA de tercero) no fue entregado — se requiere handler manual para inspeccionar el portal real de facturación antes de automatizar."
+}

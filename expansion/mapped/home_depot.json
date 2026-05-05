@@ -1,0 +1,21 @@
+{
+  "id": "home_depot",
+  "name": "The Home Depot Facturación Electrónica",
+  "url_pattern": "facturacion.homedepot.com.mx/FacturacionWeb",
+  "detection": {
+    "ticket_keywords": [
+      "home depot",
+      "homedepot",
+      "homer",
+      "ticket"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://facturacion.homedepot.com.mx/FacturacionWeb/",
+    "flow": []
+  },
+  "notas_arquitecto": "Portal Angular con Cloudflare Turnstile (ngx-turnstile / cf-turnstile-response) en la primera pantalla; requiere handler manual para resolver el captcha antes de poder continuar al formulario de datos fiscales."
+}

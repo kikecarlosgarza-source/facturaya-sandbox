@@ -124,6 +124,24 @@ db.exec(`
     actualizado_en  TEXT DEFAULT (datetime('now'))
   );
 `);
+
+// Datos de contacto del negocio (whatsapp/email) para mandar la constancia
+// fiscal del usuario. Se llena por usuario la primera vez que elige WhatsApp
+// o Email para un rfc_emisor; las siguientes solicitudes del mismo emisor
+// reusan el cache.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS contactos_negocio (
+    rfc_emisor      TEXT PRIMARY KEY,
+    whatsapp        TEXT,
+    email           TEXT,
+    actualizado_en  TEXT DEFAULT (datetime('now'))
+  );
+`);
+
+// constancia_path: ruta absoluta al PDF/imagen de la Constancia de Situación
+// Fiscal subida por el usuario. Se usa como adjunto al mandar email al negocio
+// y para compartir vía WhatsApp (expo-sharing).
+try { db.exec('ALTER TABLE perfiles_fiscales ADD COLUMN constancia_path TEXT'); } catch(e) {}
 module.exports = db;
 module.exports.db = db;
 module.exports.uuid = require('uuid').v4;

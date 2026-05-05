@@ -1,0 +1,24 @@
+{
+  "id": "calimax",
+  "name": "Calimax Facturación",
+  "url_pattern": "calimax.com.mx/facturacion",
+  "detection": {
+    "ticket_keywords": [
+      "calimax",
+      "ticket",
+      "folio",
+      "factura"
+    ],
+    "rfc_keywords": [
+      "rfc",
+      "facturación"
+    ],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://calimax.com.mx/facturacion",
+    "flow": []
+  },
+  "notas_arquitecto": "Portal Angular 20 (SSR) con componentes Spartan/Analog (brn-dialog, brn-sheet, brn-popover); todos los campos del formulario de facturación son dinámicos y no están presentes en el HTML estático capturado — se requiere handler manual para navegar a la sección de facturación, esperar hidratación y mapear selectores reales en runtime."
+}

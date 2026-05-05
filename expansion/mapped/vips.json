@@ -1,0 +1,24 @@
+{
+  "id": "vips",
+  "name": "VIPS Facturación",
+  "url_pattern": "vips.com.mx/facturacion",
+  "detection": {
+    "ticket_keywords": [
+      "vips",
+      "restaurante",
+      "factura",
+      "ticket"
+    ],
+    "rfc_keywords": [
+      "RFC",
+      "facturación"
+    ],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://vips.com.mx/facturacion",
+    "flow": []
+  },
+  "notas_arquitecto": "El HTML capturado corresponde a la homepage de VIPS, no al portal de facturación real; no hay campos de facturación visibles ni se puede determinar la estructura del formulario — se requiere handler manual para inspeccionar https://vips.com.mx/facturacion directamente."
+}

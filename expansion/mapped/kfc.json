@@ -1,0 +1,21 @@
+{
+  "id": "kfc_mx",
+  "name": "KFC México Facturación",
+  "url_pattern": "kfc.com.mx/facturacion",
+  "detection": {
+    "ticket_keywords": [
+      "kfc",
+      "pollo",
+      "bucket",
+      "crispy"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://kfc.com.mx/facturacion",
+    "flow": []
+  },
+  "notas_arquitecto": "Portal SPA construido sobre Next.js + tictuk.com; la URL /facturacion renderiza la home del ecommerce sin formulario de facturación visible en el HTML capturado — se requiere handler manual para navegar al flujo real de facturación (posiblemente en subdominio o ruta dinámica distinta)."
+}

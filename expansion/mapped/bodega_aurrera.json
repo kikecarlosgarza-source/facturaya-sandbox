@@ -1,0 +1,20 @@
+{
+  "id": "bodega_aurrera",
+  "name": "Bodega Aurrera Facturación",
+  "url_pattern": "bodegaaurrera.com.mx/facturacion",
+  "detection": {
+    "ticket_keywords": [
+      "bodega aurrera",
+      "bodega",
+      "aurrera"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://bodegaaurrera.com.mx/facturacion",
+    "flow": []
+  },
+  "notas_arquitecto": "Portal bloqueado por PerimeterX/HUMAN captcha de 'mantén presionado' antes de acceder al formulario; requiere handler manual."
+}

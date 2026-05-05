@@ -1,0 +1,21 @@
+{
+  "id": "shell_mexico",
+  "name": "Shell México - Facturación Electrónica",
+  "url_pattern": "shell.com.mx/electronic-billing",
+  "detection": {
+    "ticket_keywords": [
+      "shell",
+      "estacion",
+      "servicio",
+      "gasolina"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://www.shell.com.mx/electronic-billing.html",
+    "flow": []
+  },
+  "notas_arquitecto": "El portal de Shell México es un directorio que redirige a portales individuales por estación de servicio; no tiene formulario propio, requiere handler para seleccionar la estación correcta y seguir el flujo del sub-portal correspondiente."
+}

@@ -1,0 +1,21 @@
+{
+  "id": "heb",
+  "name": "HEB Facturación Clientes",
+  "url_pattern": "heb.com.mx/facturacion",
+  "detection": {
+    "ticket_keywords": [
+      "heb",
+      "ticket",
+      "sucursal",
+      "venta"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://heb.com.mx/cli/invoice-create",
+    "flow": []
+  },
+  "notas_arquitecto": "Portal Angular (ng-version 10.2.5) con componentes Material dinámicos (mat-autocomplete para Sucursal, datepicker para Fecha); los IDs mat-input-N son inestables y la lógica de autocomplete/selección de sucursal y datepicker requiere handler personalizado. Sin captcha, pero la dinámica SPA impide flujo directo confiable."
+}

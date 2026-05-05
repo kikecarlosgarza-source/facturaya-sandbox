@@ -1,0 +1,21 @@
+{
+  "id": "mobil_mx",
+  "name": "Mobil México Facturación",
+  "url_pattern": "mobil.mx/facturacion",
+  "detection": {
+    "ticket_keywords": [
+      "mobil",
+      "lubricante",
+      "aceite",
+      "gasolinera"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://mobil.mx/facturacion",
+    "flow": []
+  },
+  "notas_arquitecto": "HTML sin campos visibles detectados (0 campos); posible carga dinámica SPA o detrás de autenticación — requiere handler manual para inspección en runtime."
+}

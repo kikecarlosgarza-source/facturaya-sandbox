@@ -1,0 +1,20 @@
+{
+  "id": "farmacias_del_nino",
+  "name": "Farmacia Del Niño",
+  "url_pattern": "farmaciasdelnino.mx/facturacion",
+  "detection": {
+    "ticket_keywords": [
+      "farmacia del niño",
+      "farmaciasdelnino",
+      "farmacia nino"
+    ],
+    "rfc_keywords": [],
+    "url_in_ticket": false
+  },
+  "automation": {
+    "type": "requires_handler",
+    "base_url": "https://farmaciasdelnino.mx/facturacion",
+    "flow": []
+  },
+  "notas_arquitecto": "El portal de facturación no tiene formulario visible; la página /facturacion solo muestra selector de idioma y redirige a farmaciasdelnino.com.mx — requiere investigación manual del handler antes de automatizar."
+}
