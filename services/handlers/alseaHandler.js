@@ -9,6 +9,19 @@
 
 const claudeAgent = require('../claudeAgent');
 
+// Wrapper de page.screenshot que nunca lanza — instrumentación de diagnóstico,
+// si falla no debe romper el flujo. Pensado para post-mortem cuando un ticket
+// real no completa: los archivos quedan en /tmp del filesystem efímero del
+// servidor (pierdes entre deploys, pero suficiente para diagnóstico inmediato).
+async function snap(page, label) {
+  try {
+    await page.screenshot({ path: `/tmp/alsea_${label}.png`, fullPage: true });
+    console.log(`[AUTO] Alsea — screenshot /tmp/alsea_${label}.png`);
+  } catch (e) {
+    console.warn(`[AUTO] Alsea — screenshot ${label} falló: ${e.message}`);
+  }
+}
+
 function makeReportDom(portal) {
   return (page, step, error) =>
     page.content()
@@ -48,33 +61,44 @@ function logoForEstablecimiento(est) {
   return null;
 }
 
-// Angular con formControlName / ngModel necesita que el cambio dispare 'input'
-// y 'change'. Playwright.fill solo produce 'input'; sin 'change' el FormGroup
-// no marca dirty y la validación no se reactiva.
+// Setea un campo por su key. Inspección confirma que Alsea usa Angular
+// template-driven forms (id+name+ngModel), NO reactive forms (formControlName).
+// Probamos 3 estrategias en orden: formcontrolname → name → id. Detecta input
+// vs select, dispara input+change para que ngModel marque dirty/touched.
+async function setAngularField(page, key, value) {
+  const selectors = [
+    `[formcontrolname="${key}"]`,
+    `[name="${key}"]`,
+    `#${key}`
+  ];
+  let chosen = null;
+  let tag = null;
+  for (const s of selectors) {
+    const found = await page.evaluate((sel) => {
+      const el = document.querySelector(sel);
+      return el ? el.tagName.toLowerCase() : null;
+    }, s);
+    if (found) { chosen = s; tag = found; break; }
+  }
+  if (!chosen) {
+    throw new Error(`Alsea: campo "${key}" no encontrado (probé formcontrolname, name, id)`);
+  }
+  if (tag === 'select') {
+    await page.selectOption(chosen, String(value));
+    await page.dispatchEvent(chosen, 'change');
+  } else {
+    await page.fill(chosen, String(value));
+    await page.dispatchEvent(chosen, 'input');
+    await page.dispatchEvent(chosen, 'change');
+  }
+}
+
+// Backwards-compat: el código anterior llama fillAngular(sel, val) directo
+// con un CSS selector ya construido. Mantenemos la firma para no romper.
 async function fillAngular(page, selector, value) {
   await page.fill(selector, value);
   await page.dispatchEvent(selector, 'input');
   await page.dispatchEvent(selector, 'change');
-}
-
-// Setea un campo del FormGroup por su formControlName. Detecta tag (input vs
-// select) y elige fill+events o selectOption+change. Dispara input y change
-// siempre para que ngModel marque dirty/touched y reactive validación.
-async function setAngularField(page, formControlName, value) {
-  const sel = `[formcontrolname="${formControlName}"]`;
-  const tag = await page.evaluate((s) => {
-    const el = document.querySelector(s);
-    return el ? el.tagName.toLowerCase() : null;
-  }, sel);
-  if (!tag) throw new Error(`Alsea: campo formControlName="${formControlName}" no encontrado en DOM`);
-  if (tag === 'select') {
-    await page.selectOption(sel, String(value));
-    await page.dispatchEvent(sel, 'change');
-  } else {
-    await page.fill(sel, String(value));
-    await page.dispatchEvent(sel, 'input');
-    await page.dispatchEvent(sel, 'change');
-  }
 }
 
 // Splitea "JUAN PEREZ LOPEZ" → { nombres: "JUAN", apellidos: "PEREZ LOPEZ" }.
@@ -146,8 +170,9 @@ async function ejecutar(page, perfil, ticketData, solicitudId) {
       const visible = Array.from(document.querySelectorAll('form.billing_form'))
         .find(f => f.offsetParent !== null);
       if (!visible) return null;
-      if (visible.querySelector('[formcontrolname="tienda"]')) return 'tienda_fecha';
-      if (visible.querySelector('[formcontrolname="monto"]'))  return 'total';
+      // Cubrir 3 esquemas de atributos (formcontrolname / name / id)
+      if (visible.querySelector('[formcontrolname="tienda"], [name="tienda"], #tienda')) return 'tienda_fecha';
+      if (visible.querySelector('[formcontrolname="monto"], [formcontrolname="total"], [name="monto"], [name="total"], #total, #monto')) return 'total';
       return null;
     });
   } catch (e) {
@@ -158,6 +183,7 @@ async function ejecutar(page, perfil, ticketData, solicitudId) {
     return { success: false, mensaje: 'Alsea: form visible pero no se detectó variant (sin #tienda ni #total)' };
   }
   console.log(`[AUTO] Alsea — marca=${logo} variant=${formVariant}`);
+  await snap(page, 'paso1');
 
   // 3. Llenar campos del paso 1
   const ticket = ticketData.numero_ticket || ticketData.folio || '';
@@ -166,24 +192,21 @@ async function ejecutar(page, perfil, ticketData, solicitudId) {
   const total  = ticketData.total != null ? String(ticketData.total) : '';
 
   try {
-    await fillAngular(page, 'input[formcontrolname="rfc"]', perfil.rfc);
-    await fillAngular(page, 'input[formcontrolname="ticket"]', ticket);
+    await setAngularField(page, 'rfc', perfil.rfc);
+    await setAngularField(page, 'ticket', ticket);
     if (formVariant === 'tienda_fecha') {
       if (!tienda) {
         return { success: false, mensaje: 'Alsea: marca requiere numero_tienda y el ticket no lo trae extraído' };
       }
-      await fillAngular(page, 'input[formcontrolname="tienda"]', tienda);
-      // Fecha: probar formControlName primero, fallback a la clase .txFecha
-      // que algunas marcas usan (datepicker custom de Alsea).
-      const fechaSel = (await page.$('input[formcontrolname="fecha"]'))
-        ? 'input[formcontrolname="fecha"]'
-        : 'input.txFecha';
-      await fillAngular(page, fechaSel, fecha);
+      await setAngularField(page, 'tienda', tienda);
+      await setAngularField(page, 'fecha', fecha);
     } else {
       if (!total) {
         return { success: false, mensaje: 'Alsea: marca requiere total y el ticket no lo trae' };
       }
-      await fillAngular(page, 'input[formcontrolname="monto"]', total);
+      // El nombre del campo varía: monto/total. setAngularField prueba ambos.
+      try { await setAngularField(page, 'total', total); }
+      catch { await setAngularField(page, 'monto', total); }
     }
   } catch (e) {
     reportDom(page, { action: 'fill_paso1', formVariant }, e.message);
@@ -203,6 +226,7 @@ async function ejecutar(page, perfil, ticketData, solicitudId) {
     reportDom(page, { action: 'submit_paso1' }, e.message);
     return { success: false, mensaje: 'Alsea: error en submit paso 1 — ' + e.message };
   }
+  await snap(page, 'paso2');
 
   // 5. Detectar resultado del paso 1
   const estado = await page.evaluate(() => {
@@ -257,6 +281,7 @@ async function ejecutar(page, perfil, ticketData, solicitudId) {
 
   // 7. Verificar éxito final
   await page.waitForTimeout(2000);
+  await snap(page, 'paso3');
   const final = await page.evaluate(() => {
     const text = (document.body.innerText || '').toLowerCase();
     return {
