@@ -24,6 +24,63 @@ const selectPrevious = db.prepare(`
 const deactivate = db.prepare(`UPDATE portal_scripts SET active = 0 WHERE id = ?`);
 const activate   = db.prepare(`UPDATE portal_scripts SET active = 1 WHERE id = ?`);
 
+// Algunos rows en portal_scripts no son JS ejecutable sino descriptores JSON
+// (analyzeApiFailure → step="api:..."; handlerUniversal → step="universal_pattern:...";
+// agentService macro CAMBIO 1 → step="agente_visual_exitoso"). Esos los salta el
+// validador para no marcarlos como inválidos por error.
+function esJsEjecutable(patch_js, step) {
+  if (!patch_js || typeof patch_js !== 'string') return false;
+  if (patch_js.trim().startsWith('{')) return false;
+  if (step && (step.startsWith('api:') ||
+               step.startsWith('universal_pattern:') ||
+               step === 'agente_visual_exitoso')) return false;
+  return true;
+}
+
+function validarSintaxisJs(code) {
+  try {
+    const AsyncFunction = (async function(){}).constructor;
+    new AsyncFunction(code);
+    return { valid: true };
+  } catch (e) {
+    return { valid: false, error: e.message };
+  }
+}
+
+// POST /api/scripts/cleanup — recorre todos los activos, valida sintaxis JS de
+// los que son código ejecutable y desactiva los que tengan SyntaxError.
+// Reversible vía /:portal/:id/rollback.
+router.post('/cleanup', authMiddleware, (req, res) => {
+  try {
+    const rows = db.prepare('SELECT id, portal, step, patch_js FROM portal_scripts WHERE active = 1').all();
+    const desactivados = [];
+    let skipped_json = 0;
+    let validos = 0;
+    const tx = db.transaction(() => {
+      for (const r of rows) {
+        if (!esJsEjecutable(r.patch_js, r.step)) { skipped_json++; continue; }
+        const v = validarSintaxisJs(r.patch_js);
+        if (!v.valid) {
+          deactivate.run(r.id);
+          desactivados.push({ id: r.id, portal: r.portal, step: r.step, error: v.error });
+        } else {
+          validos++;
+        }
+      }
+    });
+    tx();
+    res.json({
+      total_activos_antes: rows.length,
+      desactivados: desactivados.length,
+      validos,
+      skipped_json_descriptors: skipped_json,
+      detalles: desactivados
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // GET /api/scripts/patch/:id — endpoint admin temporal: devuelve el parche
 // completo (incluyendo patch_js) por id. Debe ir ANTES de /:portal porque
 // Express matchea por orden y "patch" caería bajo el catch-all de :portal.
