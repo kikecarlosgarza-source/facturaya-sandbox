@@ -5,6 +5,7 @@ const fs = require('fs');
 const claudeAgent = require('./claudeAgent');
 const handlerUniversal = require('./handlerUniversal');
 const scout = require('./scout');
+const { procesarConAgente } = require('./agentService');
 
 // Directorio para guardar captchas
 const CAPTCHA_DIR = '/data/captchas';
@@ -1049,6 +1050,19 @@ function detectarPortal(establecimiento, sistemaFacturacion) {
   return null;
 }
 
+// Fallback al agente visual (Computer Use). Cualquier excepción queda como status='error'.
+async function invocarAgenteVisual(solicitudId, motivo) {
+  console.log(`[AUTO] Invocando agente visual: ${motivo}`);
+  try {
+    return await procesarConAgente(solicitudId);
+  } catch (e) {
+    console.error('[AUTO] agente visual falló:', e.message);
+    db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
+      .run('error', `agente: ${e.message}`.substring(0, 200), solicitudId);
+    return { success: false, error: e.message };
+  }
+}
+
 async function procesarFactura(solicitudId) {
   const solicitud = db.prepare('SELECT * FROM solicitudes WHERE id = ?').get(solicitudId);
   if (!solicitud) throw new Error('Solicitud no encontrada');
@@ -1078,12 +1092,8 @@ async function procesarFactura(solicitudId) {
       console.log(`[AUTO] Sin handler bespoke (establecimiento="${solicitud.establecimiento}") — usando handlerUniversal con ${url}`);
       portal = { key: 'universal', ...PORTALES['universal'] };
     } else {
-      const detalle = solicitud.sistema_facturacion === 'wansoft'
-        ? 'Portal Wansoft aún no soportado automáticamente — factura manualmente en el portal del comercio'
-        : 'Portal no soportado aun';
-      db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
-        .run('manual', detalle, solicitudId);
-      return { success: false, manual: true, mensaje: detalle };
+      // Sin URL ni handler bespoke — último recurso: agente visual
+      return await invocarAgenteVisual(solicitudId, `sin URL ni handler para "${solicitud.establecimiento}"`);
     }
   }
   console.log(`[AUTO] Portal seleccionado: ${portal.key} (sistema=${solicitud.sistema_facturacion || 'N/A'} shop=${solicitud.shop_name || 'N/A'})`);
@@ -1109,10 +1119,16 @@ async function procesarFactura(solicitudId) {
       if (resultado.success) {
         db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
           .run('completado', resultado.mensaje, solicitudId);
-      } else {
-        db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
-          .run('manual', resultado.mensaje || 'Proceso parcial', solicitudId);
+        return resultado;
       }
+      // Si era universal y falló — último recurso: agente visual
+      if (portal.key === 'universal') {
+        console.log(`[AUTO] handlerUniversal falló: ${resultado.mensaje}`);
+        return await invocarAgenteVisual(solicitudId, 'handlerUniversal falló');
+      }
+      // Bespoke falló — manual
+      db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
+        .run('manual', resultado.mensaje || 'Proceso parcial', solicitudId);
       return resultado;
     } catch (e) {
       console.error('[AUTO] Error HTTP portal:', e.message);

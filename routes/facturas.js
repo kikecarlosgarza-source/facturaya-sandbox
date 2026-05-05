@@ -3,33 +3,14 @@ const router = express.Router();
 const fs = require('fs');
 const authMiddleware = require('../middleware/auth');
 const { procesarFactura, enviarCaptcha } = require('../services/automationService');
-const { procesarConAgente } = require('../services/agentService');
 const db = require('../db/database');
-
-// Portales que tienen automation hardcodeada
-const PORTALES_HARDCODED = ['home depot', 'petro'];
-
-function usarAgente(establecimiento) {
-  const n = (establecimiento || '').toLowerCase();
-  return !PORTALES_HARDCODED.some(p => n.includes(p));
-}
 
 router.post('/solicitar', authMiddleware, async (req, res) => {
   try {
     const { solicitudId } = req.body;
     if (!solicitudId) return res.status(400).json({ error: 'solicitudId requerido' });
-    
-    const solicitud = db.prepare('SELECT establecimiento FROM solicitudes WHERE id = ?').get(solicitudId);
     res.json({ ok: true, solicitudId, status: 'procesando' });
-
-    // Usar agente visual para portales nuevos/desconocidos, automation hardcodeada para los conocidos
-    if (solicitud && usarAgente(solicitud.establecimiento)) {
-      console.log('[FACTURA] Usando agente visual para:', solicitud.establecimiento);
-      procesarConAgente(solicitudId).catch(e => console.error('[AGENTE]', e.message));
-    } else {
-      console.log('[FACTURA] Usando automation hardcodeada para:', solicitud?.establecimiento);
-      procesarFactura(solicitudId).catch(e => console.error('[FACTURA]', e.message));
-    }
+    procesarFactura(solicitudId).catch(e => console.error('[FACTURA]', e.message));
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
