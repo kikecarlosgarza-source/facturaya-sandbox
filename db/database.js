@@ -86,6 +86,21 @@ try { db.exec('ALTER TABLE solicitudes ADD COLUMN shop_name TEXT'); } catch(e) {
 // validation_error: testRunner guarda aquí el error del smoke test si falló
 try { db.exec('ALTER TABLE portal_scripts ADD COLUMN validation_error TEXT'); } catch(e) {}
 
+// Scout: cache de URLs descubiertas vía web search, cacheado por RFC o establecimiento
+try { db.exec(`
+  CREATE TABLE IF NOT EXISTS portal_url_cache (
+    cache_key       TEXT PRIMARY KEY,
+    rfc_emisor      TEXT,
+    establecimiento TEXT,
+    portal_url      TEXT,
+    source          TEXT,
+    confidence      REAL,
+    searched_at     TEXT DEFAULT (datetime('now')),
+    last_verified   TEXT,
+    expires_at      TEXT
+  )
+`); } catch(e) {}
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS portal_scripts (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,

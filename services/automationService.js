@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const claudeAgent = require('./claudeAgent');
 const handlerUniversal = require('./handlerUniversal');
+const scout = require('./scout');
 
 // Directorio para guardar captchas
 const CAPTCHA_DIR = '/data/captchas';
@@ -1057,7 +1058,21 @@ async function procesarFactura(solicitudId) {
 
   let portal = detectarPortal(solicitud.establecimiento, solicitud.sistema_facturacion);
   if (!portal) {
-    const url = solicitud.portal_url;
+    let url = solicitud.portal_url;
+    // Scout: si no hay URL en el ticket, busca en internet y cachea por RFC
+    if (!url || !/^https?:\/\//.test(url)) {
+      if (solicitud.rfc_emisor || solicitud.establecimiento) {
+        console.log(`[AUTO] Sin portal_url — Scout buscando para "${solicitud.establecimiento}"`);
+        url = await scout.findPortalURL({
+          rfc_emisor: solicitud.rfc_emisor,
+          establecimiento: solicitud.establecimiento
+        }).catch(e => { console.warn('[AUTO] Scout falló:', e.message); return null; });
+        if (url) {
+          console.log(`[AUTO] Scout encontró: ${url}`);
+          solicitud.portal_url = url;
+        }
+      }
+    }
     if (url && /^https?:\/\//.test(url)) {
       console.log(`[AUTO] Sin handler bespoke (establecimiento="${solicitud.establecimiento}") — usando handlerUniversal con ${url}`);
       portal = { key: 'universal', ...PORTALES['universal'] };
