@@ -15,8 +15,27 @@ Estos archivos / bloques contienen lógica que ya funciona (o estaba estable) y 
 | `services/handlers/benavidesHandler.js` | **FUNCIONAL** | commit `b73d92b` o posterior (2026-05-06) |
 | `services/handlers/alseaHandler.js` | **FUNCIONAL** — paso 1 HTTP, paso 2 vía WebView | — |
 | `services/handlers/hebHandler.js` | **PENDIENTE VERIFICAR** — tratar como si funcionara | — |
-| Bloque Home Depot dentro de `services/automationService.js` (`PORTALES['home depot']`, ~línea 61) | **FUNCIONAL al 6/may/2026 — primera factura timbrada exitosamente (commit `1bcd795`). Serie `4KHFEBI`, Folio `63707`. Fixes aplicados: F1 (CapSolver sin puerto), F2-A + F2-C LOTE 1 (indexSerieTienda + payload reformado), F2-LOTE-2 (impuesto IVA→002 catálogo SAT). NO TOCAR sin permiso explícito. F2-B (emisor/tienda completos) y F2-D (totales servidos) quedan como mejoras opcionales pendientes — NO aplicar sin autorización porque ya está funcionando.** | `1bcd795` |
+| Bloque Home Depot dentro de `services/automationService.js` (`PORTALES['home depot']`, ~línea 61) | **🔒 LOCKED — FUNCIONAL al 6/may/2026** | commit `e73bf8e` |
 | Bloque Petro7 dentro de `services/automationService.js` (`PORTALES['petro']`, ~línea 651) | **FUNCIONAL** | — |
+
+## ⚠️ ATENCIÓN — HANDLER PROTEGIDO: Home Depot
+
+Home Depot timbró exitosamente 2 facturas reales el 6/may/2026:
+- Folio CFDI `63707` ($267, FOCO LED + LUMINARIO LED) — commit `1bcd795`
+- Folio CFDI `63722` ($169, LUMINARIO LED) — verificado en logs
+
+**Fixes aplicados que componen este estado funcional:**
+- **F1** (commit `220a444`): URL CapSolver sin puerto `:2053`
+- **F2-A + F2-C LOTE 1** (commit `01cd390`): `indexSerieTienda`, tipos cruzados (`tipoComprobante`/`tipoDocumento`), `tickets` como array de strings, direcciones placeholder (`NO ESPECIFICADO` / `S/N`), removido campo `cliente` sobrante
+- **F2-LOTE-2** (commit `1bcd795`): mapeo `IVA → 002` al catálogo SAT `c_Impuesto`
+
+**NO TOCAR este bloque bajo NINGUNA circunstancia sin autorización explícita del usuario** nombrando "home depot" o "automationService.js > home depot" en el mismo turno. Esta regla aplica a Claude (cualquier sesión), a otros asistentes, y al usuario en un descuido. Si el usuario abre una sesión y pide algo que indirectamente toque este bloque sin nombrarlo, **hay que pedir confirmación primero**.
+
+**Mejoras pendientes que NO se aplican (porque ya funciona):**
+- **F2-B** — objetos `emisor`/`tienda` completos en payload (hoy van con 4 y 2 campos respectivamente).
+- **F2-D** — usar totales servidos por `agregarTicket` en lugar de recalcular desde conceptos.
+
+Estas mejoras quedan documentadas como **deuda técnica conocida** pero NO se aplican porque el handler ya entrega facturas exitosamente. Aplicarlas sin razón implica riesgo de regresión.
 
 ## Qué SÍ se puede tocar libremente
 
