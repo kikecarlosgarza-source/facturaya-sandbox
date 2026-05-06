@@ -132,23 +132,18 @@ async function ejecutar(perfil, ticketData, solicitudId) {
   }
 
   // STEP 1: ValidarTicket
-  // FIX 1: hotfix sucursal — Benavides imprime "M214" pero a veces el OCR
-  // pierde la "M". Si la sucursal viene como solo dígitos, prependemos "M".
-  // El root cause está en claudeService.NUMERO_TIENDA prompt (ya corregido)
-  // pero esto cubre tickets ya analizados antes del nuevo prompt.
-  let sucursal = tienda || '0';
-  if (sucursal && /^\d+$/.test(sucursal)) {
-    const original = sucursal;
-    sucursal = 'M' + sucursal;
-    console.log('[Benavides] Sucursal sin prefijo M, agregando:', original, '→', sucursal);
-  }
+  // Sucursal: Benavides la espera como Int32 (NO como string "M214"). El
+  // ticket imprime "M214" pero el portal hace el strip internamente. Aquí
+  // strip de no-dígitos + parseInt para mandar 214 como número. Cubre
+  // también tickets que llegaron como "214" sin prefijo.
+  const sucursalInt = parseInt(String(tienda || '0').replace(/[^\d]/g, ''), 10) || 0;
 
   // Payload exacto del blueprint: Folio + Total + Fecha + Sucursal + RFC
   const validarPayload = {
     Folio: String(folio),
     Total: total,
     Fecha: fecha,
-    Sucursal: sucursal,
+    Sucursal: sucursalInt,
     RFC: perfil.rfc
   };
 
@@ -192,28 +187,45 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     if (!validarData) {
       return { success: false, mensaje: 'Benavides ValidarTicket: response.data.d vacío' };
     }
-    sal1 = validarData.sal || validarData;
     console.log('[Benavides] ValidarTicket mensaje:', validarData.mensaje);
-    console.log('[Benavides] ValidarTicket correo:', validarData.correo);
+    console.log('[Benavides] ValidarTicket html:', validarData.html);
+    console.log('[Benavides] ValidarTicket sal present:', !!validarData.sal);
+
+    // CASO 1: Error explícito — el message va en d.html (no d.correo).
+    if (validarData.mensaje === 'Error') {
+      console.log('[Benavides] Error de Benavides:', validarData.html);
+      return {
+        success: false,
+        error: 'BENAVIDES_ERROR',
+        mensaje: validarData.html || 'Error desconocido',
+        fallbackToManual: true
+      };
+    }
+
+    // CASO 2: Response sin sal (raro pero defensivo)
+    if (!validarData.sal) {
+      console.log('[Benavides] Response sin sal:', validarData.mensaje);
+      return {
+        success: false,
+        error: 'NO_SAL',
+        mensaje: validarData.mensaje || 'Respuesta sin sal',
+        fallbackToManual: true
+      };
+    }
+
+    sal1 = validarData.sal;
     console.log('[Benavides] sal.Tck_Id:', sal1.Tck_Id);
     console.log('[Benavides] sal.MensajeBlock:', sal1.MensajeBlock);
 
-    if (validarData.mensaje === 'Error' || validarData.Mensaje === 'Error') {
-      return {
-        success: false,
-        error: validarData.correo || validarData.Correo,
-        mensaje: `Benavides ValidarTicket rechazado — ${validarData.correo || validarData.Correo || 'sin detalle'}`
-      };
-    }
-    // Bug observado: CodErr=0, Mensaje="Validación exitosa", PERO Tck_Id=null
-    // y MensajeBlock contiene el motivo del bloqueo del ticket.
+    // CASO 3 (bug observado): Mensaje="Validación exitosa" pero Tck_Id null
+    // y MensajeBlock con el motivo del bloqueo.
     if (!sal1.Tck_Id || (sal1.MensajeBlock && String(sal1.MensajeBlock).trim().length > 0)) {
       const motivo = sal1.MensajeBlock || 'Benavides no permite facturar este ticket';
       console.log('[Benavides] Ticket no facturable — motivo:', motivo);
       return {
         success: false,
         error: 'TICKET_NO_FACTURABLE',
-        mensaje: `Benavides: ${motivo}`,
+        mensaje: motivo,
         fallbackToManual: true
       };
     }
@@ -303,8 +315,9 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     Localidad: zipData.Localidad || '',
     EmailCFDI: perfil.email      || '',
 
-    // Datos del ticket (de ObtieneDatosTicket — pasar verbatim)
-    suc:                  tienda,
+    // Datos del ticket (de ObtieneDatosTicket — pasar verbatim).
+    // suc es Int32 (mismo tipo que Sucursal en ValidarTicket).
+    suc:                  sucursalInt,
     TckNum:               String(folio),
     Id:                   tckId,
     TipoDocumento:        datosTicket.TipoDocumento,
