@@ -268,6 +268,22 @@ const PORTALES = {
       // Régimen del emisor: probar varias keys (la API a veces usa una distinta a la del frontend)
       const regimenEmisor = tienda?.claveRegimenFiscal || tienda?.regimenFiscal || tienda?.regimen || datosTicket?.regimenEmisor || '601';
 
+      // Mapeo nombre → código catálogo c_Impuesto SAT (el portal devuelve "IVA" pero
+      // el timbrado exige "002", si no responde CFDI40175).
+      const IMPUESTO_CODIGO = { 'IVA': '002', 'ISR': '001', 'IEPS': '003' };
+      const conceptosNormalizados = conceptos.map(c => ({
+        ...c,
+        traslados: (c.traslados || []).map(t => {
+          const { tipoImpuesto, ...rest } = t;
+          return { ...rest, impuesto: IMPUESTO_CODIGO[t.impuesto] || t.impuesto };
+        }),
+        retenciones: (c.retenciones || []).map(r => {
+          const { tipoImpuesto, ...rest } = r;
+          return { ...rest, impuesto: IMPUESTO_CODIGO[r.impuesto] || r.impuesto };
+        })
+      }));
+      console.log(`[AUTO] HD - conceptos normalizados: ${conceptosNormalizados.length} items, primer impuesto=${conceptosNormalizados[0]?.traslados?.[0]?.impuesto}`);
+
       // 9. Construir comprobante y timbrar
       const comprobante = {
         tipoComprobante: serie.nombre,
@@ -306,7 +322,7 @@ const PORTALES = {
         activo: true,
         relacionados: [],
         tickets: [folio],
-        conceptos,
+        conceptos: conceptosNormalizados,
         descuento: totDescuento,
         totImpRet: 0,
         totImpTras,
