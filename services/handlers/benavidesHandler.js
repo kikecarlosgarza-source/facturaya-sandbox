@@ -1,85 +1,32 @@
 // Handler HTTP-only para e-facturate.com/benavides/ (Farmacias Benavides).
 //
-// Flujo descubierto en el inline JS de la página (no API docs):
-//   1. ValidarTicket   — input: {NumeroTicket, RFC, Total, ...} + Sucursal:0
-//                        output: data.d.sal.Tck_Id (ticket id interno)
-//   2. ObtieneDatosTicket — input: {ticketId}
-//                           output: data.d.{Items, Subtotal, ImpTot, Tua, ...}
-//   3. GeneraFacturaTicket — input: jsonObject completo (datos cliente +
-//                            ticket data + defaults). SUBMIT real.
+// Reescrito desde cero usando blueprint de ingeniería inversa del JS de
+// producción del portal:
 //
-// Wrapper de body para 1 y 3:  {json: encodeURIComponent(JSON.stringify(jsonObject))}
-// Wrapper de body para 2:      {ticketId: "..."} (JSON estricto, ASP.NET acepta)
-// Discriminador de error:      data.d.mensaje === "Error" → data.d.correo es el msg
+//   GET  /benavides/                                    — sembrar cookies
+//   POST /benavides/DataProcessor.aspx/ValidarTicket    — devuelve sal.Tck_Id
+//   POST /benavides/DataProcessor.aspx/ObtieneDatosTicket — Items, totales
+//   POST /benavides/DataProcessor.aspx/GetZipCodes      — Estado, Municipio, Colonia
+//   POST /benavides/DataProcessor.aspx/GeneraFacturaTicket — TIMBRADO REAL
+//
+// Body wrapper para TODO POST:
+//   { json: encodeURIComponent(JSON.stringify(jsonObject)) }
+//
+// Bug conocido del portal: campo Pais se resetea a "AFG" tras GetZipCodes.
+// Workaround: hardcodear Pais="MEX" siempre.
+//
+// Discriminadores de error (en orden):
+//   1. result.mensaje === "Error"  → result.correo es el motivo
+//   2. !sal.Tck_Id || sal.MensajeBlock no vacío → TICKET_NO_FACTURABLE
 
 const axios = require('axios');
 const claudeAgent = require('../claudeAgent');
 
-const BASE = 'https://e-facturate.com';
-const PATH = '/benavides';
+const ORIGIN = 'https://e-facturate.com';
+const PATH   = '/benavides';
+const BASE_DP = ORIGIN + PATH + '/DataProcessor.aspx';
 
-// Catálogo SAT abreviado para concatenar "código-descripción" como espera
-// Benavides en RegimenFiscal y UsoCFDI (el bundle hace .split('-')[0] pero
-// otras validaciones del server probablemente esperan formato completo).
-const REGIMEN_FISCAL = {
-  '601': 'General de Ley Personas Morales',
-  '603': 'Personas Morales con Fines no Lucrativos',
-  '605': 'Sueldos y Salarios e Ingresos Asimilados a Salarios',
-  '606': 'Arrendamiento',
-  '607': 'Régimen de Enajenación o Adquisición de Bienes',
-  '608': 'Demás ingresos',
-  '610': 'Residentes en el Extranjero sin Establecimiento Permanente en México',
-  '611': 'Ingresos por Dividendos (socios y accionistas)',
-  '612': 'Personas Físicas con Actividades Empresariales y Profesionales',
-  '614': 'Ingresos por intereses',
-  '615': 'Régimen de los ingresos por obtención de premios',
-  '616': 'Sin obligaciones fiscales',
-  '620': 'Sociedades Cooperativas de Producción que optan por diferir sus ingresos',
-  '621': 'Incorporación Fiscal',
-  '622': 'Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras',
-  '623': 'Opcional para Grupos de Sociedades',
-  '624': 'Coordinados',
-  '625': 'Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas',
-  '626': 'Régimen Simplificado de Confianza',
-  '628': 'Hidrocarburos'
-};
-
-const USO_CFDI = {
-  'G01':  'Adquisición de mercancías',
-  'G02':  'Devoluciones, descuentos o bonificaciones',
-  'G03':  'Gastos en general',
-  'I01':  'Construcciones',
-  'I02':  'Mobiliario y equipo de oficina por inversiones',
-  'I03':  'Equipo de transporte',
-  'I04':  'Equipo de cómputo y accesorios',
-  'I05':  'Dados, troqueles, moldes, matrices y herramental',
-  'I06':  'Comunicaciones telefónicas',
-  'I07':  'Comunicaciones satelitales',
-  'I08':  'Otra maquinaria y equipo',
-  'D01':  'Honorarios médicos, dentales y gastos hospitalarios',
-  'D02':  'Gastos médicos por incapacidad o discapacidad',
-  'D03':  'Gastos funerales',
-  'D04':  'Donativos',
-  'D05':  'Intereses reales efectivamente pagados por créditos hipotecarios (casa habitación)',
-  'D06':  'Aportaciones voluntarias al SAR',
-  'D07':  'Primas por seguros de gastos médicos',
-  'D08':  'Gastos de transportación escolar obligatoria',
-  'D09':  'Depósitos en cuentas para el ahorro, primas que tengan como base planes de pensiones',
-  'D10':  'Pagos por servicios educativos (colegiaturas)',
-  'P01':  'Por definir',
-  'S01':  'Sin efectos fiscales',
-  'CP01': 'Pagos',
-  'CN01': 'Nómina'
-};
-
-// Si ya viene en formato "612-...", déjalo. Si es solo código, concatena.
-function toCodigoGuionDesc(value, catalog) {
-  if (!value) return '';
-  const v = String(value).trim();
-  if (v.includes('-')) return v;
-  const desc = catalog[v];
-  return desc ? `${v}-${desc}` : v;
-}
+const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 
 function makeReportApi(portal) {
   return (endpoint, request, e) =>
@@ -91,21 +38,52 @@ function makeReportApi(portal) {
     }).catch(err => console.warn(`[OTA ${portal}] analyzeApiFailure falló (${endpoint}):`, err.message));
 }
 
-// Body wrapper exacto que usa el bundle de Benavides para
-// ValidarTicket y GeneraFacturaTicket.
+// Body wrapper EXACTO que espera el portal (todos los POST).
 function wrapJson(jsonObject) {
   return { json: encodeURIComponent(JSON.stringify(jsonObject)) };
+}
+
+// Parser de response ASP.NET ScriptService. response.data.d puede venir
+// como string serializado o ya como objeto — manejamos ambos.
+function parseResponse(res) {
+  const d = res.data?.d;
+  if (typeof d === 'string') {
+    try { return JSON.parse(d); } catch { return d; }
+  }
+  return d;
+}
+
+// El portal espera fecha en dd/mm/yyyy. Convertir de YYYY-MM-DD si aplica.
+function toDDMMYYYY(s) {
+  if (!s) return '';
+  s = String(s).trim();
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (m) return `${m[1].padStart(2,'0')}/${m[2].padStart(2,'0')}/${m[3]}`;
+  return s;
+}
+
+// Solo código SAT, sin descripción. El bundle hace .split('-')[0] al leer
+// del select; el server espera string limpio "G03" / "612".
+function soloCodigo(value) {
+  if (value == null) return '';
+  return String(value).trim().split('-')[0].trim();
 }
 
 async function ejecutar(perfil, ticketData, solicitudId) {
   const reportApi = makeReportApi('benavides');
 
-  const folio = ticketData.folio || ticketData.numero_ticket || '';
-  const total = ticketData.total;
-  if (!folio) return { success: false, mensaje: 'Benavides: folio (txt_ticket) requerido' };
-  if (total == null) return { success: false, mensaje: 'Benavides: total requerido' };
+  const folio  = ticketData.folio || ticketData.numero_ticket || '';
+  const total  = ticketData.total;
+  const fecha  = toDDMMYYYY(ticketData.fecha_compra || ticketData.fecha || ticketData.fecha_formateada);
+  const tienda = ticketData.numero_tienda || '';
 
-  // Cookie jar manual para mantener sesión ASP.NET (.AspNet.ApplicationCookie etc.)
+  if (!folio)        return { success: false, mensaje: 'Benavides: folio requerido' };
+  if (total == null) return { success: false, mensaje: 'Benavides: total requerido' };
+  if (!fecha)        return { success: false, mensaje: 'Benavides: fecha requerida' };
+
+  // Cookie jar manual
   const jar = {};
   const parseCookies = (h) => {
     const sc = h?.['set-cookie']; if (!sc) return;
@@ -114,239 +92,243 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       if (n) jar[n.trim()] = v ? v.trim() : '';
     });
   };
-  const cookieStr = () => Object.entries(jar).map(([k,v]) => k+'='+v).join('; ');
-  const baseHeaders = {
-    'Content-Type': 'application/json; charset=UTF-8',
-    'Accept': 'application/json, text/javascript, */*; q=0.01',
-    'X-Requested-With': 'XMLHttpRequest',
-    'Origin': BASE,
-    'Referer': BASE + PATH + '/',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-  };
-  const opts = (extra = {}) => ({
-    headers: { ...baseHeaders, Cookie: cookieStr(), ...extra },
-    timeout: 30000, validateStatus: () => true
-  });
+  const cookieHeader = () => Object.entries(jar).map(([k,v]) => k+'='+v).join('; ');
 
-  // 0. GET / para sembrar cookies + llamadas init (best-effort, no bloquean)
+  function postOpts() {
+    return {
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': ORIGIN + PATH + '/',
+        'Origin': ORIGIN,
+        'User-Agent': UA,
+        'Cookie': cookieHeader()
+      },
+      timeout: 30000,
+      validateStatus: () => true
+    };
+  }
+
+  // STEP 0: GET inicial para sembrar cookies
   try {
-    const r = await axios.get(BASE + PATH + '/', opts());
+    const r = await axios.get(ORIGIN + PATH + '/', {
+      headers: { 'User-Agent': UA },
+      timeout: 30000,
+      validateStatus: () => true
+    });
     parseCookies(r.headers);
-    console.log(`[Benavides] init GET / status=${r.status} cookies=${Object.keys(jar).join(',')}`);
+    console.log('[Benavides] init GET status:', r.status);
+    console.log('[Benavides] init cookies set:', Object.keys(jar).join(','));
   } catch (e) {
-    reportApi(BASE + PATH + '/', null, e);
+    reportApi(ORIGIN + PATH + '/', null, e);
     return { success: false, mensaje: 'Benavides: GET inicial falló — ' + e.message };
   }
-  for (const m of ['PoliticasCliente', 'CustomLabelsCliente', 'GetPaymentMethods', 'GetCountries']) {
-    try {
-      const r = await axios.post(BASE + PATH + '/DataProcessor.aspx/' + m, {}, opts());
-      parseCookies(r.headers);
-    } catch {}
-  }
 
-  // ── 1. ValidarTicket ─────────────────────────────────────────────────
-  // Body shape extraído de inline JS. Sucursal=0 porque Benavides no
-  // muestra select de sucursal (campos del form: ticket+total+RFC).
-  const validarBody = {
-    Fecha: '',
-    IdentificadorGlobal: '',
-    Moneda: '',
-    Noreferencia: '',
-    NumeroTicket: String(folio),
-    RFC: perfil.rfc,
-    Sucursal: 0,
-    SucursalName: '',
-    Tipo: 2,
-    TipoCambio: '',
-    Total: String(total)
+  // STEP 1: ValidarTicket
+  // Payload exacto del blueprint: Folio + Total + Fecha + Sucursal + RFC
+  const validarPayload = {
+    Folio: String(folio),
+    Total: total,
+    Fecha: fecha,
+    Sucursal: tienda || '0',
+    RFC: perfil.rfc
   };
-
-  let tckId = null;
+  let tckId, sal1;
   try {
-    const url = BASE + PATH + '/DataProcessor.aspx/ValidarTicket';
-    const r = await axios.post(url, wrapJson(validarBody), opts());
+    const r = await axios.post(BASE_DP + '/ValidarTicket', wrapJson(validarPayload), postOpts());
     parseCookies(r.headers);
-    console.log(`[Benavides] ValidarTicket status=${r.status}`);
+    console.log('[Benavides] ValidarTicket status:', r.status);
     if (r.status >= 400) {
-      return { success: false, mensaje: `Benavides ValidarTicket HTTP ${r.status} — ${JSON.stringify(r.data).substring(0, 200)}` };
+      console.error('[Benavides] ValidarTicket HTTP error body keys:', Object.keys(r.data || {}).join(','));
+      return { success: false, mensaje: `Benavides ValidarTicket HTTP ${r.status}` };
     }
-    const d = r.data?.d;
-    if (!d) {
-      return { success: false, mensaje: 'Benavides ValidarTicket: response sin .d' };
+    const validarData = parseResponse(r);
+    if (!validarData) {
+      return { success: false, mensaje: 'Benavides ValidarTicket: response.data.d vacío' };
     }
-    if (d.mensaje === 'Error') {
-      console.error('[Benavides] ValidarTicket rechazado:', JSON.stringify(d));
-      return { success: false, mensaje: `Benavides ValidarTicket rechazado — ${d.correo || JSON.stringify(d).substring(0, 200)}` };
+    sal1 = validarData.sal || validarData;
+    console.log('[Benavides] ValidarTicket mensaje:', validarData.mensaje);
+    console.log('[Benavides] ValidarTicket correo:', validarData.correo);
+    console.log('[Benavides] sal.Tck_Id:', sal1.Tck_Id);
+    console.log('[Benavides] sal.MensajeBlock:', sal1.MensajeBlock);
+
+    if (validarData.mensaje === 'Error' || validarData.Mensaje === 'Error') {
+      return {
+        success: false,
+        error: validarData.correo || validarData.Correo,
+        mensaje: `Benavides ValidarTicket rechazado — ${validarData.correo || validarData.Correo || 'sin detalle'}`
+      };
     }
-    tckId = d.sal?.Tck_Id;
-    if (!tckId) {
-      console.error('[Benavides] ValidarTicket sin Tck_Id:', JSON.stringify(d).substring(0, 400));
-      return { success: false, mensaje: 'Benavides ValidarTicket: sin Tck_Id en response (revisar shape)' };
+    // Bug observado: CodErr=0, Mensaje="Validación exitosa", PERO Tck_Id=null
+    // y MensajeBlock contiene el motivo del bloqueo del ticket.
+    if (!sal1.Tck_Id || (sal1.MensajeBlock && String(sal1.MensajeBlock).trim().length > 0)) {
+      const motivo = sal1.MensajeBlock || 'Benavides no permite facturar este ticket';
+      console.log('[Benavides] Ticket no facturable — motivo:', motivo);
+      return {
+        success: false,
+        error: 'TICKET_NO_FACTURABLE',
+        mensaje: `Benavides: ${motivo}`,
+        fallbackToManual: true
+      };
     }
-    console.log(`[Benavides] ValidarTicket OK Tck_Id=${tckId}`);
+    tckId = sal1.Tck_Id;
   } catch (e) {
-    reportApi(BASE + PATH + '/DataProcessor.aspx/ValidarTicket', validarBody, e);
+    reportApi(BASE_DP + '/ValidarTicket', validarPayload, e);
     return { success: false, mensaje: 'Benavides ValidarTicket excepción — ' + e.message };
   }
 
-  // ── 2. ObtieneDatosTicket ────────────────────────────────────────────
-  // Body en JSON estricto (ASP.NET deserializer permisivo acepta), no el
-  // string con single quotes que usa el bundle.
-  let ticketDetalle;
+  // STEP 2: ObtieneDatosTicket
+  let datosTicket;
   try {
-    const url = BASE + PATH + '/DataProcessor.aspx/ObtieneDatosTicket';
-    const r = await axios.post(url, { ticketId: String(tckId) }, opts());
+    const r = await axios.post(BASE_DP + '/ObtieneDatosTicket', wrapJson({ ticketId: tckId }), postOpts());
     parseCookies(r.headers);
-    console.log(`[Benavides] ObtieneDatosTicket status=${r.status}`);
+    console.log('[Benavides] ObtieneDatosTicket status:', r.status);
     if (r.status >= 400) {
-      return { success: false, mensaje: `Benavides ObtieneDatosTicket HTTP ${r.status} — ${JSON.stringify(r.data).substring(0, 200)}` };
+      return { success: false, mensaje: `Benavides ObtieneDatosTicket HTTP ${r.status}` };
     }
-    const d = r.data?.d;
-    if (!d) {
-      return { success: false, mensaje: 'Benavides ObtieneDatosTicket: response sin .d' };
+    const datosData = parseResponse(r);
+    if (!datosData) {
+      return { success: false, mensaje: 'Benavides ObtieneDatosTicket: response.data.d vacío' };
     }
-    if (d.mensaje === 'Error') {
-      console.error('[Benavides] ObtieneDatosTicket rechazado:', JSON.stringify(d));
-      return { success: false, mensaje: `Benavides ObtieneDatosTicket rechazado — ${d.correo || JSON.stringify(d).substring(0, 200)}` };
+    if (datosData.mensaje === 'Error' || datosData.Mensaje === 'Error') {
+      console.error('[Benavides] ObtieneDatosTicket correo:', datosData.correo || datosData.Correo);
+      return { success: false, mensaje: `Benavides ObtieneDatosTicket rechazado — ${datosData.correo || datosData.Correo}` };
     }
-    ticketDetalle = d;
-    console.log(`[Benavides] ObtieneDatosTicket OK keys=${Object.keys(d).join(',')}`);
+    datosTicket = datosData.sal || datosData;
+    console.log('[Benavides] datosTicket TipoDocumento:', datosTicket.TipoDocumento);
+    console.log('[Benavides] datosTicket Subtotal:', datosTicket.Subtotal);
+    console.log('[Benavides] datosTicket ImpTot:', datosTicket.ImpTot);
+    console.log('[Benavides] datosTicket Total:', datosTicket.Total);
+    console.log('[Benavides] datosTicket Items.length:', Array.isArray(datosTicket.Items) ? datosTicket.Items.length : 'no-array');
+    console.log('[Benavides] datosTicket Tua:', datosTicket.Tua);
+    console.log('[Benavides] datosTicket OtrosCargos:', datosTicket.OtrosCargos);
   } catch (e) {
-    reportApi(BASE + PATH + '/DataProcessor.aspx/ObtieneDatosTicket', { ticketId: String(tckId) }, e);
+    reportApi(BASE_DP + '/ObtieneDatosTicket', { ticketId: tckId }, e);
     return { success: false, mensaje: 'Benavides ObtieneDatosTicket excepción — ' + e.message };
   }
 
-  // ── 3. GeneraFacturaTicket ──────────────────────────────────────────
-  // FormaDePago: intentar inferir del ticketDetalle. Bundle no muestra
-  // qué key usa la response, así que probamos variantes comunes.
-  let formaDePago = ticketDetalle.FormaPago
-    || ticketDetalle.formaPago
-    || ticketDetalle.forma_pago
-    || ticketDetalle.FormaDePago
-    || (ticketDetalle.sal && (ticketDetalle.sal.FormaPago || ticketDetalle.sal.formaPago));
+  // STEP 3: GetZipCodes — lookup por CP devuelve Estado/Municipio/Colonia/Localidad
+  let zipData = {};
+  try {
+    const r = await axios.post(BASE_DP + '/GetZipCodes', wrapJson({ cp: perfil.cp }), postOpts());
+    parseCookies(r.headers);
+    console.log('[Benavides] GetZipCodes status:', r.status);
+    if (r.status < 400) {
+      const zd = parseResponse(r);
+      if (zd) {
+        zipData = zd.sal || zd;
+        console.log('[Benavides] zipData Estado:', zipData.Estado);
+        console.log('[Benavides] zipData Municipio:', zipData.Municipio);
+        console.log('[Benavides] zipData Colonia:', zipData.Colonia);
+        console.log('[Benavides] zipData Localidad:', zipData.Localidad);
+      }
+    }
+  } catch (e) {
+    // Best-effort: no abortamos; armamos jsonObject con lo que tengamos
+    reportApi(BASE_DP + '/GetZipCodes', { cp: perfil.cp }, e);
+    console.warn('[Benavides] GetZipCodes excepción (no crítico):', e.message);
+  }
+
+  // STEP 4: GeneraFacturaTicket — TIMBRADO REAL
+  // FormaDePago: intentar inferir, fallback "01" con log explícito.
+  let formaDePago = datosTicket.FormaPago
+    || datosTicket.formaPago
+    || datosTicket.FormaDePago
+    || datosTicket.forma_pago;
   if (!formaDePago) {
     formaDePago = '01';
-    console.warn('[Benavides] FormaDePago hardcoded a 01 - revisar si ticket fue tarjeta');
+    console.warn('[Benavides] FormaDePago hardcoded a 01');
   } else {
-    console.log(`[Benavides] FormaDePago inferido del ticket: ${formaDePago}`);
+    console.log('[Benavides] FormaDePago inferido del ticket:', formaDePago);
   }
 
-  const facturaBody = {
-    // Cliente / fiscal — del perfil
-    RFC: perfil.rfc,
-    Nombre: perfil.nombre_sat || perfil.nombre || '',
-    CodPost: perfil.cp || '',
-    EmailCFDI: perfil.email || '',
-    RegimenFiscal: toCodigoGuionDesc(perfil.regimen, REGIMEN_FISCAL),
-    UsoCFDI:       toCodigoGuionDesc(perfil.uso_cfdi, USO_CFDI),
-    NumRegIdTrib: '',
+  const jsonObject = {
+    // Datos del cliente (perfil)
+    RFC:       perfil.rfc,
+    Nombre:    perfil.razon_social || perfil.nombre_sat || perfil.nombre || '',
+    Calle:     perfil.calle || '',
+    NoInt:     perfil.no_int || '',
+    NoExt:     perfil.no_ext || '',
+    Pais:      'MEX',  // HARDCODE — bug del portal lo resetea a AFG si no
+    Estado:    zipData.Estado    || 'NLE',
+    Municipio: zipData.Municipio || '',
+    Colonia:   zipData.Colonia   || '',
+    CodPost:   perfil.cp,
+    Localidad: zipData.Localidad || '',
+    EmailCFDI: perfil.email      || '',
 
-    // Dirección — primer intento todo vacío. Si Benavides los infiere del CP
-    // perfecto; si no, el catch detectará el error y reintenta con GetZipCodes.
-    Calle: '',
-    NoExt: '',
-    NoInt: '',
-    Colonia: '',
-    Localidad: '',
-    Municipio: '',
-    Estado: '',
-    Pais: 'MEX',
-
-    // Ticket — tomar del ObtieneDatosTicket response (keys comunes ASP.NET)
+    // Datos del ticket (de ObtieneDatosTicket — pasar verbatim)
+    suc:                  tienda,
     TckNum:               String(folio),
-    Total:                ticketDetalle.Total                ?? Number(total),
-    Subtotal:             ticketDetalle.Subtotal             ?? 0,
-    Descuento:            ticketDetalle.Descuento            ?? 0,
-    ImpTot:               ticketDetalle.ImpTot               ?? 0,
-    Tua:                  ticketDetalle.Tua                  ?? 0,
-    OtrosCargos:          ticketDetalle.OtrosCargos          ?? 0,
-    Items:                ticketDetalle.Items                ?? '',
-    ImpuestosCalculados:  ticketDetalle.ImpuestosCalculados  ?? '',
-    IdentificadorGlobal:  ticketDetalle.IdentificadorGlobal  ?? '',
+    Id:                   tckId,
+    TipoDocumento:        datosTicket.TipoDocumento,
+    Subtotal:             datosTicket.Subtotal,
+    Descuento:            datosTicket.Descuento || 0,
+    ImpTot:               datosTicket.ImpTot,
+    Total:                datosTicket.Total,
+    Items:                datosTicket.Items,
+    ImpuestosCalculados:  datosTicket.ImpuestosCalculados,
+    Tua:                  datosTicket.Tua || 0,
+    OtrosCargos:          datosTicket.OtrosCargos || 0,
 
-    // Defaults / constantes del bundle
-    TipoDocumento: '01',
+    // CFDI 4.0 — solo código, NO "código-descripción"
+    UsoCFDI:       soloCodigo(perfil.uso_cfdi)       || 'G03',
+    RegimenFiscal: soloCodigo(perfil.regimen_fiscal || perfil.regimen) || '612',
+    NumRegIdTrib:  '',
+
+    // Constantes
+    Propina:       false,
+    selectItems:   false,
+    Observaciones: '',
     MetodoPago:    'PUE',
     FormaDePago:   formaDePago,
-    Propina:       'false',
-    selectItems:   'false',
-    Observaciones: ''
+    version:       '4.0'
   };
 
-  let result = await postFactura(facturaBody, opts, reportApi);
-  if (result.success) return result;
-
-  // Fallback dirección: si el error menciona dirección/CP/colonia/calle,
-  // intentar enriquecer con GetZipCodes y reintentar UNA vez.
-  if (esErrorDireccion(result.errorMsg) && perfil.cp) {
-    console.warn(`[Benavides] error parece de dirección, reintentando con GetZipCodes(filter=${perfil.cp})`);
-    const zips = await fetchZipCodes(perfil.cp, opts, reportApi);
-    if (zips && zips.length) {
-      // GetInformationCatalog devuelve array de Key strings. Sin documentación
-      // del shape exacto, asumimos primer item es la colonia/CP correspondiente.
-      // Best-effort: rellenamos Colonia con el primer zip; resto vacío.
-      facturaBody.Colonia = String(zips[0]);
-      console.log(`[Benavides] retry con Colonia="${facturaBody.Colonia}" (de GetZipCodes[0])`);
-      result = await postFactura(facturaBody, opts, reportApi);
-      if (result.success) return result;
-    } else {
-      console.warn('[Benavides] GetZipCodes vacío o falló — sin más fallback');
-    }
-  }
-  return result;
-}
-
-async function postFactura(facturaBody, opts, reportApi) {
-  const url = BASE + PATH + '/DataProcessor.aspx/GeneraFacturaTicket';
   try {
-    const r = await axios.post(url, wrapJson(facturaBody), opts());
-    console.log(`[Benavides] GeneraFacturaTicket status=${r.status}`);
+    const r = await axios.post(BASE_DP + '/GeneraFacturaTicket', wrapJson(jsonObject), postOpts());
+    parseCookies(r.headers);
+    console.log('[Benavides] GeneraFacturaTicket status:', r.status);
     if (r.status >= 400) {
-      const errBody = JSON.stringify(r.data).substring(0, 300);
-      console.error(`[Benavides] GeneraFacturaTicket HTTP ${r.status} body=${errBody}`);
-      return { success: false, errorMsg: errBody, mensaje: `Benavides GeneraFacturaTicket HTTP ${r.status} — ${errBody}` };
+      console.error('[Benavides] GeneraFacturaTicket HTTP error keys:', Object.keys(r.data || {}).join(','));
+      return { success: false, mensaje: `Benavides GeneraFacturaTicket HTTP ${r.status}` };
     }
-    const d = r.data?.d;
-    if (!d) {
-      return { success: false, errorMsg: 'sin .d', mensaje: 'Benavides GeneraFacturaTicket: response sin .d' };
+    const facturaData = parseResponse(r);
+    if (!facturaData) {
+      return { success: false, mensaje: 'Benavides GeneraFacturaTicket: response.data.d vacío' };
     }
-    if (d.mensaje === 'Error') {
-      // Loggear objeto completo para feedback accionable
-      console.error('[Benavides] GeneraFacturaTicket RECHAZADO:', JSON.stringify(d));
-      const detalle = d.correo || d.html || JSON.stringify(d).substring(0, 300);
-      return { success: false, errorMsg: detalle, mensaje: `Benavides GeneraFacturaTicket rechazado — ${detalle}` };
-    }
-    // Éxito: response trae sus_id, total, fecha, rfc, mensaje, etc.
-    const cfdi = d.sus_id || d.uuid || d.id || '';
-    return { success: true, mensaje: `Factura Benavides generada — ${cfdi || 'CFDI sin uuid en response'} (${d.mensaje || 'OK'})` };
-  } catch (e) {
-    reportApi(url, facturaBody, e);
-    return { success: false, errorMsg: e.message, mensaje: 'Benavides GeneraFacturaTicket excepción — ' + e.message };
-  }
-}
+    const sal2 = facturaData.sal || facturaData;
+    console.log('[Benavides] facturaData.mensaje:', facturaData.mensaje);
+    console.log('[Benavides] facturaData.correo:', facturaData.correo);
+    console.log('[Benavides] sal.UUID:', sal2.UUID);
+    console.log('[Benavides] sal.PdfUrl:', sal2.PdfUrl);
+    console.log('[Benavides] sal.UrlPdf:', sal2.UrlPdf);
+    console.log('[Benavides] sal.XmlUrl:', sal2.XmlUrl);
+    console.log('[Benavides] sal.UrlXml:', sal2.UrlXml);
 
-function esErrorDireccion(msg) {
-  if (!msg) return false;
-  const m = String(msg).toLowerCase();
-  return /direcci[óo]n|calle|colonia|c[óo]digo postal|cp |c\.p\.|municipio|localidad|estado/.test(m);
-}
-
-async function fetchZipCodes(cp, opts, reportApi) {
-  const url = BASE + PATH + '/DataProcessor.aspx/GetZipCodes';
-  try {
-    // El bundle pasa el estado como filter; probamos con CP por si el WebMethod
-    // lo acepta. Si no devuelve nada, retornamos array vacío.
-    const r = await axios.post(url, { filter: String(cp) }, opts());
-    if (r.status >= 400) {
-      console.warn(`[Benavides] GetZipCodes HTTP ${r.status}`);
-      return [];
+    if (facturaData.mensaje === 'Error' || facturaData.Mensaje === 'Error') {
+      const detalle = facturaData.correo || facturaData.Correo || facturaData.html || '';
+      return {
+        success: false,
+        error: detalle,
+        mensaje: `Benavides GeneraFacturaTicket rechazado — ${detalle || 'sin detalle'}`
+      };
     }
-    const d = r.data?.d;
-    if (!Array.isArray(d)) return [];
-    return d.map(item => item?.Key || item?.Value || item).filter(Boolean);
+
+    const uuid = sal2.UUID || sal2.uuid || '';
+    const pdfUrl = sal2.PdfUrl || sal2.UrlPdf || '';
+    const xmlUrl = sal2.XmlUrl || sal2.UrlXml || '';
+    return {
+      success: true,
+      uuid,
+      pdf_url: pdfUrl,
+      xml_url: xmlUrl,
+      mensaje: `Factura Benavides generada${uuid ? ' UUID ' + uuid : ''}`
+    };
   } catch (e) {
-    reportApi(url, { filter: String(cp) }, e);
-    return [];
+    reportApi(BASE_DP + '/GeneraFacturaTicket', jsonObject, e);
+    return { success: false, mensaje: 'Benavides GeneraFacturaTicket excepción — ' + e.message };
   }
 }
 
