@@ -15,7 +15,7 @@ Estos archivos / bloques contienen lógica que ya funciona (o estaba estable) y 
 | `services/handlers/benavidesHandler.js` | **FUNCIONAL** | commit `b73d92b` o posterior (2026-05-06) |
 | `services/handlers/alseaHandler.js` | **FUNCIONAL** — paso 1 HTTP, paso 2 vía WebView | — |
 | `services/handlers/hebHandler.js` | **PENDIENTE VERIFICAR** — tratar como si funcionara | — |
-| Bloque Home Depot dentro de `services/automationService.js` (`PORTALES['home depot']`, ~línea 61) | **EN MODIFICACIÓN ACTIVA — sesión 2026-05-06, único fix aplicado: F1 (URL CapSolver sin puerto)** | — |
+| Bloque Home Depot dentro de `services/automationService.js` (`PORTALES['home depot']`, ~línea 61) | **EN MODIFICACIÓN ACTIVA — sesión 2026-05-06. Aplicados: F1 (CapSolver sin puerto), F2-A + F2-C LOTE 1 (indexSerieTienda, tipos cruzados, tickets array de folios string, direcciones placeholder, removido campo `cliente`)** | — |
 | Bloque Petro7 dentro de `services/automationService.js` (`PORTALES['petro']`, ~línea 651) | **FUNCIONAL** | — |
 
 ## Qué SÍ se puede tocar libremente

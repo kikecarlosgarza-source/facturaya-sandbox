@@ -224,6 +224,26 @@ const PORTALES = {
         }
       }
 
+      // 7b. F2: indexSerieTienda — sin serie, tipoComprobante y serieTiendaId quedan
+      // incorrectos y el portal responde server_error 500.
+      if (!tienda?.id) {
+        return { success: false, mensaje: 'HD: sin tienda válida no se puede obtener serie' };
+      }
+      let serie;
+      try {
+        const serieRes = await axios.get(`${BASE}/indexSerieTienda`, { ...opts, params: { idTienda: tienda.id, tipoDocumento: 'FACTURA' } });
+        const serieArr = Array.isArray(serieRes.data) ? serieRes.data : [];
+        console.log(`[AUTO] HD - indexSerieTienda status=${serieRes.status} count=${serieArr.length}`);
+        if (serieArr.length === 0) {
+          return { success: false, mensaje: 'HD: indexSerieTienda devolvió array vacío' };
+        }
+        serie = serieArr[0];
+        console.log(`[AUTO] HD - serie.id=${serie.id} serie.nombre=${serie.nombre} folioActual=${serie.folioActual}`);
+      } catch (e) {
+        reportApi(`${BASE}/indexSerieTienda`, { idTienda: tienda?.id, tipoDocumento: 'FACTURA' }, e);
+        return { success: false, mensaje: 'HD: error indexSerieTienda - ' + e.message };
+      }
+
       // 8. Calcular totales desde los conceptos del ticket
       const conceptos = datosTicket?.conceptos || [];
       const round2 = n => Math.round((Number(n) || 0) * 100) / 100;
@@ -250,10 +270,11 @@ const PORTALES = {
 
       // 9. Construir comprobante y timbrar
       const comprobante = {
-        tipoComprobante: 'I',
-        tipoDocumento: 'FACTURA',
+        tipoComprobante: serie.nombre,
+        tipoDocumento: 'I',
         serieId: tienda?.emisorId ? String(tienda.emisorId) : '',
-        serieTiendaId: tienda?.id ? String(tienda.id) : '',
+        serieTiendaId: String(serie.id),
+        fechaEmision: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' }),
         moneda: 'MXN',
         tipoCambio: 1,
         exportacion: '01',
@@ -262,6 +283,7 @@ const PORTALES = {
         metodoPago: 'PUE',
         lugarExpedicion: datosTicket?.codigoPostalTienda || tienda?.codigoPostal || '0',
         canalEmision: 'WEB',
+        tipoOperacion: 'VTA',
         rfcEmisor: tienda?.emisorRfc || datosTicket?.rfcEmisor || '',
         nombreEmisor: tienda?.emisorNombre || '',
         regimenEmisor,
@@ -274,16 +296,16 @@ const PORTALES = {
         correo: perfil.email,
         domicilioReceptor: perfil.cp,
         direccionReceptor: `Código Postal: ${perfil.cp}`,
-        calle: '',
-        numeroExterior: '',
+        calle: 'NO ESPECIFICADO',
+        numeroExterior: 'S/N',
         numeroInterior: '',
-        colonia: '',
-        municipio: '',
-        estado: '',
+        colonia: 'NO ESPECIFICADO',
+        municipio: 'NO ESPECIFICADO',
+        estado: 'NO ESPECIFICADO',
         pais: 'MEXICO',
         activo: true,
         relacionados: [],
-        tickets: [datosTicket],
+        tickets: [folio],
         conceptos,
         descuento: totDescuento,
         totImpRet: 0,
@@ -293,8 +315,8 @@ const PORTALES = {
         totalDocumento: total,
         noClienteAR: datosTicket?.cliente?.noCliente || '',
         ordenCompra: '',
-        tieneDetallista: datosTicket?.tieneDetallista || false,
-        cliente: clienteFacturama
+        orderReference: '',
+        tieneDetallista: datosTicket?.tieneDetallista || false
       };
 
       // Loguear el payload completo en chunks (Render trunca líneas largas)
