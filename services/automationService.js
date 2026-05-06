@@ -7,6 +7,8 @@ const handlerUniversal = require('./handlerUniversal');
 const scout = require('./scout');
 const { procesarConAgente } = require('./agentService');
 const alseaHandler = require('./handlers/alseaHandler');
+const hebHandler = require('./handlers/hebHandler');
+const benavidesHandler = require('./handlers/benavidesHandler');
 
 // Directorio para guardar captchas
 const CAPTCHA_DIR = '/data/captchas';
@@ -904,12 +906,24 @@ const PORTALES = {
   },
 
   'alsea': {
-    url: 'https://alsea.interfactura.com',
+    httpOnly: true,
     brands: [
       'vips','starbucks','dominos',"domino's",'burger king',
       'chilis',"chili's",'p.f. chang','pf chang','pfchangs','italianni'
     ],
     ejecutar: alseaHandler.ejecutar
+  },
+
+  'heb': {
+    httpOnly: true,
+    brands: ['heb','h-e-b','h e b'],
+    ejecutar: hebHandler.ejecutar
+  },
+
+  'benavides': {
+    httpOnly: true,
+    brands: ['benavides'],
+    ejecutar: benavidesHandler.ejecutar
   },
 
   // Fallback: detección heurística + IA para portales sin handler bespoke (lee ticketData.portal_url)
@@ -1138,6 +1152,14 @@ async function procesarFactura(solicitudId) {
       if (resultado.success) {
         db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
           .run('completado', resultado.mensaje, solicitudId);
+        return resultado;
+      }
+      // Si el handler dice "abre WebView" (paso 1 OK, paso 2 lo completa el
+      // usuario en el portal), persistimos la URL en portal_url para que
+      // FacturacionManualScreen ofrezca "Portal web" abriendo esa URL.
+      if (resultado.openWebView) {
+        db.prepare('UPDATE solicitudes SET status=?, status_detalle=?, portal_url=? WHERE id=?')
+          .run('manual', resultado.mensaje, resultado.openWebView, solicitudId);
         return resultado;
       }
       // Si era universal y falló — último recurso: agente visual
