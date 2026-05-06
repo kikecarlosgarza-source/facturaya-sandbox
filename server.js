@@ -16,7 +16,6 @@ app.use('/api/perfil',   require('./routes/perfil'));
 app.use('/api/constancia', require('./routes/constancia'));
 app.use('/api/scripts',    require('./routes/scripts'));
 app.use('/api/errors',     require('./routes/errors'));
-app.use('/admin',          require('./routes/admin')); // TEMP: auditoría handlerUniversal — borrar tras decidir
 app.get('/health', (req, res) => res.json({ status: 'ok', version: '1.0.0' }));
 
 

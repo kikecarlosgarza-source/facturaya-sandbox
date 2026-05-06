@@ -14,7 +14,5 @@ services:
         sync: false
       - key: CAPSOLVER_API_KEY
         sync: false
-      - key: ADMIN_AUDIT_TOKEN
-        sync: false
       - key: DB_DIR
         value: /data
