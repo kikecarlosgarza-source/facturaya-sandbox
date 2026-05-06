@@ -71,9 +71,13 @@ INSTRUCCIONES:
    "bandeja.mx" responde "bandeja-mx". Si es "moft.mx" responde "moft". Si es
    "tienda.com" responde "tienda". Si no estás seguro responde null.
 10. NUMERO_TIENDA: Para cadenas que identifican sucursal por número
-    (Alsea: VIPS, Starbucks, Domino's, Chili's, P.F. Chang's, etc.;
-    HEB; otros con campo "Sucursal"/"Tienda"/"Store"). Pueden ser 3-5
-    dígitos. Devuelve solo los dígitos. Si no aparece o no aplica, null.
+    o código (Alsea: VIPS, Starbucks, Domino's, Chili's, P.F. Chang's,
+    etc.; HEB; Benavides; otros con campo "Sucursal"/"Tienda"/"Store").
+    Devuelve el código TAL CUAL aparece en el ticket, conservando
+    prefijos alfanuméricos. Ejemplos: "38199" (Starbucks, 5 dígitos),
+    "285" (HEB, 3 dígitos), "M214" (Benavides, letra+3 dígitos).
+    NO quites letras prefijo. NO agregues guiones ni espacios.
+    Si no aparece o no aplica, null.
 11. NUMERO_TICKET: Número de 9 dígitos del ticket cuando aparece como
     "No. Ticket", "Ticket #" o similar. Es complementario al folio: en
     algunos portales (como Alsea) se usa específicamente el número de
@@ -91,7 +95,7 @@ Responde SOLO JSON sin backticks:
   "web_id": "Web ID para Petro 7 o null",
   "sistema_facturacion": "facturama_shopify/facturama_hd/konesh/wansoft/oxxo_gas/otro",
   "shop_name": "handle de Shopify si aplica, null si no",
-  "numero_tienda": "5 digitos de sucursal o null",
+  "numero_tienda": "codigo de sucursal tal cual (ej '38199', '285', 'M214') o null",
   "numero_ticket": "9 digitos del ticket o null"
 }`;
 

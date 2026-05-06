@@ -54,14 +54,20 @@ function parseResponse(res) {
 }
 
 // El portal espera fecha en dd/mm/yyyy. Convertir de YYYY-MM-DD si aplica.
+// FIX 4: log explícito cuando convertimos desde ISO para diagnosticar
+// problemas de formato en producción.
 function toDDMMYYYY(s) {
   if (!s) return '';
-  s = String(s).trim();
-  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (m) return `${m[3]}/${m[2]}/${m[1]}`;
-  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  const orig = String(s).trim();
+  let m = orig.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) {
+    const out = `${m[3]}/${m[2]}/${m[1]}`;
+    console.log('[Benavides] Fecha convertida ISO→DDMMYYYY:', orig, '→', out);
+    return out;
+  }
+  m = orig.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
   if (m) return `${m[1].padStart(2,'0')}/${m[2].padStart(2,'0')}/${m[3]}`;
-  return s;
+  return orig;
 }
 
 // Solo código SAT, sin descripción. El bundle hace .split('-')[0] al leer
@@ -126,14 +132,32 @@ async function ejecutar(perfil, ticketData, solicitudId) {
   }
 
   // STEP 1: ValidarTicket
+  // FIX 1: hotfix sucursal — Benavides imprime "M214" pero a veces el OCR
+  // pierde la "M". Si la sucursal viene como solo dígitos, prependemos "M".
+  // El root cause está en claudeService.NUMERO_TIENDA prompt (ya corregido)
+  // pero esto cubre tickets ya analizados antes del nuevo prompt.
+  let sucursal = tienda || '0';
+  if (sucursal && /^\d+$/.test(sucursal)) {
+    const original = sucursal;
+    sucursal = 'M' + sucursal;
+    console.log('[Benavides] Sucursal sin prefijo M, agregando:', original, '→', sucursal);
+  }
+
   // Payload exacto del blueprint: Folio + Total + Fecha + Sucursal + RFC
   const validarPayload = {
     Folio: String(folio),
     Total: total,
     Fecha: fecha,
-    Sucursal: tienda || '0',
+    Sucursal: sucursal,
     RFC: perfil.rfc
   };
+
+  // FIX 2: log explícito de cada campo del payload antes del POST
+  console.log('[Benavides] ValidarTicket payload Folio:', validarPayload.Folio);
+  console.log('[Benavides] ValidarTicket payload Total:', validarPayload.Total);
+  console.log('[Benavides] ValidarTicket payload Fecha:', validarPayload.Fecha);
+  console.log('[Benavides] ValidarTicket payload Sucursal:', validarPayload.Sucursal);
+  console.log('[Benavides] ValidarTicket payload RFC:', validarPayload.RFC);
   let tckId, sal1;
   try {
     const r = await axios.post(BASE_DP + '/ValidarTicket', wrapJson(validarPayload), postOpts());
@@ -143,6 +167,27 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       console.error('[Benavides] ValidarTicket HTTP error body keys:', Object.keys(r.data || {}).join(','));
       return { success: false, mensaje: `Benavides ValidarTicket HTTP ${r.status}` };
     }
+
+    // FIX 3: dump completo de la response antes de parsear, para descubrir
+    // shapes inesperados que rompen el discriminador de mensaje/sal.
+    console.log('[Benavides] ValidarTicket raw response.data type:', typeof r.data);
+    console.log('[Benavides] ValidarTicket raw response.data keys:', Object.keys(r.data || {}).join(','));
+    console.log('[Benavides] ValidarTicket res.data.d type:', typeof r.data?.d);
+    if (typeof r.data?.d === 'string') {
+      console.log('[Benavides] ValidarTicket d (string, primeros 500 chars):', r.data.d.substring(0, 500));
+      console.log('[Benavides] ValidarTicket d (string, chars 500-1000):', r.data.d.substring(500, 1000));
+    } else if (r.data?.d && typeof r.data.d === 'object') {
+      console.log('[Benavides] ValidarTicket d keys:', Object.keys(r.data.d).join(','));
+      for (const k of Object.keys(r.data.d)) {
+        const v = r.data.d[k];
+        if (typeof v === 'object' && v !== null) {
+          console.log('[Benavides] d.' + k + ' (object) keys:', Object.keys(v).join(','));
+        } else {
+          console.log('[Benavides] d.' + k + ':', String(v).substring(0, 200));
+        }
+      }
+    }
+
     const validarData = parseResponse(r);
     if (!validarData) {
       return { success: false, mensaje: 'Benavides ValidarTicket: response.data.d vacío' };
