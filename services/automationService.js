@@ -62,6 +62,7 @@ const PORTALES = {
     httpOnly: true,
     async ejecutar(perfil, ticketData) {
       const axios = require('axios');
+      console.log(`[HD] ticket.total=${ticketData?.total} (type=${typeof ticketData?.total})`);
       const BASE = 'https://facturacion.homedepot.com.mx:2053/CFDiConnectFacturacion/facturacion';
       const reportApi = makeReportApi('home depot');
       const TURNSTILE_SITEKEY = '0x4AAAAAAB6nsteTRVZ39dGq';
@@ -89,7 +90,7 @@ const PORTALES = {
         console.log('[AUTO] HD - resolviendo Turnstile via CapSolver');
         const create = await axios.post('https://api.capsolver.com/createTask', {
           clientKey: capKey,
-          task: { type: 'AntiTurnstileTaskProxyLess', websiteURL: 'https://facturacion.homedepot.com.mx/FacturacionWeb/', websiteKey: TURNSTILE_SITEKEY }
+          task: { type: 'AntiTurnstileTaskProxyLess', websiteURL: 'https://facturacion.homedepot.com.mx:2053/FacturacionWeb/', websiteKey: TURNSTILE_SITEKEY }
         }, { timeout: 15000 });
         if (create.data.errorId) return { success: false, mensaje: 'HD: CapSolver error - ' + create.data.errorDescription };
         const taskId = create.data.taskId;
@@ -100,6 +101,7 @@ const PORTALES = {
           if (res.data.errorId) return { success: false, mensaje: 'HD: CapSolver - ' + res.data.errorDescription };
         }
         if (!turnstileToken) return { success: false, mensaje: 'HD: CapSolver timeout' };
+        console.log(`[HD] capsolver token obtained: ${turnstileToken.length}`);
         console.log('[AUTO] HD - Turnstile token obtenido');
       } catch (e) {
         return { success: false, mensaje: 'HD: error CapSolver - ' + e.message };
@@ -237,7 +239,10 @@ const PORTALES = {
       subTotal = round2(subTotal);
       totImpTras = round2(totImpTras);
       totDescuento = round2(totDescuento);
-      const total = round2(subTotal - totDescuento + totImpTras);
+      const totalCalculado = round2(subTotal - totDescuento + totImpTras);
+      const ticketTotalNum = Number(ticketData?.total);
+      const total = (Number.isFinite(ticketTotalNum) && ticketTotalNum > 0) ? round2(ticketTotalNum) : totalCalculado;
+      console.log(`[HD] totales preserve ticket.total=${ticketData?.total} → usado=${total} (calculado=${totalCalculado}, datosTicket.total=${datosTicket?.total})`);
       console.log(`[AUTO] HD - calculados desde conceptos: subTotal=${subTotal} totImpTras=${totImpTras} descuento=${totDescuento} total=${total} (vs ticket.total=${datosTicket?.total})`);
 
       // Régimen del emisor: probar varias keys (la API a veces usa una distinta a la del frontend)
@@ -254,7 +259,7 @@ const PORTALES = {
         exportacion: '01',
         condicionesPago: datosTicket?.metodoPagoInfo?.condicionesPago || 'PAGADO',
         formaPago: datosTicket?.metodoPagoInfo?.tipoPago?.formaPago || '01',
-        metodoPago: datosTicket?.metodoPagoInfo?.metodoPago || 'PUE',
+        metodoPago: 'PUE',
         lugarExpedicion: datosTicket?.codigoPostalTienda || tienda?.codigoPostal || '0',
         canalEmision: 'WEB',
         rfcEmisor: tienda?.emisorRfc || datosTicket?.rfcEmisor || '',
@@ -269,12 +274,12 @@ const PORTALES = {
         correo: perfil.email,
         domicilioReceptor: perfil.cp,
         direccionReceptor: `Código Postal: ${perfil.cp}`,
-        calle: 'NO ESPECIFICADO',
-        numeroExterior: 'S/N',
+        calle: '',
+        numeroExterior: '',
         numeroInterior: '',
-        colonia: 'NO ESPECIFICADO',
-        municipio: 'NO ESPECIFICADO',
-        estado: 'NO ESPECIFICADO',
+        colonia: '',
+        municipio: '',
+        estado: '',
         pais: 'MEXICO',
         activo: true,
         relacionados: [],
