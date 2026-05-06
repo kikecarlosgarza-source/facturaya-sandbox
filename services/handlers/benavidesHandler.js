@@ -77,6 +77,20 @@ function soloCodigo(value) {
   return String(value).trim().split('-')[0].trim();
 }
 
+// Benavides espera Total como string con decimales: "40.00" no 40.
+function formatTotalBenavides(total) {
+  if (total == null) return '';
+  const s = String(total);
+  return s.includes('.') ? s : s + '.00';
+}
+
+// Strip HTML tags + colapsar whitespace para leer el .html del response como
+// texto plano humano (Benavides devuelve mensajes de error con markup).
+function stripHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+}
+
 async function ejecutar(perfil, ticketData, solicitudId) {
   const reportApi = makeReportApi('benavides');
 
@@ -131,137 +145,210 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     return { success: false, mensaje: 'Benavides: GET inicial falló — ' + e.message };
   }
 
-  // STEP 1: ValidarTicket
-  // Payload completo del portal (extraído del JS de producción de Benavides):
-  //   Sucursal:Int32, SucursalName:string, NumeroTicket:string,
-  //   Noreferencia:string(""), RFC:string, Fecha:dd/mm/yyyy, Total:number, Tipo:Int32(1).
-  // El handler anterior mandaba "Folio" (campo inexistente en la API) y
-  // omitía SucursalName/Noreferencia/Tipo → NullReferenceException en .NET.
+  // STEP 1: flujo de 2 ValidarTicket con PoliticasByActuallySusId entre medio.
+  //   1a. ValidarTicket #1 (defaults seguros) → obtenemos Sus_Id del ticket
+  //   1b. PoliticasByActuallySusId(Sus_Id) → políticas reales de la sucursal
+  //   1c. ValidarTicket #2 con payload ajustado a esas políticas → tckId final
   const sucursalRaw = String(tienda || '0');
   const sucursalInt = parseInt(sucursalRaw.replace(/[^\d]/g, ''), 10) || 0;
+  const totalStr = formatTotalBenavides(total);
   console.log('[Benavides] Sucursal raw:', sucursalRaw, 'parsed:', sucursalInt);
+  console.log('[Benavides] Total formateado:', totalStr);
 
-  const validarPayload = {
-    Sucursal:     sucursalInt,
-    SucursalName: sucursalRaw,         // string original con prefijo (ej "M214")
-    NumeroTicket: String(folio),        // NO se llama "Folio" en la API
-    Noreferencia: '',                   // busqueda_NoReferencia=false → vacío
+  // ── 1a. ValidarTicket #1 — defaults conservadores (Sucursal:0, Fecha vacía)
+  // El propósito de esta llamada es solo obtener Sus_Id para cargar políticas.
+  const validarPayload1 = {
+    Sucursal:     0,
+    SucursalName: sucursalRaw,
+    NumeroTicket: String(folio),
+    Noreferencia: '',
     RFC:          perfil.rfc,
-    Fecha:        fecha,                // dd/mm/yyyy
-    Total:        total,
-    Tipo:         1                     // Int32 constante = factura normal
+    Fecha:        fecha,
+    Total:        totalStr,
+    Tipo:         1
   };
+  console.log('[Benavides] ValidarTicket1 payload Sucursal:', validarPayload1.Sucursal);
+  console.log('[Benavides] ValidarTicket1 payload NumeroTicket:', validarPayload1.NumeroTicket);
+  console.log('[Benavides] ValidarTicket1 payload Total:', validarPayload1.Total);
 
-  // Log por campo (sobrevive truncado de Render)
-  console.log('[Benavides] ValidarTicket payload Sucursal:', validarPayload.Sucursal);
-  console.log('[Benavides] ValidarTicket payload SucursalName:', validarPayload.SucursalName);
-  console.log('[Benavides] ValidarTicket payload NumeroTicket:', validarPayload.NumeroTicket);
-  console.log('[Benavides] ValidarTicket payload Noreferencia:', validarPayload.Noreferencia);
-  console.log('[Benavides] ValidarTicket payload RFC:', validarPayload.RFC);
-  console.log('[Benavides] ValidarTicket payload Fecha:', validarPayload.Fecha);
-  console.log('[Benavides] ValidarTicket payload Total:', validarPayload.Total);
-  console.log('[Benavides] ValidarTicket payload Tipo:', validarPayload.Tipo);
+  let susId;
+  try {
+    const r = await axios.post(BASE_DP + '/ValidarTicket', wrapJson(validarPayload1), postOpts());
+    parseCookies(r.headers);
+    console.log('[Benavides] ValidarTicket1 status:', r.status);
+    if (r.status >= 400) {
+      return { success: false, mensaje: `Benavides ValidarTicket1 HTTP ${r.status}` };
+    }
+    const d1 = parseResponse(r);
+    if (!d1) {
+      return { success: false, mensaje: 'Benavides ValidarTicket1: response.data.d vacío' };
+    }
+    console.log('[Benavides] Validar1 d.mensaje:', d1.mensaje);
+    console.log('[Benavides] Validar1 d.html (preview):', stripHtml(d1.html).substring(0, 200));
+
+    // Si el primer call ya falla con error, no podemos avanzar.
+    if (d1.mensaje === 'Error' && d1.html && d1.html.includes('Ya ha sido generada')) {
+      return {
+        success: false,
+        error: 'TICKET_YA_FACTURADO',
+        mensaje: 'Este ticket ya fue facturado anteriormente',
+        fallbackToManual: false
+      };
+    }
+    if (d1.mensaje === 'Error') {
+      const cleanMsg = stripHtml(d1.html).substring(0, 200);
+      return {
+        success: false,
+        error: 'BENAVIDES_ERROR',
+        mensaje: cleanMsg || 'Error desconocido en Validar1',
+        fallbackToManual: true
+      };
+    }
+    const lst1 = d1.lstTickets || [];
+    console.log('[Benavides] Validar1 lstTickets count:', lst1.length);
+    if (lst1.length === 0) {
+      return {
+        success: false,
+        error: 'NO_TICKETS_FIRST_VALIDATE',
+        mensaje: 'Benavides Validar1 no devolvió tickets',
+        fallbackToManual: true
+      };
+    }
+    const tck1 = lst1[0];
+    console.log('[Benavides] Validar1 lstTickets[0].Sus_Id:', tck1.Sus_Id);
+    console.log('[Benavides] Validar1 lstTickets[0].Suc_Id:', tck1.Suc_Id);
+    susId = parseInt(tck1.Sus_Id, 10);
+    if (!Number.isFinite(susId)) {
+      return {
+        success: false,
+        error: 'NO_SUS_ID',
+        mensaje: 'Benavides Validar1 devolvió Sus_Id inválido: ' + tck1.Sus_Id,
+        fallbackToManual: true
+      };
+    }
+  } catch (e) {
+    reportApi(BASE_DP + '/ValidarTicket', validarPayload1, e);
+    return { success: false, mensaje: 'Benavides ValidarTicket1 excepción — ' + e.message };
+  }
+
+  // ── 1b. PoliticasByActuallySusId — body JSON DIRECTO (sin wrapper)
+  console.log('[Benavides] Llamando PoliticasByActuallySusId con susId:', susId);
+  let politicas = {};
+  try {
+    const r = await axios.post(BASE_DP + '/PoliticasByActuallySusId', { susId }, postOpts());
+    parseCookies(r.headers);
+    console.log('[Benavides] PoliticasByActuallySusId status:', r.status);
+    if (r.status < 400) {
+      const pd = parseResponse(r);
+      politicas = pd || {};
+      console.log('[Benavides] BusquedaNumeroTicket:', politicas.BusquedaNumeroTicket);
+      console.log('[Benavides] mostrarmonto:', politicas.mostrarmonto);
+      console.log('[Benavides] mostrarFecha:', politicas.mostrarFecha);
+      console.log('[Benavides] display_Sucursal:', politicas.display_Sucursal);
+    } else {
+      console.warn('[Benavides] PoliticasByActuallySusId HTTP error, asumiendo defaults Benavides (display_Sucursal=false, mostrarFecha=false)');
+    }
+  } catch (e) {
+    reportApi(BASE_DP + '/PoliticasByActuallySusId', { susId }, e);
+    console.warn('[Benavides] PoliticasByActuallySusId excepción (no crítico):', e.message);
+  }
+
+  // ── 1c. ValidarTicket #2 — payload ajustado a las políticas reales
+  const validarPayload2 = {
+    Sucursal:     politicas.display_Sucursal ? sucursalInt : 0,
+    NumeroTicket: String(folio),
+    Noreferencia: '',
+    RFC:          perfil.rfc,
+    Fecha:        politicas.mostrarFecha ? fecha : '',
+    Total:        totalStr,
+    Tipo:         1
+  };
+  if (politicas.display_Sucursal) {
+    validarPayload2.SucursalName = sucursalRaw;
+  }
+  console.log('[Benavides] ValidarTicket2 payload Sucursal:', validarPayload2.Sucursal);
+  console.log('[Benavides] ValidarTicket2 payload SucursalName (omit?):', 'SucursalName' in validarPayload2 ? validarPayload2.SucursalName : '<omitido>');
+  console.log('[Benavides] ValidarTicket2 payload NumeroTicket:', validarPayload2.NumeroTicket);
+  console.log('[Benavides] ValidarTicket2 payload Fecha:', validarPayload2.Fecha);
+  console.log('[Benavides] ValidarTicket2 payload Total:', validarPayload2.Total);
+
   let tckId;
   try {
-    const r = await axios.post(BASE_DP + '/ValidarTicket', wrapJson(validarPayload), postOpts());
+    const r = await axios.post(BASE_DP + '/ValidarTicket', wrapJson(validarPayload2), postOpts());
     parseCookies(r.headers);
-    console.log('[Benavides] ValidarTicket status:', r.status);
+    console.log('[Benavides] ValidarTicket2 status:', r.status);
     if (r.status >= 400) {
-      console.error('[Benavides] ValidarTicket HTTP error body keys:', Object.keys(r.data || {}).join(','));
-      return { success: false, mensaje: `Benavides ValidarTicket HTTP ${r.status}` };
+      return { success: false, mensaje: `Benavides ValidarTicket2 HTTP ${r.status}` };
     }
-
-    // Dump de raw response (sobrevive truncado de Render por field).
-    console.log('[Benavides] ValidarTicket raw response.data type:', typeof r.data);
-    console.log('[Benavides] ValidarTicket raw response.data keys:', Object.keys(r.data || {}).join(','));
-    console.log('[Benavides] ValidarTicket res.data.d type:', typeof r.data?.d);
-    if (typeof r.data?.d === 'string') {
-      console.log('[Benavides] ValidarTicket d (string, primeros 500 chars):', r.data.d.substring(0, 500));
-      console.log('[Benavides] ValidarTicket d (string, chars 500-1000):', r.data.d.substring(500, 1000));
-    } else if (r.data?.d && typeof r.data.d === 'object') {
-      console.log('[Benavides] ValidarTicket d keys:', Object.keys(r.data.d).join(','));
+    const d2 = parseResponse(r);
+    if (!d2) {
+      return { success: false, mensaje: 'Benavides ValidarTicket2: response.data.d vacío' };
     }
+    console.log('[Benavides] Validar2 d.mensaje:', d2.mensaje);
+    console.log('[Benavides] Validar2 d.html (preview):', stripHtml(d2.html).substring(0, 200));
+    console.log('[Benavides] Validar2 lstTickets count:', (d2.lstTickets || []).length);
 
-    const validarData = parseResponse(r);
-    if (!validarData) {
-      return { success: false, mensaje: 'Benavides ValidarTicket: response.data.d vacío' };
+    // Caso especial: ticket ya facturado.
+    if (d2.mensaje === 'Error' && d2.html && d2.html.includes('Ya ha sido generada')) {
+      return {
+        success: false,
+        error: 'TICKET_YA_FACTURADO',
+        mensaje: 'Este ticket ya fue facturado anteriormente',
+        fallbackToManual: false
+      };
     }
-    console.log('[Benavides] ValidarTicket d.mensaje (top-level):', validarData.mensaje);
-    console.log('[Benavides] ValidarTicket d.html (top-level):', validarData.html);
-
-    // CASO 0: Error a nivel de API (top-level), antes de tocar lstTickets.
-    if (validarData.mensaje === 'Error') {
-      console.log('[Benavides] Error API top-level:', validarData.html);
+    if (d2.mensaje === 'Error') {
+      const cleanMsg = stripHtml(d2.html).substring(0, 200);
       return {
         success: false,
         error: 'BENAVIDES_ERROR',
-        mensaje: validarData.html || 'Error desconocido',
+        mensaje: cleanMsg || 'Error desconocido en Validar2',
         fallbackToManual: true
       };
     }
-
-    // El Tck_Id real vive en d.lstTickets[0].tckId (lowercase).
-    // d.sal.Tck_Id siempre es null en la versión actual del portal.
-    const lstTickets = validarData.lstTickets || [];
-    console.log('[Benavides] lstTickets count:', lstTickets.length);
-    if (lstTickets.length === 0) {
+    const lst2 = d2.lstTickets || [];
+    if (lst2.length === 0) {
       return {
         success: false,
-        error: 'NO_TICKETS',
-        mensaje: 'Benavides no devolvió tickets en lstTickets',
+        error: 'NO_TICKETS_SECOND_VALIDATE',
+        mensaje: 'Benavides Validar2 no devolvió tickets',
         fallbackToManual: true
       };
     }
+    const tck2 = lst2[0];
+    console.log('[Benavides] Validar2 tckId:', tck2.tckId);
+    console.log('[Benavides] Validar2 mensaje:', tck2.mensaje);
+    console.log('[Benavides] Validar2 html:', stripHtml(tck2.html).substring(0, 200));
 
-    const tckResp = lstTickets[0];
-    console.log('[Benavides] lstTickets[0].tckId:', tckResp.tckId);
-    console.log('[Benavides] lstTickets[0].mensaje:', tckResp.mensaje);
-    console.log('[Benavides] lstTickets[0].html:', tckResp.html);
-    console.log('[Benavides] lstTickets[0].numeroticket:', tckResp.numeroticket);
-    console.log('[Benavides] lstTickets[0].monto:', tckResp.monto);
-    console.log('[Benavides] lstTickets[0].fecha:', tckResp.fecha);
-    console.log('[Benavides] lstTickets[0].tipoticket:', tckResp.tipoticket);
-    console.log('[Benavides] lstTickets[0].tipoDocumento:', tckResp.tipoDocumento);
-    console.log('[Benavides] lstTickets[0].Suc_Id:', tckResp.Suc_Id);
-    console.log('[Benavides] lstTickets[0].Sus_Id:', tckResp.Sus_Id);
-
-    // CASO 1: per-ticket mensaje "Error".
-    if (tckResp.mensaje === 'Error') {
+    if (tck2.mensaje === 'Error') {
       return {
         success: false,
         error: 'BENAVIDES_ERROR',
-        mensaje: tckResp.html || 'Error desconocido',
+        mensaje: stripHtml(tck2.html) || 'Error desconocido per-ticket',
         fallbackToManual: true
       };
     }
-
-    // CASO 2 (CRÍTICO): Aceptado pero con html no vacío = bloqueo no
-    // automatizable (ej: "boleto con cambios", "diríjase al establecimiento").
-    if (tckResp.html && String(tckResp.html).trim().length > 0) {
-      console.log('[Benavides] Ticket aceptado pero con bloqueo:', tckResp.html);
+    if (tck2.html && String(tck2.html).trim().length > 0) {
       return {
         success: false,
         error: 'TICKET_NO_AUTOMATICO',
-        mensaje: tckResp.html,
+        mensaje: stripHtml(tck2.html),
         fallbackToManual: true
       };
     }
-
-    // CASO 3: sin tckId aunque mensaje sea Aceptado.
-    if (!tckResp.tckId) {
+    if (!tck2.tckId) {
       return {
         success: false,
         error: 'NO_TCKID',
-        mensaje: 'Benavides aceptó el ticket pero no devolvió tckId',
+        mensaje: 'Benavides Validar2 sin tckId',
         fallbackToManual: true
       };
     }
-
-    tckId = tckResp.tckId;
+    tckId = tck2.tckId;
     console.log('[Benavides] tckId final:', tckId);
   } catch (e) {
-    reportApi(BASE_DP + '/ValidarTicket', validarPayload, e);
-    return { success: false, mensaje: 'Benavides ValidarTicket excepción — ' + e.message };
+    reportApi(BASE_DP + '/ValidarTicket', validarPayload2, e);
+    return { success: false, mensaje: 'Benavides ValidarTicket2 excepción — ' + e.message };
   }
 
   // STEP 2: ObtieneDatosTicket
