@@ -132,27 +132,35 @@ async function ejecutar(perfil, ticketData, solicitudId) {
   }
 
   // STEP 1: ValidarTicket
-  // Sucursal: Benavides la espera como Int32 (NO como string "M214"). El
-  // ticket imprime "M214" pero el portal hace el strip internamente. Aquí
-  // strip de no-dígitos + parseInt para mandar 214 como número. Cubre
-  // también tickets que llegaron como "214" sin prefijo.
-  const sucursalInt = parseInt(String(tienda || '0').replace(/[^\d]/g, ''), 10) || 0;
+  // Payload completo del portal (extraído del JS de producción de Benavides):
+  //   Sucursal:Int32, SucursalName:string, NumeroTicket:string,
+  //   Noreferencia:string(""), RFC:string, Fecha:dd/mm/yyyy, Total:number, Tipo:Int32(1).
+  // El handler anterior mandaba "Folio" (campo inexistente en la API) y
+  // omitía SucursalName/Noreferencia/Tipo → NullReferenceException en .NET.
+  const sucursalRaw = String(tienda || '0');
+  const sucursalInt = parseInt(sucursalRaw.replace(/[^\d]/g, ''), 10) || 0;
+  console.log('[Benavides] Sucursal raw:', sucursalRaw, 'parsed:', sucursalInt);
 
-  // Payload exacto del blueprint: Folio + Total + Fecha + Sucursal + RFC
   const validarPayload = {
-    Folio: String(folio),
-    Total: total,
-    Fecha: fecha,
-    Sucursal: sucursalInt,
-    RFC: perfil.rfc
+    Sucursal:     sucursalInt,
+    SucursalName: sucursalRaw,         // string original con prefijo (ej "M214")
+    NumeroTicket: String(folio),        // NO se llama "Folio" en la API
+    Noreferencia: '',                   // busqueda_NoReferencia=false → vacío
+    RFC:          perfil.rfc,
+    Fecha:        fecha,                // dd/mm/yyyy
+    Total:        total,
+    Tipo:         1                     // Int32 constante = factura normal
   };
 
-  // FIX 2: log explícito de cada campo del payload antes del POST
-  console.log('[Benavides] ValidarTicket payload Folio:', validarPayload.Folio);
-  console.log('[Benavides] ValidarTicket payload Total:', validarPayload.Total);
-  console.log('[Benavides] ValidarTicket payload Fecha:', validarPayload.Fecha);
+  // Log por campo (sobrevive truncado de Render)
   console.log('[Benavides] ValidarTicket payload Sucursal:', validarPayload.Sucursal);
+  console.log('[Benavides] ValidarTicket payload SucursalName:', validarPayload.SucursalName);
+  console.log('[Benavides] ValidarTicket payload NumeroTicket:', validarPayload.NumeroTicket);
+  console.log('[Benavides] ValidarTicket payload Noreferencia:', validarPayload.Noreferencia);
   console.log('[Benavides] ValidarTicket payload RFC:', validarPayload.RFC);
+  console.log('[Benavides] ValidarTicket payload Fecha:', validarPayload.Fecha);
+  console.log('[Benavides] ValidarTicket payload Total:', validarPayload.Total);
+  console.log('[Benavides] ValidarTicket payload Tipo:', validarPayload.Tipo);
   let tckId, sal1;
   try {
     const r = await axios.post(BASE_DP + '/ValidarTicket', wrapJson(validarPayload), postOpts());
