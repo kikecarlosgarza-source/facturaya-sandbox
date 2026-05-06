@@ -13,7 +13,7 @@ Estos archivos / bloques contienen lógica que ya funciona (o estaba estable) y 
 | Archivo / bloque | Estado | Última referencia conocida |
 |---|---|---|
 | `services/handlers/benavidesHandler.js` | **FUNCIONAL** | commit `b73d92b` o posterior (2026-05-06) |
-| `services/handlers/alseaHandler.js` | **FUNCIONAL** — paso 1 HTTP, paso 2 vía WebView | — |
+| `services/handlers/alseaHandler.js` | **EN MODIFICACIÓN ACTIVA — sesión 2026-05-06.** Pivote de flujo híbrido (WebView paso 2) a 100% backend HTTP. Endpoint nuevo: `ValidaPagina2Facturar`. Aplicado: LOTE-1 (paso 2 directo, sin fallback WebView). | — |
 | `services/handlers/hebHandler.js` | **PENDIENTE VERIFICAR** — tratar como si funcionara | — |
 | Bloque Home Depot dentro de `services/automationService.js` (`PORTALES['home depot']`, ~línea 61) | **🔒 LOCKED — FUNCIONAL al 6/may/2026** | commit `e73bf8e` |
 | Bloque Petro7 dentro de `services/automationService.js` (`PORTALES['petro']`, ~línea 651) | **FUNCIONAL** | — |

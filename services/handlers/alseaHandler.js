@@ -1,16 +1,10 @@
-// Handler HTTP-only para alsea.interfactura.com (multi-marca: VIPS, Starbucks,
-// Domino's, Burger King, Chili's, P.F. Chang's, Italianni's).
+// Handler 100% backend HTTP para alsea.interfactura.com (multi-marca: VIPS,
+// Starbucks, Domino's, Burger King, Chili's, P.F. Chang's, Italianni's).
 //
-// Reescrito desde la versión Playwright a flujo httpOnly basado en grabación
-// real (expansion/apis/alsea_full.json) que capturó los 3 endpoints de
-// validación del paso 1:
-//   POST /api/chatbot/ValidaPagina1RFC
-//   POST /api/chatbot/ValidaPagina1Ticket
-//   POST /api/chatbot/ValidaPagina1Fecha
-//
-// Patrón Petro7: httpOnly, numerado por fases, try/catch + reportApi por fase.
-// Paso 2 (datos fiscales) se delega a la app vía WebView — el handler retorna
-// openWebView con la URL específica de la marca para que la app la abra.
+// Flujo: 3 validaciones del paso 1 (ValidaPagina1RFC/Ticket/Fecha) + POST
+// timbrado del paso 2 (ValidaPagina2Facturar). Marca-aware vía BRAND_OPERATORS.
+// Sin fallback a WebView — si el timbrado falla, la solicitud queda en
+// status='error', no 'manual'.
 
 const axios = require('axios');
 const claudeAgent = require('../claudeAgent');
@@ -129,15 +123,49 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     }
   }
 
-  // Paso 1 OK. Devolvemos URL específica de marca para que la app abra
-  // WebView donde el usuario completa datos fiscales (paso 2).
-  const webviewUrl = `${BASE}/?opc=${encodeURIComponent(brand.operator)}`;
-  return {
-    success: false,
-    openWebView: webviewUrl,
-    paso1_valido: true,
-    mensaje: `Alsea ${brand.operator}: paso 1 validado. Completa datos fiscales en el portal.`
+  // Paso 2: timbrado directo (100% automático, sin fallback a WebView).
+  const persona = (perfil.rfc || '').replace(/\s/g, '').length === 13 ? 'FISICA' : 'MORAL';
+  const payloadV2 = {
+    rfc: perfil.rfc,
+    ticket,
+    total: String(ticketData.total),
+    nombres: perfil.nombre_sat || perfil.nombre || '',
+    apellidos: '',
+    codigoPostal: perfil.cp,
+    regimenFiscal: perfil.regimen || '612',
+    usoCfdi: perfil.uso_cfdi || 'G03',
+    correoElectronico: String(perfil.email || '').toUpperCase(),
+    tienda,
+    fecha: fechaIso,
+    persona,
+    operador: brand.operator,
+    isFastFood: brand.isFastFood,
+    residenciaFiscal: ''
   };
+  console.log(`[AUTO] Alsea ValidaPagina2Facturar - operador=${brand.operator} persona=${persona} total=${payloadV2.total}`);
+
+  const url2 = `${BASE}/api/chatbot/ValidaPagina2Facturar`;
+  try {
+    const r = await axios.post(url2, payloadV2, opts);
+    const bodyStr = typeof r.data === 'string' ? r.data : JSON.stringify(r.data);
+    console.log(`[AUTO] Alsea ValidaPagina2Facturar status=${r.status} body=${bodyStr.substring(0, 800)}`);
+
+    if (r.status >= 400) {
+      return { success: false, mensaje: `Alsea timbrado HTTP ${r.status}: ${bodyStr.substring(0, 300)}` };
+    }
+    const d = r.data || {};
+    if (d.exito === false || d.success === false || d.valido === false || d.response === false || d.error) {
+      return { success: false, mensaje: `Alsea timbrado rechazado — ${bodyStr.substring(0, 300)}` };
+    }
+    return {
+      success: true,
+      mensaje: `Alsea ${brand.operator}: factura timbrada exitosamente`,
+      facturaData: d
+    };
+  } catch (e) {
+    reportApi(url2, payloadV2, e);
+    return { success: false, mensaje: `Alsea timbrado excepción — ${e.message}` };
+  }
 }
 
 module.exports = { ejecutar };
