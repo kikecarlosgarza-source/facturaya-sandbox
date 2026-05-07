@@ -18,6 +18,7 @@ Estos archivos / bloques contienen lógica que ya funciona (o estaba estable) y 
 | `services/handlers/costcoHandler.js` | **🔒 LOCKED — FUNCIONAL al 6/may/2026 — primera factura Costco solicitada exitosamente vía 3 POSTs encadenados (`oauth/estilos` → `validateCheck` → `generaCFDiXTransaccion`). Token público sin login. Response esperado de timbrado: `status_code:'0'` con description "Su solicitud fue aceptada...". Costco emite asíncrono (hasta 72h, normalmente minutos vía email). NO TOCAR sin autorización explícita nombrando "costco" o "costcoHandler.js".** | commit `dccab15` |
 | Bloque Home Depot dentro de `services/automationService.js` (`PORTALES['home depot']`, ~línea 61) | **🔒 LOCKED — FUNCIONAL al 6/may/2026** | commit `e73bf8e` |
 | Bloque Petro7 dentro de `services/automationService.js` (`PORTALES['petro']`, ~línea 651) | **FUNCIONAL** | — |
+| `services/barcodeService.js` | **🔒 LOCKED — FUNCIONAL al 6/may/2026 — decoder server-side con `@undecaf/zbar-wasm` + `sharp` como fallback al barcode scanner del frontend (commit `28358cd`). Validado con factura Costco real timbrada y entregada por email. NO TOCAR sin autorización explícita nombrando "barcode" o "barcodeService.js".** | commit `28358cd` |
 
 ## ⚠️ ATENCIÓN — HANDLER PROTEGIDO: Home Depot
 
