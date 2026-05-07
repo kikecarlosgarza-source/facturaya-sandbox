@@ -228,16 +228,48 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     await page.fill(SELECTORS.razon, razon);
     await page.selectOption(SELECTORS.regimenFiscal, perfil.regimen || '612');
     await page.selectOption(SELECTORS.usoCfdi, perfil.uso_cfdi || 'G03');
-    await page.fill(SELECTORS.formaPago, capturedFormaPago);
     await page.fill(SELECTORS.calle, '');
     await page.fill(SELECTORS.noExterior, '');
     await page.fill(SELECTORS.noInterior, '');
     await page.fill(SELECTORS.ciudad, '');
     await page.fill(SELECTORS.colonia, '');
     await page.fill(SELECTORS.delegacion, '');
-    await page.fill(SELECTORS.cp, String(perfil.cp || ''));
     await page.fill(SELECTORS.pais, '');
+    await page.fill(SELECTORS.cp, String(perfil.cp || ''));
     await page.fill(SELECTORS.emailInput, String(perfil.email || '').toLowerCase());
+    // #formaPagoAux es readonly — page.fill timeout. Setear via evaluate AL FINAL
+    // del receptor (el $apply digest puede invalidar transitorias si otros campos
+    // están vacíos cuando se ejecuta).
+    // 1) DOM defensive (value + dispatch input/change para que ng-model capture)
+    // 2) ngModelController.$setViewValue + $setDirty para que validación pase
+    // 3) scope.$apply para forzar digest cycle
+    await page.evaluate((value) => {
+      const el = document.getElementById('formaPagoAux');
+      if (!el) return;
+      // Defensive: bypass readonly DOM-side
+      el.removeAttribute('readonly');
+      el.value = value;
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      // Angular: setear scope + ngModelController
+      try {
+        const ngEl = window.angular?.element(el);
+        if (ngEl) {
+          const ngModelCtrl = ngEl.controller && ngEl.controller('ngModel');
+          if (ngModelCtrl) {
+            ngModelCtrl.$setViewValue(value);
+            ngModelCtrl.$setDirty();
+            ngModelCtrl.$render();
+          }
+          const scope = ngEl.scope && ngEl.scope();
+          if (scope) {
+            scope.formaPagoAux = value;
+            if (scope.$apply) scope.$apply();
+          }
+        }
+      } catch (e) {}
+    }, capturedFormaPago);
+    console.log(`[AUTO] 7-Eleven - step 8b: formaPagoAux seteado via evaluate (readonly bypass) value=${capturedFormaPago}`);
 
     // Step 9: capturar imagen del Kaptcha y resolver con CapSolver
     console.log('[AUTO] 7-Eleven - step 9: screenshot Kaptcha');
