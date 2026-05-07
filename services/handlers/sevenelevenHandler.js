@@ -1,14 +1,43 @@
-// Handler aislado para 7-Eleven México (e7-eleven.com.mx).
-// Stack: Konesh KPortalExterno (mismo que Petro 7), distinto BASE.
+// Handler para 7-Eleven México (e7-eleven.com.mx).
+// Stack: Konesh KPortalExterno protegido por DataDome (Pattern C).
 //
-// Flujo: sesión → verificaTicketWS2 → Kaptcha (CapSolver image-to-text)
-//        → captchaValidator → POST FacturaExpressService (urlencoded).
+// Pattern C — Browser stealth + network interception:
+//   1. launchStealthBrowser (playwright-extra + stealth, JA3 consistente con Chrome)
+//   2. page.goto SPA → DataDome ejecuta su challenge JS, setea cookie datadome
+//   3. Detección de bloqueo DataDome post-goto
+//   4. Interceptor de network captura verificaTicketWS2 (formaPago) y
+//      FacturaExpressService (UUID) — más robusto que DOM-scraping
+//   5. Form fill estilo Angular (page.fill / selectOption)
+//   6. Kaptcha resuelto via screenshot del <img id="Kaptcha"> + CapSolver
+//   7. Click "FACTURAR" dispara window.confirm (auto-aceptado por dialog handler)
+//   8. UUID extraído del response interceptado, no del DOM
 
 const axios = require('axios');
-const https = require('https');
+const { launchStealthBrowser, closeBrowser } = require('../koneshBrowser');
 const claudeAgent = require('../claudeAgent');
 
 const BASE = 'https://www.e7-eleven.com.mx';
+
+const SELECTORS = {
+  noTicket: 'input[name="noTicket"]',
+  agregarTicketBtn: 'button[ng-click="addRow()"]',
+  rfcCliente: '#rfcCliente',
+  razon: '#razon',
+  regimenFiscal: '#regimenFiscalReceptor',
+  formaPago: '#formaPagoAux',
+  usoCfdi: '#usoCfdi',
+  calle: '#calle',
+  noExterior: '#noExterior',
+  noInterior: '#noInterior',
+  ciudad: '#ciudad',
+  colonia: '#colonia',
+  delegacion: '#delegacion',
+  cp: '#cp',
+  pais: '#pais',
+  emailInput: '#emailInput',
+  kaptchaImg: '#Kaptcha',
+  captcha: '#captcha'
+};
 
 function makeReportApi(portal) {
   return (endpoint, request, e) =>
@@ -20,232 +49,251 @@ function makeReportApi(portal) {
     }).catch(err => console.warn(`[OTA ${portal}] analyzeApiFailure falló (${endpoint}):`, err.message));
 }
 
+// CapSolver ImageToText con loop de módulos (clonado del handler axios anterior)
+async function resolverKaptchaConCapSolver(captchaB64) {
+  const capKey = process.env.CAPSOLVER_API_KEY;
+  if (!capKey) throw new Error('CAPSOLVER_API_KEY no configurada');
+
+  const modulosACobrar = ['common', 'queueit'];
+  let createData;
+  let createErr;
+  for (const mod of modulosACobrar) {
+    try {
+      const create = await axios.post('https://api.capsolver.com/createTask', {
+        clientKey: capKey,
+        task: { type: 'ImageToTextTask', body: captchaB64, module: mod }
+      }, { timeout: 15000, validateStatus: () => true });
+      console.log(`[AUTO] 7-Eleven - CapSolver createTask(module=${mod}) status=${create.status} body=${JSON.stringify(create.data).substring(0,500)}`);
+      if (create.data.errorId) {
+        createErr = create.data.errorDescription || create.data.errorCode || ('HTTP ' + create.status);
+        continue;
+      }
+      if (create.data.status === 'ready' || create.data.solution?.text || create.data.taskId) {
+        createData = { ...create.data, _module: mod };
+        break;
+      }
+      createErr = 'createTask sin solution ni taskId: ' + JSON.stringify(create.data).substring(0, 200);
+    } catch (e) {
+      createErr = e.message;
+      console.log(`[AUTO] 7-Eleven - CapSolver createTask(module=${mod}) EXCEPCIÓN: ${e.message}`);
+    }
+  }
+  if (!createData) throw new Error('CapSolver createTask falló - ' + createErr);
+
+  if (createData.status === 'ready' || createData.solution?.text) {
+    const text = createData.solution?.text || '';
+    if (!text) throw new Error('CapSolver status=ready sin texto');
+    console.log(`[AUTO] 7-Eleven - captcha resuelto sincrónicamente (module=${createData._module}): "${text}"`);
+    return text;
+  }
+  for (let i = 0; i < 20; i++) {
+    await new Promise(r => setTimeout(r, 3000));
+    const res = await axios.post('https://api.capsolver.com/getTaskResult', { clientKey: capKey, taskId: createData.taskId }, { timeout: 15000, validateStatus: () => true });
+    console.log(`[AUTO] 7-Eleven - CapSolver getTaskResult[${i}] status=${res.data.status} errorId=${res.data.errorId || 0}`);
+    if (res.data.status === 'ready') {
+      const text = res.data.solution?.text || '';
+      if (!text) throw new Error('CapSolver ready sin texto en polling');
+      console.log(`[AUTO] 7-Eleven - captcha resuelto via polling (module=${createData._module}): "${text}"`);
+      return text;
+    }
+    if (res.data.errorId) {
+      throw new Error(`CapSolver error - ${res.data.errorCode}: ${res.data.errorDescription}`);
+    }
+  }
+  throw new Error('CapSolver timeout sin solución');
+}
+
 async function ejecutar(perfil, ticketData, solicitudId) {
   const reportApi = makeReportApi('seveneleven');
-  const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
-  // Cookie jar manual
-  const jar = {};
-  const parseCookies = h => {
-    const sc = h?.['set-cookie']; if (!sc) return;
-    (Array.isArray(sc) ? sc : [sc]).forEach(c => {
-      const [nv] = c.split(';'); const [n, v] = nv.split('=');
-      if (n) jar[n.trim()] = v ? v.trim() : '';
-    });
-  };
-  const cookieStr = () => Object.entries(jar).map(([k,v]) => k+'='+v).join('; ');
-
-  const baseHeaders = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept': 'application/json, text/plain, */*',
-    'Origin': BASE,
-    'Referer': BASE + '/facturacion/KPortalExterno/'
-  };
-  const opts = (extra = {}) => ({
-    headers: { ...baseHeaders, Cookie: cookieStr(), ...extra },
-    httpsAgent, validateStatus: () => true, timeout: 30000
-  });
-
-  // Validación entrada
   const noTicket = String(ticketData?.numero_ticket || ticketData?.folio || '');
   if (!noTicket) return { success: false, mensaje: '7-Eleven: numero_ticket (barcode 35 chars) requerido' };
   if (!perfil?.rfc) return { success: false, mensaje: '7-Eleven: RFC del perfil requerido' };
 
-  console.log(`[AUTO] 7-Eleven - noTicket=${noTicket} (len=${noTicket.length}) rfc=${perfil.rfc}`);
+  console.log(`[AUTO] 7-Eleven - step 0: inicio noTicket=${noTicket} (len=${noTicket.length}) rfc=${perfil.rfc}`);
 
-  // 1. Establecer sesión (semilla de cookies)
+  let browser;
   try {
-    const r = await axios.get(BASE + '/facturacion/KPortalExterno/', opts());
-    parseCookies(r.headers);
-    console.log('[AUTO] 7-Eleven - sesión:', Object.keys(jar).join(','));
-  } catch (e) {
-    reportApi(BASE + '/facturacion/KPortalExterno/', null, e);
-    return { success: false, mensaje: '7-Eleven: error sesión - ' + e.message };
-  }
+    const launched = await launchStealthBrowser();
+    browser = launched.browser;
+    const { context, page } = launched;
+    context.setDefaultTimeout(30000);
+    context.setDefaultNavigationTimeout(60000);
 
-  // 2. verificaTicketWS2 — el server devuelve estacion, formaPago, totalTicket, webid, fecha automáticamente
-  let estacion, formaPago, monto;
-  try {
-    const v = await axios.get(BASE + '/KJServices/webapi/FacturacionService/verificaTicketWS2', {
-      ...opts(),
-      params: { noTicket }
+    // Auto-aceptar window.confirm que dispara el botón "FACTURAR"
+    page.on('dialog', async d => {
+      console.log(`[AUTO] 7-Eleven - dialog interceptado: type=${d.type()} message="${d.message()}"`);
+      try { await d.accept(); } catch (e) { console.warn('[AUTO] 7-Eleven - dialog.accept() falló:', e.message); }
     });
-    console.log(`[AUTO] 7-Eleven - verificaTicketWS2 status=${v.status} body=${JSON.stringify(v.data).substring(0,400)}`);
-    if (v.data?.status !== '0' && v.data?.status !== 0) {
-      const msg = v.data?.mensajeValidacion || v.data?.respuesta || 'sin detalle';
+
+    // Interceptor de network — Promises que resuelven cuando los responses esperados llegan
+    let resolveVerifica;
+    const verificaP = new Promise(resolve => { resolveVerifica = resolve; });
+    let resolveExpress;
+    const expressP = new Promise(resolve => { resolveExpress = resolve; });
+
+    page.on('response', async (resp) => {
+      const url = resp.url();
+      try {
+        if (url.includes('/verificaTicketWS2') && resp.request().method() === 'GET') {
+          let body = null;
+          try { body = await resp.json(); } catch { body = null; }
+          console.log(`[AUTO] 7-Eleven - intercepted verificaTicketWS2 status=${resp.status()} body=${JSON.stringify(body).substring(0,400)}`);
+          resolveVerifica({ status: resp.status(), body });
+        } else if (resp.request().method() === 'POST' && url.includes('/FacturaExpressService')) {
+          let body = null;
+          try { body = await resp.json(); } catch {
+            try { body = await resp.text(); } catch { body = null; }
+          }
+          const bodyStr = typeof body === 'object' ? JSON.stringify(body) : String(body ?? '');
+          console.log(`[AUTO] 7-Eleven - intercepted FacturaExpressService status=${resp.status()}`);
+          for (let i = 0; i < bodyStr.length && i < 4500; i += 1500) {
+            console.log(`[AUTO] 7-Eleven - FacturaExpress body[${i}-${Math.min(i+1500, bodyStr.length)}]: ${bodyStr.substring(i, i+1500)}`);
+          }
+          resolveExpress({ status: resp.status(), body });
+        }
+      } catch (e) {
+        console.warn('[AUTO] 7-Eleven - response listener error:', e.message);
+      }
+    });
+
+    // Step 1: navegar al SPA — DataDome ejecuta su challenge JS aquí
+    console.log('[AUTO] 7-Eleven - step 1: page.goto SPA');
+    await page.goto(BASE + '/facturacion/KPortalExterno/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+
+    // Step 2: detectar bloqueo DataDome
+    const currentUrl = page.url();
+    const title = await page.title().catch(() => '');
+    console.log(`[AUTO] 7-Eleven - step 2: post-goto url="${currentUrl}" title="${title}"`);
+    if (/datadome|captcha-delivery|access\s*denied/i.test(currentUrl) || /blocked|access\s*denied|datadome/i.test(title)) {
+      return { success: false, mensaje: `7-Eleven: DataDome bloqueó la sesión (url="${currentUrl}", title="${title}")` };
+    }
+
+    // Step 3: esperar que Angular renderice el link "FACTURA EXPRESS"
+    console.log('[AUTO] 7-Eleven - step 3: esperando link "FACTURA EXPRESS"');
+    await page.waitForFunction(() =>
+      Array.from(document.querySelectorAll('a')).some(a => /FACTURA\s*EXPRESS/i.test(a.textContent || ''))
+    , null, { timeout: 15000 });
+
+    // Step 4: click "FACTURA EXPRESS" via evaluate (más robusto que has-text)
+    console.log('[AUTO] 7-Eleven - step 4: click "FACTURA EXPRESS"');
+    await page.evaluate(() => {
+      const link = Array.from(document.querySelectorAll('a')).find(a => /FACTURA\s*EXPRESS/i.test(a.textContent || ''));
+      if (link) link.click();
+    });
+
+    // Step 5: esperar que aparezca el form de ticket
+    console.log('[AUTO] 7-Eleven - step 5: esperando form de ticket');
+    await page.waitForSelector(SELECTORS.noTicket, { timeout: 15000 });
+
+    // Step 6: llenar noTicket y disparar verificaTicketWS2
+    console.log(`[AUTO] 7-Eleven - step 6: fill noTicket=${noTicket} y click "Agregar Ticket"`);
+    await page.fill(SELECTORS.noTicket, noTicket);
+    await page.click(SELECTORS.agregarTicketBtn);
+
+    // Esperar response interceptado de verificaTicketWS2
+    const verificaResp = await Promise.race([
+      verificaP,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('verificaTicketWS2 timeout 30s')), 30000))
+    ]).catch(e => ({ error: e.message }));
+
+    if (verificaResp?.error) {
+      return { success: false, mensaje: '7-Eleven: ' + verificaResp.error };
+    }
+    if (!verificaResp?.body || (verificaResp.body.status !== '0' && verificaResp.body.status !== 0)) {
+      const msg = verificaResp?.body?.mensajeValidacion || verificaResp?.body?.respuesta || 'sin detalle';
       return { success: false, mensaje: `7-Eleven: ticket rechazado por verificaTicketWS2 — ${msg} (noTicket=${noTicket})` };
     }
-    estacion = String(v.data?.estacion || '');
-    formaPago = String(v.data?.formaPago || '');
-    // Campo en POST se llama "monto", se toma de "totalTicket" del response
-    monto = String(v.data?.totalTicket ?? '');
-  } catch (e) {
-    reportApi(BASE + '/KJServices/webapi/FacturacionService/verificaTicketWS2', { noTicket }, e);
-    return { success: false, mensaje: '7-Eleven: error verificaTicketWS2 - ' + e.message };
-  }
+    const capturedFormaPago = String(verificaResp.body.formaPago || '');
+    if (!capturedFormaPago) {
+      return { success: false, mensaje: '7-Eleven: verificaTicketWS2 OK pero formaPago vacío' };
+    }
+    console.log(`[AUTO] 7-Eleven - step 6b: formaPago capturado="${capturedFormaPago}"`);
 
-  if (!estacion || !formaPago || !monto) {
-    return { success: false, mensaje: `7-Eleven: verificaTicketWS2 devolvió campos vacíos (estacion=${estacion}, formaPago=${formaPago}, monto=${monto})` };
-  }
+    // Step 7: esperar form de receptor
+    console.log('[AUTO] 7-Eleven - step 7: esperando form de receptor (#rfcCliente)');
+    await page.waitForSelector(SELECTORS.rfcCliente, { timeout: 15000 });
 
-  // 3. Resolver Kaptcha (imagen JPG) — requiere CapSolver ImageToText
-  const capKey = process.env.CAPSOLVER_API_KEY;
-  if (!capKey) return { success: false, mensaje: '7-Eleven: CAPSOLVER_API_KEY no configurada' };
+    // Step 8: llenar campos de receptor
+    console.log('[AUTO] 7-Eleven - step 8: fill receptor');
+    const razon = String(perfil.nombre_sat || perfil.nombre || '').toUpperCase();
+    await page.fill(SELECTORS.rfcCliente, String(perfil.rfc).toUpperCase());
+    await page.fill(SELECTORS.razon, razon);
+    await page.selectOption(SELECTORS.regimenFiscal, perfil.regimen || '612');
+    await page.selectOption(SELECTORS.usoCfdi, perfil.uso_cfdi || 'G03');
+    await page.fill(SELECTORS.formaPago, capturedFormaPago);
+    await page.fill(SELECTORS.calle, '');
+    await page.fill(SELECTORS.noExterior, '');
+    await page.fill(SELECTORS.noInterior, '');
+    await page.fill(SELECTORS.ciudad, '');
+    await page.fill(SELECTORS.colonia, '');
+    await page.fill(SELECTORS.delegacion, '');
+    await page.fill(SELECTORS.cp, String(perfil.cp || ''));
+    await page.fill(SELECTORS.pais, '');
+    await page.fill(SELECTORS.emailInput, String(perfil.email || '').toLowerCase());
 
-  let captchaText;
-  try {
-    const img = await axios.get(BASE + '/KPortalExterno/Kaptcha.jpg', { ...opts(), responseType: 'arraybuffer' });
-    parseCookies(img.headers);
-    const captchaB64 = Buffer.from(img.data).toString('base64');
-    const contentType = img.headers['content-type'] || 'unknown';
-    console.log(`[AUTO] 7-Eleven - Kaptcha image: ${img.data.length} bytes, content-type=${contentType}, b64.length=${captchaB64.length}`);
-    if (img.data.length < 500) {
-      return { success: false, mensaje: '7-Eleven: Kaptcha image demasiado pequeña (' + img.data.length + ' bytes), revisa cookies' };
+    // Step 9: capturar imagen del Kaptcha y resolver con CapSolver
+    console.log('[AUTO] 7-Eleven - step 9: screenshot Kaptcha');
+    await page.waitForSelector(SELECTORS.kaptchaImg, { timeout: 10000 });
+    const captchaBuf = await page.locator(SELECTORS.kaptchaImg).screenshot({ type: 'jpeg' });
+    const captchaB64 = captchaBuf.toString('base64');
+    console.log(`[AUTO] 7-Eleven - step 9b: Kaptcha bytes=${captchaBuf.length} b64.length=${captchaB64.length}`);
+
+    let captchaText;
+    try {
+      captchaText = await resolverKaptchaConCapSolver(captchaB64);
+    } catch (e) {
+      return { success: false, mensaje: '7-Eleven: ' + e.message };
     }
 
-    // Resolver con CapSolver — intentar varios módulos si falla.
-    // ImageToTextTask normalmente resuelve sincrónicamente: createTask retorna status=ready
-    // con solution.text en la misma respuesta. Si no, hacer polling.
-    const modulosACobrar = ['common', 'queueit'];
-    let createData;
-    let createErr;
-    for (const mod of modulosACobrar) {
-      try {
-        const create = await axios.post('https://api.capsolver.com/createTask', {
-          clientKey: capKey,
-          task: { type: 'ImageToTextTask', body: captchaB64, module: mod }
-        }, { timeout: 15000, validateStatus: () => true });
-        console.log(`[AUTO] 7-Eleven - CapSolver createTask(module=${mod}) status=${create.status} body=${JSON.stringify(create.data).substring(0,500)}`);
-        if (create.data.errorId) {
-          createErr = create.data.errorDescription || create.data.errorCode || ('HTTP ' + create.status);
-          continue;
-        }
-        if (create.data.status === 'ready' || create.data.solution?.text || create.data.taskId) {
-          createData = { ...create.data, _module: mod };
-          break;
-        }
-        createErr = 'createTask sin solution ni taskId: ' + JSON.stringify(create.data).substring(0, 200);
-      } catch (e) {
-        createErr = e.message;
-        console.log(`[AUTO] 7-Eleven - CapSolver createTask(module=${mod}) EXCEPCIÓN: ${e.message} response=${JSON.stringify(e.response?.data).substring(0,300)}`);
-      }
+    // Step 10: llenar input del captcha
+    console.log(`[AUTO] 7-Eleven - step 10: fill captcha="${captchaText}"`);
+    await page.fill(SELECTORS.captcha, captchaText);
+
+    // Step 11: click "FACTURAR" → dispara window.confirm (auto-aceptado) y POST FacturaExpressService
+    console.log('[AUTO] 7-Eleven - step 11: click "FACTURAR"');
+    await page.evaluate(() => {
+      const btn = Array.from(document.querySelectorAll('button')).find(b => /FACTURAR/i.test(b.textContent || ''));
+      if (btn) btn.click();
+    });
+
+    // Step 12: esperar response interceptado de FacturaExpressService
+    console.log('[AUTO] 7-Eleven - step 12: esperando response de FacturaExpressService');
+    const expressResp = await Promise.race([
+      expressP,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('FacturaExpressService timeout 60s')), 60000))
+    ]).catch(e => ({ error: e.message }));
+
+    if (expressResp?.error) {
+      return { success: false, mensaje: '7-Eleven: ' + expressResp.error };
     }
-    if (!createData) return { success: false, mensaje: '7-Eleven: CapSolver createTask falló - ' + createErr };
-
-    if (createData.status === 'ready' || createData.solution?.text) {
-      captchaText = createData.solution?.text || '';
-      if (!captchaText) return { success: false, mensaje: '7-Eleven: CapSolver status=ready sin texto' };
-      console.log(`[AUTO] 7-Eleven - captcha resuelto sincrónicamente (module=${createData._module}): "${captchaText}"`);
-    } else {
-      for (let i = 0; i < 20; i++) {
-        await new Promise(r => setTimeout(r, 3000));
-        const res = await axios.post('https://api.capsolver.com/getTaskResult', { clientKey: capKey, taskId: createData.taskId }, { timeout: 15000, validateStatus: () => true });
-        console.log(`[AUTO] 7-Eleven - CapSolver getTaskResult[${i}] status=${res.data.status} errorId=${res.data.errorId || 0} body=${JSON.stringify(res.data).substring(0,400)}`);
-        if (res.data.status === 'ready') {
-          captchaText = res.data.solution?.text || '';
-          break;
-        }
-        if (res.data.errorId) {
-          return { success: false, mensaje: `7-Eleven: CapSolver error - ${res.data.errorCode}: ${res.data.errorDescription}` };
-        }
-      }
-      if (!captchaText) return { success: false, mensaje: '7-Eleven: CapSolver timeout sin solución' };
-      console.log(`[AUTO] 7-Eleven - captcha resuelto via polling (module=${createData._module}): "${captchaText}"`);
-    }
-  } catch (e) {
-    console.log(`[AUTO] 7-Eleven - excepción captcha: ${e.message} status=${e.response?.status} data=${JSON.stringify(e.response?.data).substring(0,300)}`);
-    return { success: false, mensaje: '7-Eleven: error captcha - ' + e.message };
-  }
-
-  // 4. Validar captcha contra captchaValidator (path distinto a Petro 7)
-  try {
-    const r = await axios.get(BASE + '/KJServices/webapi/captchaValidator/', { ...opts(), params: { kaptcha: captchaText } });
-    parseCookies(r.headers);
-    console.log('[AUTO] 7-Eleven - captchaValidator:', JSON.stringify(r.data));
-    if (!r.data?.esValido) {
-      return { success: false, mensaje: '7-Eleven: captcha rechazado - ' + (r.data?.mensaje || captchaText) };
-    }
-  } catch (e) {
-    reportApi(BASE + '/KJServices/webapi/captchaValidator/', { kaptcha: captchaText }, e);
-    return { success: false, mensaje: '7-Eleven: error validando captcha - ' + e.message };
-  }
-
-  // 5. Construir tickets array (shape exacto del scope Angular del portal)
-  const ticket = {
-    noEstacion: estacion,
-    noTicket,
-    monto,
-    formaPago,
-    id: null
-  };
-  console.log('[AUTO] 7-Eleven - ticket:', JSON.stringify(ticket));
-
-  // 6. POST FacturaExpressService (urlencoded)
-  // Orden y nombres de campos espejean el bundle JS del portal
-  // (kportalexterno.js, ExpressFormController). 20 campos exactos.
-  const params = new URLSearchParams({
-    tickets: JSON.stringify([ticket]),
-    idCliente: '',
-    rfc: String(perfil.rfc).toUpperCase(),
-    razon: String(perfil.nombre_sat || perfil.nombre || '').toUpperCase(),
-    usoCFDI: perfil.uso_cfdi || 'G03',
-    calle: '',
-    noExterior: '',
-    noInterior: '',
-    colonia: '',
-    delegacion: '',
-    ciudad: '',
-    cp: String(perfil.cp || ''),
-    pais: '',
-    email: String(perfil.email || '').toLowerCase(),
-    facturaExpress: 'true',
-    facturaRegistrado: 'true',
-    selectedFormaPago: formaPago,
-    formaPagoAux: formaPago,
-    medioEmision: 'FEXPRESS',
-    regimenFiscalReceptor: perfil.regimen || '612'
-  });
-
-  const paramsStr = params.toString();
-  console.log(`[AUTO] 7-Eleven - FacturaExpress payload size=${paramsStr.length} bytes`);
-  for (let i = 0; i < paramsStr.length; i += 1500) {
-    console.log(`[AUTO] 7-Eleven - FacturaExpress payload[${i}-${Math.min(i+1500, paramsStr.length)}]: ${paramsStr.substring(i, i+1500)}`);
-  }
-
-  try {
-    const r = await axios.post(
-      BASE + '/KJServices/webapi/FacturaExpressService',
-      paramsStr,
-      opts({ 'Content-Type': 'application/x-www-form-urlencoded' })
-    );
-    parseCookies(r.headers);
-    const bodyStr = typeof r.data === 'object' ? JSON.stringify(r.data) : String(r.data ?? '');
-    console.log(`[AUTO] 7-Eleven - FacturaExpress RESPONSE status=${r.status} headers=${JSON.stringify(r.headers).substring(0,400)}`);
-    for (let i = 0; i < bodyStr.length && i < 4500; i += 1500) {
-      console.log(`[AUTO] 7-Eleven - FacturaExpress body[${i}-${Math.min(i+1500, bodyStr.length)}]: ${bodyStr.substring(i, i+1500)}`);
+    if (expressResp.status >= 400) {
+      const bodyStr = typeof expressResp.body === 'object' ? JSON.stringify(expressResp.body) : String(expressResp.body ?? '');
+      reportApi(BASE + '/KJServices/webapi/FacturaExpressService', { noTicket }, { response: { status: expressResp.status, data: expressResp.body }, message: 'HTTP ' + expressResp.status });
+      return { success: false, mensaje: '7-Eleven: HTTP ' + expressResp.status + ' - ' + bodyStr.substring(0, 200) };
     }
 
-    if (r.status >= 400) {
-      reportApi(BASE + '/KJServices/webapi/FacturaExpressService', { tickets: [ticket] }, { response: r, message: 'HTTP ' + r.status });
-      return { success: false, mensaje: '7-Eleven: HTTP ' + r.status + ' - ' + bodyStr.substring(0, 200) };
-    }
-
-    const data = r.data || {};
+    // Step 13: parsear UUID del response
+    console.log('[AUTO] 7-Eleven - step 13: parsear UUID');
+    const data = expressResp.body || {};
     const uuid = data.uuid || data.cfdis?.[0]?.uuid || (Array.isArray(data) ? data[0]?.uuid : null);
     if (uuid) {
       console.log(`[AUTO] 7-Eleven - CFDI timbrado uuid=${uuid}`);
       return { success: true, uuid, mensaje: '7-Eleven: factura emitida' };
     }
-
     if (data.status === '0' || data.status === 0 || data.status === 'OK') {
+      const bodyStr = typeof data === 'object' ? JSON.stringify(data) : String(data ?? '');
       return { success: true, mensaje: '7-Eleven: factura solicitada (sin UUID directo) - ' + bodyStr.substring(0, 200) };
     }
-
-    const msg = data.mensaje || data.mensajeValidacion || bodyStr.substring(0, 200);
+    const msg = data.mensaje || data.mensajeValidacion ||
+      (typeof data === 'object' ? JSON.stringify(data).substring(0, 200) : String(data ?? '').substring(0, 200));
     return { success: false, mensaje: '7-Eleven: respuesta sin UUID - ' + msg };
+
   } catch (e) {
-    reportApi(BASE + '/KJServices/webapi/FacturaExpressService', { tickets: [ticket] }, e);
-    return { success: false, mensaje: '7-Eleven: error FacturaExpress - ' + e.message };
+    console.warn('[AUTO] 7-Eleven - excepción no capturada:', e.message);
+    return { success: false, mensaje: '7-Eleven: error inesperado - ' + e.message };
+  } finally {
+    await closeBrowser(browser);
   }
 }
 
