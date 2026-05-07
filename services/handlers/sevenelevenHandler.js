@@ -568,6 +568,26 @@ async function ejecutar(perfil, ticketData, solicitudId) {
         const body = await postResp.json().catch(async () => await postResp.text());
         finalExpressResp = { status: postResp.status(), body };
         console.log(`[AUTO] 7-Eleven - intento ${attempt}: POST FacturaExpressService capturado status=${postResp.status()}`);
+
+        // Extraer UUID INMEDIATAMENTE — si existe, return temprano sin más interacción
+        // con browser. Esto evita que un elementHandle.click pendiente o cualquier
+        // re-render post-submit haga timeout y mate la ejecución después de que
+        // la factura YA fue timbrada exitosamente.
+        let earlyUuid = null;
+        if (Array.isArray(body) && body[0]?.uuid) earlyUuid = body[0].uuid;
+        else if (body?.uuid) earlyUuid = body.uuid;
+        else if (body?.cfdis?.[0]?.uuid) earlyUuid = body.cfdis[0].uuid;
+
+        if (earlyUuid) {
+          console.log(`[AUTO] 7-Eleven - SUCCESS uuid=${earlyUuid} (early return, sin más interacción con DOM)`);
+          closeBrowser(browser).catch(() => {});
+          return {
+            success: true,
+            uuid: earlyUuid,
+            mensaje: 'CFDI generado exitosamente'
+          };
+        }
+
         captchaSuccess = true;
         break;
       }
