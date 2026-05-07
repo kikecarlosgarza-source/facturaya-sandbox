@@ -280,6 +280,23 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     }, capturedFormaPago);
     console.log(`[AUTO] 7-Eleven - step 8b: formaPagoAux seteado via evaluate (readonly bypass) value=${capturedFormaPago}`);
 
+    // Step 8c: leer el estado de validación del form Angular para detectar si
+    // los page.fill registraron correctamente como ng-dirty + ng-valid. Si el
+    // form sigue ng-invalid, el submit no dispara aunque hagamos click realista.
+    const formValidState = await page.evaluate(() => {
+      const form = document.forms['basicForm'];
+      if (!form) return 'no form';
+      const ngScope = window.angular?.element(form).scope();
+      const ngForm = ngScope?.basicForm || ngScope?.[form.name];
+      return {
+        formInvalid: form.classList.contains('ng-invalid'),
+        angularInvalid: ngForm?.$invalid,
+        angularValid: ngForm?.$valid,
+        firstInvalid: Array.from(form.querySelectorAll('.ng-invalid')).slice(0, 3).map(el => el.id || el.name)
+      };
+    });
+    console.log(`[AUTO] 7-Eleven - step 8c: form state ${JSON.stringify(formValidState)}`);
+
     // Step 9-11: captcha download + CapSolver + click FACTURAR con retry loop.
     // Los Kaptcha de Konesh son notoriamente difíciles. CapSolver puede devolver
     // texto con confianza alta (0.99) pero incorrecto. Retry hasta 3 veces:
@@ -354,12 +371,22 @@ async function ejecutar(perfil, ticketData, solicitudId) {
         { timeout: 15000 }
       ).catch(() => null);
 
-      // Click FACTURAR
-      console.log(`[AUTO] 7-Eleven - step 11 (intento ${attempt}): click FACTURAR`);
-      await page.evaluate(() => {
-        const btn = Array.from(document.querySelectorAll('button')).find(b => /FACTURAR/i.test(b.textContent || '') && b.offsetParent);
-        if (btn) btn.click();
+      // Click FACTURAR — usar page.click() de Playwright (no page.evaluate(.click))
+      // para disparar el submit del <form name="basicForm"> correctamente. El botón
+      // es <button type="submit"> sin ng-click; un .click() sintético via evaluate
+      // puede ser silencioso bajo Angular/headless. page.click() simula
+      // mousedown+mouseup+click como un usuario real.
+      const facturarBtnHandle = await page.evaluateHandle(() => {
+        return Array.from(document.querySelectorAll('button')).find(b =>
+          /^FACTURAR$/i.test((b.textContent || '').trim()) && b.offsetParent
+        );
       });
+      const facturarBtn = facturarBtnHandle.asElement();
+      if (!facturarBtn) {
+        throw new Error('7-Eleven: botón FACTURAR no encontrado');
+      }
+      await facturarBtn.click();
+      console.log(`[AUTO] 7-Eleven - step 11 (intento ${attempt}): page.click() del botón FACTURAR ejecutado`);
 
       // Polling: cada 200ms verificar (a) dialog nuevo, (b) si respPromise resolvió
       let postResp = null;
