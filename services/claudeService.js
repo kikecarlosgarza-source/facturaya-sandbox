@@ -30,7 +30,7 @@ function parsearRespuestaJSON(content) {
   throw new Error('Respuesta no es JSON valido: ' + limpio.substring(0, 200));
 }
 
-async function analizarTicket(base64Image, mimeType = 'image/jpeg') {
+async function analizarTicket(base64Image, mimeType = 'image/jpeg', barcodeNumber = null) {
   const systemPrompt = `Eres un experto en facturacion electronica Mexico CFDI 4.0. Analiza la imagen del ticket.
 
 INSTRUCCIONES:
@@ -121,6 +121,12 @@ Responde SOLO JSON sin backticks:
   const datos = parsearRespuestaJSON(response.data.content);
   // Limpiar folio: quitar todo excepto digitos
   if (datos.folio) datos.folio = datos.folio.replace(/[^0-9\-]/g, '').replace(/^-+|-+$/g, '');
+
+  // Override numero_ticket con el barcode si el frontend lo escaneó (más preciso que OCR)
+  if (barcodeNumber) {
+    datos.numero_ticket = barcodeNumber;
+    console.log(`[OCR] Barcode override: numero_ticket=${barcodeNumber}`);
+  }
 
   // Fallback de detección Facturama-Shopify si Claude no lo detectó
   if (datos.sistema_facturacion !== 'facturama_shopify') {

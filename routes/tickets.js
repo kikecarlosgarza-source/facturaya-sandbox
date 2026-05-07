@@ -31,12 +31,12 @@ function detectarPortal(nombre) {
 
 router.post('/analizar', authMiddleware, async (req, res) => {
       try {
-              const { imagen, mimeType = 'image/jpeg' } = req.body;
+              const { imagen, mimeType = 'image/jpeg', barcodeNumber = null } = req.body;
               if (!imagen) return res.status(400).json({ error: 'Imagen requerida' });
 
-        console.log('[IMG] tamanio base64:', imagen.length, 'mimeType:', mimeType);
+        console.log('[IMG] tamanio base64:', imagen.length, 'mimeType:', mimeType, 'barcode:', barcodeNumber || 'none');
 
-        const ticketData = await analizarTicket(imagen, mimeType);
+        const ticketData = await analizarTicket(imagen, mimeType, barcodeNumber);
               console.log('[TICKET] datos extraidos:', JSON.stringify(ticketData));
 
         const portalLocal = detectarPortal(ticketData.establecimiento);
