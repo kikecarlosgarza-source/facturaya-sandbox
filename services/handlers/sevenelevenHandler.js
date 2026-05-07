@@ -147,6 +147,11 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     const verificaP = new Promise(resolve => { resolveVerifica = resolve; });
     let resolveExpress;
     const expressP = new Promise(resolve => { resolveExpress = resolve; });
+    // captchaValidator se llama ANTES de FacturaExpressService. Si responde
+    // esValido:false, el portal NO hace el POST y muestra dialog "Captcha incorrecto".
+    // Detectar el resultado aquí es más confiable que esperar el dialog (timing async).
+    let lastCaptchaValidatorResult = null;
+    let lastCaptchaValidatorTimestamp = 0;
 
     page.on('response', async (resp) => {
       const url = resp.url();
@@ -156,6 +161,12 @@ async function ejecutar(perfil, ticketData, solicitudId) {
           try { body = await resp.json(); } catch { body = null; }
           console.log(`[AUTO] 7-Eleven - intercepted verificaTicketWS2 status=${resp.status()} body=${JSON.stringify(body).substring(0,400)}`);
           resolveVerifica({ status: resp.status(), body });
+        } else if (url.includes('/captchaValidator') && resp.request().method() === 'GET') {
+          let body = null;
+          try { body = await resp.json(); } catch { body = null; }
+          lastCaptchaValidatorResult = body;
+          lastCaptchaValidatorTimestamp = Date.now();
+          console.log(`[AUTO] 7-Eleven - intercepted captchaValidator status=${resp.status()} body=${JSON.stringify(body)}`);
         } else if (resp.request().method() === 'POST' && url.includes('/FacturaExpressService')) {
           let body = null;
           try { body = await resp.json(); } catch {
@@ -350,10 +361,11 @@ async function ejecutar(perfil, ticketData, solicitudId) {
         { timeout: 30000 }
       ).catch(() => null);
 
-      // Capturar timestamp del último dialog conocido. Después del click, si aparece
-      // un dialog NUEVO (timestamp avanzó) con mensaje de captcha incorrecto, retry.
-      // Evita el race condition de tener dos listeners (global + page.once específico).
-      const dialogTimestampBefore = lastDialogTimestamp;
+      // Capturar timestamp del último captchaValidator. Después del click, esperar
+      // a que el server responda — captchaValidator se llama ANTES del POST
+      // FacturaExpressService. Si esValido:false → captcha incorrecto, retry.
+      // Más robusto que detectar dialog (timing async impredecible).
+      const captchaValidatorTimestampBefore = lastCaptchaValidatorTimestamp;
 
       // Click FACTURAR
       console.log(`[AUTO] 7-Eleven - step 11 (intento ${attempt}): click FACTURAR`);
@@ -362,17 +374,32 @@ async function ejecutar(perfil, ticketData, solicitudId) {
         if (btn) btn.click();
       });
 
-      // Esperar 4s — tiempo suficiente para que Angular procese y muestre dialog si falla
-      await page.waitForTimeout(4000);
+      // Polling 8s en Node-side esperando response de captchaValidator (signal del server)
+      let validatorChanged = false;
+      for (let i = 0; i < 80; i++) {
+        if (lastCaptchaValidatorTimestamp > captchaValidatorTimestampBefore) {
+          validatorChanged = true;
+          break;
+        }
+        await page.waitForTimeout(100);
+      }
 
-      const newDialogAppeared = lastDialogTimestamp > dialogTimestampBefore;
-      const isCaptchaIncorrect = newDialogAppeared && lastDialogMessage && /captcha\s+incorrecto/i.test(lastDialogMessage);
-
-      if (isCaptchaIncorrect) {
-        console.log(`[AUTO] 7-Eleven - intento ${attempt} falló: captcha incorrecto ("${lastDialogMessage}"), reintentando`);
-        lastCaptchaError = `Captcha incorrecto: "${lastDialogMessage}"`;
+      if (!validatorChanged) {
+        console.log(`[AUTO] 7-Eleven - intento ${attempt}: captchaValidator no respondió en 8s, asumimos timeout y reintentando`);
+        lastCaptchaError = 'captchaValidator timeout';
         continue;
       }
+
+      const cvResult = lastCaptchaValidatorResult;
+      const isCaptchaValid = cvResult && (cvResult.esValido === true || cvResult.valid === true || cvResult.status === '0' || cvResult.status === 0);
+
+      if (!isCaptchaValid) {
+        console.log(`[AUTO] 7-Eleven - intento ${attempt} falló: captchaValidator devolvió ${JSON.stringify(cvResult)}, reintentando`);
+        lastCaptchaError = `Captcha rejected by server: ${JSON.stringify(cvResult)}`;
+        continue;
+      }
+
+      console.log(`[AUTO] 7-Eleven - intento ${attempt}: captchaValidator OK ${JSON.stringify(cvResult)}, esperando POST FacturaExpressService`);
 
       // Capturar response del POST del intento exitoso (specific a este attempt).
       // Si waitForResponse hizo timeout (validación client-side sin POST, o race),
