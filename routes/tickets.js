@@ -3,6 +3,7 @@ const router = express.Router();
 const { v4: uuid } = require('uuid');
 const authMiddleware = require('../middleware/auth');
 const { analizarTicket } = require('../services/claudeService');
+const { detectBarcode } = require('../services/barcodeService');
 const { db } = require('../db/database');
 
 const PORTALES = {
@@ -34,9 +35,20 @@ router.post('/analizar', authMiddleware, async (req, res) => {
               const { imagen, mimeType = 'image/jpeg', barcodeNumber = null } = req.body;
               if (!imagen) return res.status(400).json({ error: 'Imagen requerida' });
 
-        console.log('[IMG] tamanio base64:', imagen.length, 'mimeType:', mimeType, 'barcode:', barcodeNumber || 'none');
+        console.log('[IMG] tamanio base64:', imagen.length, 'mimeType:', mimeType, 'barcode_frontend:', barcodeNumber || 'none');
 
-        const ticketData = await analizarTicket(imagen, mimeType, barcodeNumber);
+        // Resolver barcode: frontend tiene prioridad. Si null, decodificar del JPEG en paralelo con Claude.
+        const [ticketData, backendBarcode] = await Promise.all([
+              analizarTicket(imagen, mimeType),
+              barcodeNumber ? Promise.resolve(null) : detectBarcode(imagen)
+        ]);
+
+        const finalBarcode = barcodeNumber || backendBarcode;
+        if (finalBarcode) {
+              ticketData.numero_ticket = finalBarcode;
+              console.log(`[TICKET] numero_ticket override (source: ${barcodeNumber ? 'frontend' : 'backend'}): ${finalBarcode}`);
+        }
+
               console.log('[TICKET] datos extraidos:', JSON.stringify(ticketData));
 
         const portalLocal = detectarPortal(ticketData.establecimiento);
