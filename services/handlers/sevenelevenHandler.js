@@ -106,7 +106,14 @@ async function resolverKaptchaConCapSolver(captchaB64) {
 async function ejecutar(perfil, ticketData, solicitudId) {
   const reportApi = makeReportApi('seveneleven');
 
-  const noTicket = String(ticketData?.numero_ticket || ticketData?.folio || '');
+  let noTicket = String(ticketData?.numero_ticket || ticketData?.folio || '');
+  // Code128-C padea con "0" inicial cuando el ticket-id tiene longitud impar (35).
+  // zbar/native scanner decodifican el padded value (36) literal, pero el portal valida
+  // contra el texto impreso (35). Confirmado empíricamente con ticket 7-Eleven 2026-05-07.
+  if (noTicket.length === 36 && noTicket.startsWith('0')) {
+    console.log(`[AUTO] 7-Eleven - removiendo padding Code128-C: ${noTicket} → ${noTicket.substring(1)}`);
+    noTicket = noTicket.substring(1);
+  }
   if (!noTicket) return { success: false, mensaje: '7-Eleven: numero_ticket (barcode 35 chars) requerido' };
   if (!perfil?.rfc) return { success: false, mensaje: '7-Eleven: RFC del perfil requerido' };
 
