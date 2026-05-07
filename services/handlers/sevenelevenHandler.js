@@ -181,28 +181,29 @@ async function ejecutar(perfil, ticketData, solicitudId) {
   console.log('[AUTO] 7-Eleven - ticket:', JSON.stringify(ticket));
 
   // 6. POST FacturaExpressService (urlencoded)
+  // Orden y nombres de campos espejean el bundle JS del portal
+  // (kportalexterno.js, ExpressFormController). 20 campos exactos.
   const params = new URLSearchParams({
     tickets: JSON.stringify([ticket]),
     idCliente: '',
     rfc: String(perfil.rfc).toUpperCase(),
-    razonSocial: perfil.nombre_sat || perfil.nombre || '',
-    usoCfdi: perfil.uso_cfdi || 'G03',
-    regimenFiscal: perfil.regimen || '612',
-    regimenFiscalReceptor: perfil.regimen || '612',
+    razon: String(perfil.nombre_sat || perfil.nombre || '').toUpperCase(),
+    usoCFDI: perfil.uso_cfdi || 'G03',
     calle: '',
-    numExterior: '',
-    numInterior: '',
+    noExterior: '',
+    noInterior: '',
     colonia: '',
     delegacion: '',
     ciudad: '',
-    estado: '',
     cp: String(perfil.cp || ''),
     pais: '',
     email: String(perfil.email || '').toLowerCase(),
     facturaExpress: 'true',
     facturaRegistrado: 'true',
     selectedFormaPago: formaPago,
-    medioEmision: 'FEXPRESS'
+    formaPagoAux: formaPago,
+    medioEmision: 'FEXPRESS',
+    regimenFiscalReceptor: perfil.regimen || '612'
   });
 
   const paramsStr = params.toString();
