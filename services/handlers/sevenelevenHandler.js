@@ -271,61 +271,138 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     }, capturedFormaPago);
     console.log(`[AUTO] 7-Eleven - step 8b: formaPagoAux seteado via evaluate (readonly bypass) value=${capturedFormaPago}`);
 
-    // Step 9: capturar imagen del Kaptcha y resolver con CapSolver
-    // Esperar a que la imagen del Kaptcha se haya cargado completamente en el DOM.
-    // page.locator(...).screenshot() puede capturar antes de que <img> termine de cargar
-    // el bitmap, especialmente con DataDome challenge que retrasa requests.
-    await page.waitForSelector(SELECTORS.kaptchaImg, { timeout: 10000 });
-    await page.waitForFunction(() => {
-      const img = document.getElementById('Kaptcha');
-      return img && img.complete && img.naturalWidth > 50;
-    }, null, { timeout: 15000 });
+    // Step 9-11: captcha download + CapSolver + click FACTURAR con retry loop.
+    // Los Kaptcha de Konesh son notoriamente difíciles. CapSolver puede devolver
+    // texto con confianza alta (0.99) pero incorrecto. Retry hasta 3 veces:
+    // refrescar Kaptcha → CapSolver → fill → click → detectar dialog "Captcha incorrecto".
+    const MAX_CAPTCHA_RETRIES = 3;
+    let captchaSuccess = false;
+    let lastCaptchaError = null;
+    // Response del POST capturado por intento. Evita el staleness del expressP global
+    // (que se resuelve solo en el primer POST y no se actualiza en los retries).
+    let finalExpressResp = null;
 
-    // Descargar la imagen via page.request — reusa las cookies del browser context
-    // (datadome=, JSESSIONID, etc.) y obtiene los bytes reales del JPG, no un screenshot.
-    const kaptchaUrl = await page.evaluate(() => {
-      const img = document.getElementById('Kaptcha');
-      return img ? img.src : null;
-    });
-    if (!kaptchaUrl) {
-      throw new Error('7-Eleven: no se pudo encontrar src del Kaptcha img');
+    for (let attempt = 1; attempt <= MAX_CAPTCHA_RETRIES; attempt++) {
+      console.log(`[AUTO] 7-Eleven - step 9 (intento ${attempt}/${MAX_CAPTCHA_RETRIES}): descargando Kaptcha`);
+
+      // Si no es el primer intento, recargar captcha clickeando el botón de reload
+      if (attempt > 1) {
+        // El portal tiene un botón con reload2.png al lado del captcha — refrescar
+        await page.evaluate(() => {
+          const reloadBtn = document.querySelector('img[src*="reload2"], [ng-click*="captcha"]');
+          if (reloadBtn) reloadBtn.click();
+          else {
+            // Fallback: forzar recarga del src del Kaptcha
+            const img = document.getElementById('Kaptcha');
+            if (img) img.src = img.src.split('?')[0] + '?t=' + Date.now();
+          }
+        });
+        // Esperar a que la nueva imagen cargue
+        await page.waitForTimeout(1500);
+      }
+
+      // Esperar imagen lista
+      await page.waitForFunction(() => {
+        const img = document.getElementById('Kaptcha');
+        return img && img.complete && img.naturalWidth > 50;
+      }, null, { timeout: 15000 });
+
+      // Descargar via page.request
+      const kaptchaUrl = await page.evaluate(() => {
+        const img = document.getElementById('Kaptcha');
+        return img ? img.src : null;
+      });
+      const kaptchaResp = await page.request.get(kaptchaUrl);
+      const captchaBuffer = await kaptchaResp.body();
+      console.log(`[AUTO] 7-Eleven - step 9b (intento ${attempt}): Kaptcha bytes=${captchaBuffer.length}`);
+      if (captchaBuffer.length < 2000) {
+        lastCaptchaError = `Kaptcha image sospechosamente pequeña (${captchaBuffer.length} bytes)`;
+        continue;
+      }
+
+      // Resolver con CapSolver
+      const captchaText = await resolverKaptchaConCapSolver(captchaBuffer.toString('base64'));
+      console.log(`[AUTO] 7-Eleven - step 9c (intento ${attempt}): CapSolver resolvió "${captchaText}"`);
+
+      if (!captchaText || captchaText.length < 4) {
+        lastCaptchaError = `CapSolver returned empty or too short text: "${captchaText}"`;
+        continue;
+      }
+
+      // Llenar input captcha (clear primero por si tiene valor previo)
+      await page.fill(SELECTORS.captcha, '');
+      await page.fill(SELECTORS.captcha, captchaText);
+
+      // Setup listener para detectar dialog "Captcha incorrecto"
+      let captchaIncorrect = false;
+      const captchaDialogListener = (dialog) => {
+        if (/captcha\s+incorrecto/i.test(dialog.message())) {
+          captchaIncorrect = true;
+        }
+        dialog.accept();
+      };
+      page.once('dialog', captchaDialogListener);
+
+      // Setup waitForResponse específico de este intento (one-shot, no comparte
+      // estado con expressP global). Se debe registrar ANTES del click para no
+      // perder el response.
+      const respPromise = page.waitForResponse(
+        resp => resp.request().method() === 'POST' && resp.url().includes('/FacturaExpressService'),
+        { timeout: 30000 }
+      ).catch(() => null);
+
+      // Click FACTURAR
+      console.log(`[AUTO] 7-Eleven - step 11 (intento ${attempt}): click FACTURAR`);
+      await page.evaluate(() => {
+        const btn = Array.from(document.querySelectorAll('button')).find(b => /FACTURAR/i.test(b.textContent || '') && b.offsetParent);
+        if (btn) btn.click();
+      });
+
+      // Esperar 4s — tiempo suficiente para que Angular procese y muestre dialog si falla
+      await page.waitForTimeout(4000);
+
+      if (captchaIncorrect) {
+        console.log(`[AUTO] 7-Eleven - intento ${attempt} falló: captcha incorrecto, reintentando`);
+        lastCaptchaError = 'Captcha incorrecto según el portal';
+        continue;
+      }
+
+      // Capturar response del POST del intento exitoso (specific a este attempt).
+      // Si waitForResponse hizo timeout (validación client-side sin POST, o race),
+      // dejamos finalExpressResp en null y step 12 cae al expressP global.
+      const resp = await respPromise;
+      if (resp) {
+        let body = null;
+        try { body = await resp.json(); } catch { try { body = await resp.text(); } catch { body = null; } }
+        finalExpressResp = { status: resp.status(), body };
+        console.log(`[AUTO] 7-Eleven - intento ${attempt} response capturado: status=${resp.status()}`);
+      } else {
+        console.log(`[AUTO] 7-Eleven - intento ${attempt} OK pero waitForResponse timeout — usaremos expressP global como fallback`);
+      }
+
+      captchaSuccess = true;
+      break;
     }
-    console.log(`[AUTO] 7-Eleven - step 9: descargando Kaptcha desde ${kaptchaUrl}`);
-    const kaptchaResp = await page.request.get(kaptchaUrl);
-    if (kaptchaResp.status() !== 200) {
-      throw new Error(`7-Eleven: Kaptcha image fetch failed status=${kaptchaResp.status()}`);
-    }
-    const captchaBuffer = await kaptchaResp.body();
-    console.log(`[AUTO] 7-Eleven - step 9b: Kaptcha bytes=${captchaBuffer.length}`);
-    if (captchaBuffer.length < 2000) {
-      throw new Error(`7-Eleven: Kaptcha image sospechosamente pequeña (${captchaBuffer.length} bytes), abortando`);
-    }
-    const captchaB64 = captchaBuffer.toString('base64');
 
-    let captchaText;
-    try {
-      captchaText = await resolverKaptchaConCapSolver(captchaB64);
-    } catch (e) {
-      return { success: false, mensaje: '7-Eleven: ' + e.message };
+    if (!captchaSuccess) {
+      return {
+        success: false,
+        mensaje: `7-Eleven: captcha falló después de ${MAX_CAPTCHA_RETRIES} intentos. Último error: ${lastCaptchaError}`
+      };
     }
 
-    // Step 10: llenar input del captcha
-    console.log(`[AUTO] 7-Eleven - step 10: fill captcha="${captchaText}"`);
-    await page.fill(SELECTORS.captcha, captchaText);
-
-    // Step 11: click "FACTURAR" → dispara window.confirm (auto-aceptado) y POST FacturaExpressService
-    console.log('[AUTO] 7-Eleven - step 11: click "FACTURAR"');
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button')).find(b => /FACTURAR/i.test(b.textContent || ''));
-      if (btn) btn.click();
-    });
-
-    // Step 12: esperar response interceptado de FacturaExpressService
-    console.log('[AUTO] 7-Eleven - step 12: esperando response de FacturaExpressService');
-    const expressResp = await Promise.race([
-      expressP,
-      new Promise((_, reject) => setTimeout(() => reject(new Error('FacturaExpressService timeout 60s')), 60000))
-    ]).catch(e => ({ error: e.message }));
+    // Step 12: usar response capturado durante el retry loop. Si por algún motivo
+    // el waitForResponse del intento exitoso no atrapó (validación client-side,
+    // race condition), caer al expressP global como fallback.
+    console.log('[AUTO] 7-Eleven - step 12: response final del POST FacturaExpressService');
+    let expressResp = finalExpressResp;
+    if (!expressResp) {
+      console.log('[AUTO] 7-Eleven - step 12: finalExpressResp vacío, usando expressP global');
+      expressResp = await Promise.race([
+        expressP,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('FacturaExpressService timeout 60s')), 60000))
+      ]).catch(e => ({ error: e.message }));
+    }
 
     if (expressResp?.error) {
       return { success: false, mensaje: '7-Eleven: ' + expressResp.error };
