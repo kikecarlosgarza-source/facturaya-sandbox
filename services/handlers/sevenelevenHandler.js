@@ -425,6 +425,19 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       if (!facturarBtn) {
         throw new Error('7-Eleven: botón FACTURAR no encontrado');
       }
+
+      // Scroll defensivo: aunque el viewport sea suficiente, asegurar que el botón
+      // esté centrado verticalmente. Importante para formularios con scroll virtual
+      // o headers fijos que tapan parte del viewport. behavior:'instant' (no smooth)
+      // para evitar race con el click siguiente.
+      await page.evaluate(() => {
+        const btn = Array.from(document.querySelectorAll('button')).find(b =>
+          /^FACTURAR$/i.test((b.textContent || '').trim()) && b.offsetParent
+        );
+        if (btn) btn.scrollIntoView({ block: 'center', behavior: 'instant' });
+      });
+      await page.waitForTimeout(300);
+
       await facturarBtn.click();
       console.log(`[AUTO] 7-Eleven - step 11 (intento ${attempt}): page.click() del botón FACTURAR ejecutado`);
 

@@ -38,7 +38,7 @@ async function launchStealthBrowser(opts = {}) {
     userAgent = DEFAULT_USER_AGENT,
     locale = 'es-MX',
     timezoneId = 'America/Mexico_City',
-    viewport = { width: 1280, height: 800 },
+    viewport = { width: 1280, height: 1200 },
     extraArgs = []
   } = opts;
 
