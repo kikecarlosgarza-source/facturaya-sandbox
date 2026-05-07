@@ -15,7 +15,7 @@ Estos archivos / bloques contienen lógica que ya funciona (o estaba estable) y 
 | `services/handlers/benavidesHandler.js` | **FUNCIONAL** | commit `b73d92b` o posterior (2026-05-06) |
 | `services/handlers/alseaHandler.js` | **🔒 LOCKED — FUNCIONAL al 6/may/2026 — primera factura Starbucks timbrada exitosamente vía paso 2 backend HTTP (commit `7c85cf5`). Endpoint usado: `ValidaPagina2Facturar`. Multi-marca soportada (Starbucks, Vips, Domino's, Burger King, Chili's, P.F. Chang's, Italianni's). Response esperado: `nivel:99` + mensaje HTML. NO TOCAR sin autorización explícita nombrando "alsea" o "alseaHandler.js".** | commit `7c85cf5` |
 | `services/handlers/hebHandler.js` | **PENDIENTE VERIFICAR** — tratar como si funcionara | — |
-| `services/handlers/costcoHandler.js` | **EN MODIFICACIÓN ACTIVA — sesión 2026-05-06.** Token OAuth público obtenido vía `POST /portales/oauth/estilos`. Aplicado: LOTE-1 (handler completo con 3 POSTs encadenados). | — |
+| `services/handlers/costcoHandler.js` | **🔒 LOCKED — FUNCIONAL al 6/may/2026 — primera factura Costco solicitada exitosamente vía 3 POSTs encadenados (`oauth/estilos` → `validateCheck` → `generaCFDiXTransaccion`). Token público sin login. Response esperado de timbrado: `status_code:'0'` con description "Su solicitud fue aceptada...". Costco emite asíncrono (hasta 72h, normalmente minutos vía email). NO TOCAR sin autorización explícita nombrando "costco" o "costcoHandler.js".** | commit `dccab15` |
 | Bloque Home Depot dentro de `services/automationService.js` (`PORTALES['home depot']`, ~línea 61) | **🔒 LOCKED — FUNCIONAL al 6/may/2026** | commit `e73bf8e` |
 | Bloque Petro7 dentro de `services/automationService.js` (`PORTALES['petro']`, ~línea 651) | **FUNCIONAL** | — |
 
