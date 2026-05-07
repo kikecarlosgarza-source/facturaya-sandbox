@@ -10,6 +10,7 @@ const alseaHandler = require('./handlers/alseaHandler');
 const hebHandler = require('./handlers/hebHandler');
 const benavidesHandler = require('./handlers/benavidesHandler');
 const costcoHandler = require('./handlers/costcoHandler');
+const sevenelevenHandler = require('./handlers/sevenelevenHandler');
 
 // Directorio para guardar captchas
 const CAPTCHA_DIR = '/data/captchas';
@@ -976,6 +977,12 @@ const PORTALES = {
     ejecutar: costcoHandler.ejecutar
   },
 
+  '7-eleven': {
+    httpOnly: true,
+    brands: ['7-eleven', '7 eleven', '7eleven', 'seven eleven'],
+    ejecutar: sevenelevenHandler.ejecutar
+  },
+
   // Fallback: detección heurística + IA para portales sin handler bespoke (lee ticketData.portal_url)
   'universal': {
     httpOnly: true,
@@ -1105,8 +1112,12 @@ function detectarPortal(establecimiento, sistemaFacturacion) {
       return { key: 'facturama-shopify', ...PORTALES['facturama-shopify'] };
     case 'facturama_hd':
       return { key: 'home depot', ...PORTALES['home depot'] };
-    case 'konesh':
+    case 'konesh': {
+      // Konesh lo usan Petro 7 y 7-Eleven (e7-eleven.com.mx). Distinguir por establecimiento.
+      const n = (establecimiento || '').toLowerCase();
+      if (n.includes('eleven')) return { key: '7-eleven', ...PORTALES['7-eleven'] };
       return { key: 'petro', ...PORTALES['petro'] };
+    }
     case 'oxxo_gas':
       return { key: 'oxxo gas', ...PORTALES['oxxo gas'] };
     case 'wansoft':
