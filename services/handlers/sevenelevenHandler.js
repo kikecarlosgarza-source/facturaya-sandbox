@@ -196,6 +196,11 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     const verificaP = new Promise(resolve => { resolveVerifica = resolve; });
     let resolveExpress;
     const expressP = new Promise(resolve => { resolveExpress = resolve; });
+    // Snapshot del último response de FacturaExpressService capturado por el listener
+    // global. Sirve como fallback al respPromise por intento que puede no capturar
+    // si el listener global consume primero. El polling loop checa este valor al
+    // inicio de cada iteración para early-return con UUID antes de cualquier click.
+    let capturedExpressResponse = null;
 
     page.on('response', async (resp) => {
       const url = resp.url();
@@ -215,6 +220,7 @@ async function ejecutar(perfil, ticketData, solicitudId) {
           for (let i = 0; i < bodyStr.length && i < 4500; i += 1500) {
             console.log(`[AUTO] 7-Eleven - FacturaExpress body[${i}-${Math.min(i+1500, bodyStr.length)}]: ${bodyStr.substring(i, i+1500)}`);
           }
+          capturedExpressResponse = { status: resp.status(), body };
           resolveExpress({ status: resp.status(), body });
         }
       } catch (e) {
@@ -535,6 +541,22 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       const TIMEOUT_MS = 12000;
 
       while (Date.now() - startTime < TIMEOUT_MS) {
+        // Check 0: el listener global ya capturó el response de FacturaExpressService.
+        // Más rápido y confiable que respPromise por intento (que puede no capturar
+        // si el listener global consume primero, según diagnóstico del 7/may/2026).
+        if (capturedExpressResponse !== null) {
+          const body = capturedExpressResponse.body;
+          let earlyUuid = null;
+          if (Array.isArray(body) && body[0]?.uuid) earlyUuid = body[0].uuid;
+          else if (body?.uuid) earlyUuid = body.uuid;
+          else if (body?.cfdis?.[0]?.uuid) earlyUuid = body.cfdis[0].uuid;
+          if (earlyUuid) {
+            console.log(`[AUTO] 7-Eleven - SUCCESS uuid=${earlyUuid} (early return via listener global)`);
+            closeBrowser(browser).catch(() => {});
+            return { success: true, uuid: earlyUuid, mensaje: 'CFDI generado exitosamente' };
+          }
+        }
+
         // Check dialog
         if (lastDialogTimestamp > dialogTimestampBefore) {
           newDialog = true;
