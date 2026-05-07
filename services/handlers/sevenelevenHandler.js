@@ -272,11 +272,35 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     console.log(`[AUTO] 7-Eleven - step 8b: formaPagoAux seteado via evaluate (readonly bypass) value=${capturedFormaPago}`);
 
     // Step 9: capturar imagen del Kaptcha y resolver con CapSolver
-    console.log('[AUTO] 7-Eleven - step 9: screenshot Kaptcha');
+    // Esperar a que la imagen del Kaptcha se haya cargado completamente en el DOM.
+    // page.locator(...).screenshot() puede capturar antes de que <img> termine de cargar
+    // el bitmap, especialmente con DataDome challenge que retrasa requests.
     await page.waitForSelector(SELECTORS.kaptchaImg, { timeout: 10000 });
-    const captchaBuf = await page.locator(SELECTORS.kaptchaImg).screenshot({ type: 'jpeg' });
-    const captchaB64 = captchaBuf.toString('base64');
-    console.log(`[AUTO] 7-Eleven - step 9b: Kaptcha bytes=${captchaBuf.length} b64.length=${captchaB64.length}`);
+    await page.waitForFunction(() => {
+      const img = document.getElementById('Kaptcha');
+      return img && img.complete && img.naturalWidth > 50;
+    }, null, { timeout: 15000 });
+
+    // Descargar la imagen via page.request — reusa las cookies del browser context
+    // (datadome=, JSESSIONID, etc.) y obtiene los bytes reales del JPG, no un screenshot.
+    const kaptchaUrl = await page.evaluate(() => {
+      const img = document.getElementById('Kaptcha');
+      return img ? img.src : null;
+    });
+    if (!kaptchaUrl) {
+      throw new Error('7-Eleven: no se pudo encontrar src del Kaptcha img');
+    }
+    console.log(`[AUTO] 7-Eleven - step 9: descargando Kaptcha desde ${kaptchaUrl}`);
+    const kaptchaResp = await page.request.get(kaptchaUrl);
+    if (kaptchaResp.status() !== 200) {
+      throw new Error(`7-Eleven: Kaptcha image fetch failed status=${kaptchaResp.status()}`);
+    }
+    const captchaBuffer = await kaptchaResp.body();
+    console.log(`[AUTO] 7-Eleven - step 9b: Kaptcha bytes=${captchaBuffer.length}`);
+    if (captchaBuffer.length < 2000) {
+      throw new Error(`7-Eleven: Kaptcha image sospechosamente pequeña (${captchaBuffer.length} bytes), abortando`);
+    }
+    const captchaB64 = captchaBuffer.toString('base64');
 
     let captchaText;
     try {
