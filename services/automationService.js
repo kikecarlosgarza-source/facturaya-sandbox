@@ -9,6 +9,7 @@ const { procesarConAgente } = require('./agentService');
 const alseaHandler = require('./handlers/alseaHandler');
 const hebHandler = require('./handlers/hebHandler');
 const benavidesHandler = require('./handlers/benavidesHandler');
+const costcoHandler = require('./handlers/costcoHandler');
 
 // Directorio para guardar captchas
 const CAPTCHA_DIR = '/data/captchas';
@@ -967,6 +968,12 @@ const PORTALES = {
     httpOnly: true,
     brands: ['benavides'],
     ejecutar: benavidesHandler.ejecutar
+  },
+
+  'costco': {
+    httpOnly: true,
+    brands: ['costco'],
+    ejecutar: costcoHandler.ejecutar
   },
 
   // Fallback: detección heurística + IA para portales sin handler bespoke (lee ticketData.portal_url)
