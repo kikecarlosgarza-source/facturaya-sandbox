@@ -103,6 +103,55 @@ async function resolverKaptchaConCapSolver(captchaB64) {
   throw new Error('CapSolver timeout sin solución');
 }
 
+// Helper: cerrar cualquier md-dialog (Angular Material modal) abierto en el momento.
+// Los modales md-dialog NO los captura page.on('dialog', ...) — ese listener solo
+// intercepta window.alert/confirm/prompt nativos, no los modales del DOM Angular Material.
+// El "Aviso de Privacidad" típico bloquea clicks porque es un overlay con z-index alto.
+async function dismissMdDialogIfPresent(page, contextLabel) {
+  try {
+    const dismissed = await page.evaluate(() => {
+      const dialogs = Array.from(document.querySelectorAll('md-dialog-container, md-dialog'))
+        .filter(d => d.offsetParent);
+
+      if (dialogs.length === 0) return { dismissed: false, count: 0 };
+
+      let closedCount = 0;
+      dialogs.forEach(d => {
+        const buttons = Array.from(d.querySelectorAll('button'));
+        // Priorizar botones de aceptar/ok/continuar/cerrar/sí/no.
+        // Fallback: el último botón (típicamente el primary action).
+        const acceptBtn = buttons.find(b =>
+          /aceptar|ok|continuar|cerrar|confirmar|s[ií]|no/i.test((b.textContent || '').trim())
+        ) || buttons[buttons.length - 1];
+
+        if (acceptBtn) {
+          acceptBtn.click();
+          closedCount++;
+        }
+      });
+
+      return {
+        dismissed: closedCount > 0,
+        count: dialogs.length,
+        closed: closedCount,
+        dialogTexts: dialogs.map(d => (d.textContent || '').trim().substring(0, 100))
+      };
+    });
+
+    if (dismissed.dismissed) {
+      console.log(`[AUTO] 7-Eleven - ${contextLabel}: cerrado md-dialog (${dismissed.closed}/${dismissed.count}) — texts=${JSON.stringify(dismissed.dialogTexts)}`);
+      // Esperar a que el dialog se vaya del DOM (animación de cierre)
+      await page.waitForFunction(() => {
+        return !Array.from(document.querySelectorAll('md-dialog-container, md-dialog'))
+          .some(d => d.offsetParent);
+      }, null, { timeout: 5000 }).catch(() => {});
+      await page.waitForTimeout(500);
+    }
+  } catch (e) {
+    console.log(`[AUTO] 7-Eleven - ${contextLabel}: error en dismissMdDialog: ${e.message}`);
+  }
+}
+
 async function ejecutar(perfil, ticketData, solicitudId) {
   const reportApi = makeReportApi('seveneleven');
 
@@ -198,9 +247,16 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       if (link) link.click();
     });
 
+    // Cerrar Aviso de Privacidad u otro md-dialog que aparezca al entrar al form Express
+    await dismissMdDialogIfPresent(page, 'post-step4');
+
     // Step 5: esperar que aparezca el form de ticket
     console.log('[AUTO] 7-Eleven - step 5: esperando form de ticket');
     await page.waitForSelector(SELECTORS.noTicket, { timeout: 15000 });
+
+    // Segundo intento de cierre de md-dialog — algunos portales muestran el aviso
+    // DESPUÉS de que el form ya está renderizado en el DOM
+    await dismissMdDialogIfPresent(page, 'post-step5');
 
     // Step 6: llenar noTicket y disparar verificaTicketWS2
     console.log(`[AUTO] 7-Eleven - step 6: fill noTicket=${noTicket} y click "Agregar Ticket"`);
@@ -425,6 +481,11 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       if (!facturarBtn) {
         throw new Error('7-Eleven: botón FACTURAR no encontrado');
       }
+
+      // Tercer punto de control: cerrar cualquier md-dialog que pudo haber aparecido
+      // entre el click "Agregar Ticket" y el click FACTURAR (ej. modal de confirmación
+      // del ticket o aviso adicional). El que tapaba el botón en el log anterior.
+      await dismissMdDialogIfPresent(page, `pre-step11-attempt-${attempt}`);
 
       // Scroll defensivo: aunque el viewport sea suficiente, asegurar que el botón
       // esté centrado verticalmente. Importante para formularios con scroll virtual
