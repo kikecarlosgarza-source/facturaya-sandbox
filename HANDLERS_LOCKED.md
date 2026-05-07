@@ -13,7 +13,7 @@ Estos archivos / bloques contienen lógica que ya funciona (o estaba estable) y 
 | Archivo / bloque | Estado | Última referencia conocida |
 |---|---|---|
 | `services/handlers/benavidesHandler.js` | **FUNCIONAL** | commit `b73d92b` o posterior (2026-05-06) |
-| `services/handlers/alseaHandler.js` | **EN MODIFICACIÓN ACTIVA — sesión 2026-05-06.** Pivote de flujo híbrido (WebView paso 2) a 100% backend HTTP. Endpoint nuevo: `ValidaPagina2Facturar`. Aplicado: LOTE-1 (paso 2 directo, sin fallback WebView). | — |
+| `services/handlers/alseaHandler.js` | **🔒 LOCKED — FUNCIONAL al 6/may/2026 — primera factura Starbucks timbrada exitosamente vía paso 2 backend HTTP (commit `7c85cf5`). Endpoint usado: `ValidaPagina2Facturar`. Multi-marca soportada (Starbucks, Vips, Domino's, Burger King, Chili's, P.F. Chang's, Italianni's). Response esperado: `nivel:99` + mensaje HTML. NO TOCAR sin autorización explícita nombrando "alsea" o "alseaHandler.js".** | commit `7c85cf5` |
 | `services/handlers/hebHandler.js` | **PENDIENTE VERIFICAR** — tratar como si funcionara | — |
 | Bloque Home Depot dentro de `services/automationService.js` (`PORTALES['home depot']`, ~línea 61) | **🔒 LOCKED — FUNCIONAL al 6/may/2026** | commit `e73bf8e` |
 | Bloque Petro7 dentro de `services/automationService.js` (`PORTALES['petro']`, ~línea 651) | **FUNCIONAL** | — |
