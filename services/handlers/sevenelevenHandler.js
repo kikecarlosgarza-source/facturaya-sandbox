@@ -487,6 +487,30 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       // del ticket o aviso adicional). El que tapaba el botón en el log anterior.
       await dismissMdDialogIfPresent(page, `pre-step11-attempt-${attempt}`);
 
+      // DEBUG instrumentation: log valores reales del scope de Angular para cada
+      // campo del receptor. Diagnóstico de falso positivo UUID con rfc vacío:
+      // queremos saber si los valores realmente llegan al $modelValue de Angular o
+      // si page.fill solo afectó el DOM sin commitear al model.
+      const formValues = await page.evaluate(() => {
+        const ids = ['rfcCliente', 'razon', 'regimenFiscalReceptor', 'formaPagoAux', 'usoCfdi', 'cp', 'emailInput', 'captcha'];
+        const result = {};
+        ids.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el) { result[id] = '(no exists)'; return; }
+          const ngEl = window.angular?.element(el);
+          const ngScope = ngEl?.scope?.();
+          const ngModelCtrl = ngEl?.controller?.('ngModel');
+          result[id] = {
+            domValue: el.value,
+            ngModelValue: ngModelCtrl?.$modelValue,
+            ngViewValue: ngModelCtrl?.$viewValue,
+            scopeValue: ngScope?.[el.getAttribute('ng-model')?.split('.').pop()]
+          };
+        });
+        return result;
+      });
+      console.log(`[AUTO] 7-Eleven - DEBUG values pre-click: ${JSON.stringify(formValues)}`);
+
       // Scroll defensivo: aunque el viewport sea suficiente, asegurar que el botón
       // esté centrado verticalmente. Importante para formularios con scroll virtual
       // o headers fijos que tapan parte del viewport. behavior:'instant' (no smooth)
