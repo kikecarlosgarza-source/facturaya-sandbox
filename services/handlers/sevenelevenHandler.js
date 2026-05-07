@@ -355,9 +355,49 @@ async function ejecutar(perfil, ticketData, solicitudId) {
         continue;
       }
 
-      // Llenar input captcha (clear primero por si tiene valor previo)
-      await page.fill(SELECTORS.captcha, '');
-      await page.fill(SELECTORS.captcha, captchaText);
+      // Llenar input captcha via evaluate Angular bypass (mismo patrón que formaPagoAux).
+      // page.fill no dispara los $watch de Angular cuando el form está validado
+      // client-side agresivamente — el form queda $invalid y el submit es silencioso
+      // aunque hagamos click realista. Confirmado empíricamente: step 8c logueó
+      // firstInvalid:["captcha"] tras page.fill, lo que bloqueaba el submit.
+      await page.evaluate((value) => {
+        const el = document.getElementById('captcha');
+        if (!el) return;
+        el.value = value;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        try {
+          const ngEl = window.angular?.element(el);
+          if (ngEl) {
+            const ngModelCtrl = ngEl.controller && ngEl.controller('ngModel');
+            if (ngModelCtrl) {
+              ngModelCtrl.$setViewValue(value);
+              ngModelCtrl.$setDirty();
+              ngModelCtrl.$render();
+            }
+            const scope = ngEl.scope && ngEl.scope();
+            if (scope) {
+              scope.captcha = value;
+              if (scope.$apply) scope.$apply();
+            }
+          }
+        } catch (e) {}
+      }, captchaText);
+
+      // Verificar que el form ahora está válido antes del click. Si sigue $invalid,
+      // el submit no se va a disparar y caemos a "timeout sin dialog ni POST".
+      const formValidPreClick = await page.evaluate(() => {
+        const form = document.forms['basicForm'];
+        if (!form) return 'no form';
+        const ngScope = window.angular?.element(form).scope();
+        const ngForm = ngScope?.basicForm;
+        return {
+          angularInvalid: ngForm?.$invalid,
+          angularValid: ngForm?.$valid,
+          firstInvalid: Array.from(form.querySelectorAll('.ng-invalid')).slice(0, 3).map(el => el.id || el.name)
+        };
+      });
+      console.log(`[AUTO] 7-Eleven - step 10b (intento ${attempt}): form state pre-click ${JSON.stringify(formValidPreClick)}`);
 
       // Capturar timestamp del último dialog conocido. El portal NO llama
       // captchaValidator en el flow Express (sólo se invoca si reCAPTCHA v2 está
