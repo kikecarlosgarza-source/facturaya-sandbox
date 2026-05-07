@@ -127,10 +127,19 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     context.setDefaultTimeout(30000);
     context.setDefaultNavigationTimeout(60000);
 
-    // Auto-aceptar window.confirm que dispara el botón "FACTURAR"
-    page.on('dialog', async d => {
+    // Auto-aceptar dialogs nativos (window.confirm del FACTURAR + window.alert del
+    // "Captcha incorrecto"). Guardamos message/type/timestamp en variables del scope
+    // para que el retry loop pueda diferenciar dialogs entre attempts vía timestamp.
+    // Patrón unificado: NO usar page.once para captcha — race condition con este global.
+    let lastDialogMessage = null;
+    let lastDialogType = null;
+    let lastDialogTimestamp = 0;
+    page.on('dialog', d => {
+      lastDialogMessage = d.message();
+      lastDialogType = d.type();
+      lastDialogTimestamp = Date.now();
       console.log(`[AUTO] 7-Eleven - dialog interceptado: type=${d.type()} message="${d.message()}"`);
-      try { await d.accept(); } catch (e) { console.warn('[AUTO] 7-Eleven - dialog.accept() falló:', e.message); }
+      d.accept().catch(() => {}); // catch para evitar throw si ya fue handled
     });
 
     // Interceptor de network — Promises que resuelven cuando los responses esperados llegan
@@ -333,16 +342,6 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       await page.fill(SELECTORS.captcha, '');
       await page.fill(SELECTORS.captcha, captchaText);
 
-      // Setup listener para detectar dialog "Captcha incorrecto"
-      let captchaIncorrect = false;
-      const captchaDialogListener = (dialog) => {
-        if (/captcha\s+incorrecto/i.test(dialog.message())) {
-          captchaIncorrect = true;
-        }
-        dialog.accept();
-      };
-      page.once('dialog', captchaDialogListener);
-
       // Setup waitForResponse específico de este intento (one-shot, no comparte
       // estado con expressP global). Se debe registrar ANTES del click para no
       // perder el response.
@@ -350,6 +349,11 @@ async function ejecutar(perfil, ticketData, solicitudId) {
         resp => resp.request().method() === 'POST' && resp.url().includes('/FacturaExpressService'),
         { timeout: 30000 }
       ).catch(() => null);
+
+      // Capturar timestamp del último dialog conocido. Después del click, si aparece
+      // un dialog NUEVO (timestamp avanzó) con mensaje de captcha incorrecto, retry.
+      // Evita el race condition de tener dos listeners (global + page.once específico).
+      const dialogTimestampBefore = lastDialogTimestamp;
 
       // Click FACTURAR
       console.log(`[AUTO] 7-Eleven - step 11 (intento ${attempt}): click FACTURAR`);
@@ -361,9 +365,12 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       // Esperar 4s — tiempo suficiente para que Angular procese y muestre dialog si falla
       await page.waitForTimeout(4000);
 
-      if (captchaIncorrect) {
-        console.log(`[AUTO] 7-Eleven - intento ${attempt} falló: captcha incorrecto, reintentando`);
-        lastCaptchaError = 'Captcha incorrecto según el portal';
+      const newDialogAppeared = lastDialogTimestamp > dialogTimestampBefore;
+      const isCaptchaIncorrect = newDialogAppeared && lastDialogMessage && /captcha\s+incorrecto/i.test(lastDialogMessage);
+
+      if (isCaptchaIncorrect) {
+        console.log(`[AUTO] 7-Eleven - intento ${attempt} falló: captcha incorrecto ("${lastDialogMessage}"), reintentando`);
+        lastCaptchaError = `Captcha incorrecto: "${lastDialogMessage}"`;
         continue;
       }
 
