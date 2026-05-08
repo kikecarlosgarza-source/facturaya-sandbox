@@ -27,6 +27,10 @@ if (require('fs').existsSync(require('path').join(__dirname, '.sandbox-marker'))
   const testAlertEmailRoute = require('./routes/testAlertEmail');
   app.use('/api', testAlertEmailRoute);
   console.log('[REINO C - SANDBOX] Endpoint /api/test-alert-email registrado');
+
+  const testInterceptorRoute = require('./routes/testInterceptor');
+  app.use('/api', testInterceptorRoute);
+  console.log('[REINO C - SANDBOX] Endpoint /api/test-interceptor registrado');
 }
 
 
