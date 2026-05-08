@@ -155,32 +155,44 @@ async function dismissMdDialogIfPresent(page, contextLabel) {
 async function triggerPostSuccessEffects(page, uuid, perfil) {
   let emailEnviado = false;
   let pdfBase64 = null;
+
   try {
-    const xmlResp = await page.evaluate(async ({ uuid, email }) => {
-      try {
-        const r = await fetch(`/KJServices/webapi/FacturaExpressService/descargaCfdiXml?uuid=${encodeURIComponent(uuid)}&email=${encodeURIComponent(email)}`);
-        return { status: r.status, ok: r.ok };
-      } catch (e) { return { error: e.message }; }
-    }, { uuid, email: perfil.email });
-    console.log(`[AUTO] 7-Eleven - descargaCfdiXml: ${JSON.stringify(xmlResp)}`);
-    emailEnviado = xmlResp.ok === true;
+    const baseUrl = 'https://www.e7-eleven.com.mx';
+    const apiCtx = page.context().request;
 
-    const pdfBytes = await page.evaluate(async ({ uuid, rfc }) => {
-      try {
-        const r = await fetch(`/KJServices/webapi/FacturaExpressService/descargaCfdiPdf?uuid=${encodeURIComponent(uuid)}&rfc=${encodeURIComponent(rfc)}`);
-        if (!r.ok) return null;
-        const ab = await r.arrayBuffer();
-        return Array.from(new Uint8Array(ab));
-      } catch (e) { return null; }
-    }, { uuid, rfc: perfil.rfc });
+    // 1. descargaCfdiXml — comparte cookies de la sesión Playwright
+    try {
+      const xmlUrl = `${baseUrl}/KJServices/webapi/FacturaExpressService/descargaCfdiXml?uuid=${encodeURIComponent(uuid)}&email=${encodeURIComponent(perfil.email)}`;
+      const xmlResp = await apiCtx.get(xmlUrl, { timeout: 15000 });
+      const status = xmlResp.status();
+      console.log(`[AUTO] 7-Eleven - descargaCfdiXml (apiCtx): status=${status}`);
+      emailEnviado = xmlResp.ok();
+    } catch (xmlErr) {
+      console.log(`[AUTO] 7-Eleven - descargaCfdiXml error: ${xmlErr.message}`);
+    }
 
-    if (pdfBytes && pdfBytes.length > 0) {
-      pdfBase64 = Buffer.from(pdfBytes).toString('base64');
-      console.log(`[AUTO] 7-Eleven - descargaCfdiPdf OK: ${pdfBytes.length} bytes`);
+    // 2. descargaCfdiPdf — descarga el binario
+    try {
+      const pdfUrl = `${baseUrl}/KJServices/webapi/FacturaExpressService/descargaCfdiPdf?uuid=${encodeURIComponent(uuid)}&rfc=${encodeURIComponent(perfil.rfc)}`;
+      const pdfResp = await apiCtx.get(pdfUrl, { timeout: 15000 });
+      if (pdfResp.ok()) {
+        const buf = await pdfResp.body();
+        if (buf && buf.length > 0) {
+          pdfBase64 = buf.toString('base64');
+          console.log(`[AUTO] 7-Eleven - descargaCfdiPdf OK: ${buf.length} bytes`);
+        } else {
+          console.log(`[AUTO] 7-Eleven - descargaCfdiPdf vacío`);
+        }
+      } else {
+        console.log(`[AUTO] 7-Eleven - descargaCfdiPdf failed: status=${pdfResp.status()}`);
+      }
+    } catch (pdfErr) {
+      console.log(`[AUTO] 7-Eleven - descargaCfdiPdf error: ${pdfErr.message}`);
     }
   } catch (err) {
     console.log(`[AUTO] 7-Eleven - error post-success (no crítico): ${err.message}`);
   }
+
   return { emailEnviado, pdfBase64 };
 }
 
