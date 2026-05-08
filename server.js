@@ -19,6 +19,12 @@ app.use('/api/scripts',    require('./routes/scripts'));
 app.use('/api/errors',     require('./routes/errors'));
 app.get('/health', (req, res) => res.json({ status: 'ok', version: '1.0.0' }));
 
+if (require('fs').existsSync(require('path').join(__dirname, '.sandbox-marker'))) {
+  const testHandlerRoute = require('./routes/testHandler');
+  app.use('/api', testHandlerRoute);
+  console.log('[REINO C - SANDBOX] Endpoint /api/test-handler registrado');
+}
+
 
 // auto-seed usuario principal
 try {
