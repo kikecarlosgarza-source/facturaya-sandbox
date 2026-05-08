@@ -152,6 +152,38 @@ async function dismissMdDialogIfPresent(page, contextLabel) {
   }
 }
 
+async function triggerPostSuccessEffects(page, uuid, perfil) {
+  let emailEnviado = false;
+  let pdfBase64 = null;
+  try {
+    const xmlResp = await page.evaluate(async ({ uuid, email }) => {
+      try {
+        const r = await fetch(`/KJServices/webapi/FacturaExpressService/descargaCfdiXml?uuid=${encodeURIComponent(uuid)}&email=${encodeURIComponent(email)}`);
+        return { status: r.status, ok: r.ok };
+      } catch (e) { return { error: e.message }; }
+    }, { uuid, email: perfil.email });
+    console.log(`[AUTO] 7-Eleven - descargaCfdiXml: ${JSON.stringify(xmlResp)}`);
+    emailEnviado = xmlResp.ok === true;
+
+    const pdfBytes = await page.evaluate(async ({ uuid, rfc }) => {
+      try {
+        const r = await fetch(`/KJServices/webapi/FacturaExpressService/descargaCfdiPdf?uuid=${encodeURIComponent(uuid)}&rfc=${encodeURIComponent(rfc)}`);
+        if (!r.ok) return null;
+        const ab = await r.arrayBuffer();
+        return Array.from(new Uint8Array(ab));
+      } catch (e) { return null; }
+    }, { uuid, rfc: perfil.rfc });
+
+    if (pdfBytes && pdfBytes.length > 0) {
+      pdfBase64 = Buffer.from(pdfBytes).toString('base64');
+      console.log(`[AUTO] 7-Eleven - descargaCfdiPdf OK: ${pdfBytes.length} bytes`);
+    }
+  } catch (err) {
+    console.log(`[AUTO] 7-Eleven - error post-success (no crítico): ${err.message}`);
+  }
+  return { emailEnviado, pdfBase64 };
+}
+
 async function ejecutar(perfil, ticketData, solicitudId) {
   const reportApi = makeReportApi('seveneleven');
 
@@ -548,8 +580,9 @@ async function ejecutar(perfil, ticketData, solicitudId) {
 
           if (earlyUuid) {
             console.log(`[AUTO] 7-Eleven - SUCCESS uuid=${earlyUuid} (early return tras click error — listener global ya tenía el response)`);
+            const { emailEnviado, pdfBase64 } = await triggerPostSuccessEffects(page, earlyUuid, perfil);
             closeBrowser(browser).catch(() => {});
-            return { success: true, uuid: earlyUuid, mensaje: 'CFDI generado exitosamente' };
+            return { success: true, uuid: earlyUuid, mensaje: 'CFDI generado exitosamente', emailEnviado, pdfBase64 };
           }
         }
 
@@ -577,8 +610,9 @@ async function ejecutar(perfil, ticketData, solicitudId) {
           else if (body?.cfdis?.[0]?.uuid) earlyUuid = body.cfdis[0].uuid;
           if (earlyUuid) {
             console.log(`[AUTO] 7-Eleven - SUCCESS uuid=${earlyUuid} (early return via listener global)`);
+            const { emailEnviado, pdfBase64 } = await triggerPostSuccessEffects(page, earlyUuid, perfil);
             closeBrowser(browser).catch(() => {});
-            return { success: true, uuid: earlyUuid, mensaje: 'CFDI generado exitosamente' };
+            return { success: true, uuid: earlyUuid, mensaje: 'CFDI generado exitosamente', emailEnviado, pdfBase64 };
           }
         }
 
@@ -627,11 +661,14 @@ async function ejecutar(perfil, ticketData, solicitudId) {
 
         if (earlyUuid) {
           console.log(`[AUTO] 7-Eleven - SUCCESS uuid=${earlyUuid} (early return, sin más interacción con DOM)`);
+          const { emailEnviado, pdfBase64 } = await triggerPostSuccessEffects(page, earlyUuid, perfil);
           closeBrowser(browser).catch(() => {});
           return {
             success: true,
             uuid: earlyUuid,
-            mensaje: 'CFDI generado exitosamente'
+            mensaje: 'CFDI generado exitosamente',
+            emailEnviado,
+            pdfBase64
           };
         }
 
