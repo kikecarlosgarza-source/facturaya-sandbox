@@ -1,8 +1,13 @@
 const Database = require('better-sqlite3');
+const fs = require('fs');
 const path = require('path');
 
-// Railway tiene filesystem efímero — usar /tmp o la variable RAILWAY_VOLUME_MOUNT_PATH si existe
-const DB_DIR  = process.env.DB_DIR || '/tmp';
+// REINO C SANDBOX FIX: crear directorio si no existe
+const DB_DIR = process.env.DB_DIR || '/data';
+if (!fs.existsSync(DB_DIR)) {
+  console.log(`[REINO C - DB FIX] Creando directorio ${DB_DIR}`);
+  fs.mkdirSync(DB_DIR, { recursive: true });
+}
 const DB_PATH = path.join(DB_DIR, 'facturasat.db');
 
 console.log(`[DB] Usando base de datos en: ${DB_PATH}`);
