@@ -529,8 +529,33 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       });
       await page.waitForTimeout(300);
 
-      await facturarBtn.click();
-      console.log(`[AUTO] 7-Eleven - step 11 (intento ${attempt}): page.click() del botón FACTURAR ejecutado`);
+      try {
+        await facturarBtn.click();
+        console.log(`[AUTO] 7-Eleven - step 11 (intento ${attempt}): page.click() del botón FACTURAR ejecutado`);
+      } catch (clickErr) {
+        console.log(`[AUTO] 7-Eleven - step 11 (intento ${attempt}): click error: ${clickErr.message}`);
+
+        // Click trono — pero el listener global PUEDE haber capturado el response del POST
+        // antes del throw. Check directo de capturedExpressResponse: si ya tiene UUID,
+        // la factura YA fue timbrada exitosamente y el click timeout es solo un artefacto
+        // (form submitted por dismiss-dialog, button defunct), no una falla real.
+        if (capturedExpressResponse !== null) {
+          const body = capturedExpressResponse.body;
+          let earlyUuid = null;
+          if (Array.isArray(body) && body[0]?.uuid) earlyUuid = body[0].uuid;
+          else if (body?.uuid) earlyUuid = body.uuid;
+          else if (body?.cfdis?.[0]?.uuid) earlyUuid = body.cfdis[0].uuid;
+
+          if (earlyUuid) {
+            console.log(`[AUTO] 7-Eleven - SUCCESS uuid=${earlyUuid} (early return tras click error — listener global ya tenía el response)`);
+            closeBrowser(browser).catch(() => {});
+            return { success: true, uuid: earlyUuid, mensaje: 'CFDI generado exitosamente' };
+          }
+        }
+
+        // Si no había response previo, propagar el error como antes
+        throw clickErr;
+      }
 
       // Polling: cada 200ms verificar (a) dialog nuevo, (b) si respPromise resolvió
       let postResp = null;
