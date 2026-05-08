@@ -75,14 +75,11 @@ async function ejecutar(perfil, ticketData, solicitudId) {
 
   let browser;
   try {
-    browser = await launchStealthBrowser();
-    const context = await browser.newContext({
-      viewport: { width: 1280, height: 800 },
-      locale: 'es-MX'
-    });
-    const page = await context.newPage();
-    page.setDefaultTimeout(TIMEOUT_EL);
-    page.setDefaultNavigationTimeout(TIMEOUT_NAV);
+    const launched = await launchStealthBrowser({ viewport: { width: 1280, height: 800 } });
+    browser = launched.browser;
+    const { context, page } = launched;
+    context.setDefaultTimeout(TIMEOUT_EL);
+    context.setDefaultNavigationTimeout(TIMEOUT_NAV);
 
     // ─────────────────────────────────────────────────────────
     // PASO 1 — Default.aspx: aceptar disclaimer + click "Obtener factura"
