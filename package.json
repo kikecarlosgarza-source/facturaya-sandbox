@@ -1,5 +1,5 @@
 {
-  "name": "facturasat-backend",
+  "name": "facturaya-sandbox",
   "version": "1.0.0",
   "description": "FacturaSAT backend - Motor de automatización de portales de facturación",
   "main": "server.js",

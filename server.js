@@ -1,3 +1,4 @@
+console.log('[REINO C - SANDBOX] Iniciando réplica de Reino A para validación');
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
