@@ -11,6 +11,7 @@ const hebHandler = require('./handlers/hebHandler');
 const benavidesHandler = require('./handlers/benavidesHandler');
 const costcoHandler = require('./handlers/costcoHandler');
 const sevenelevenHandler = require('./handlers/sevenelevenHandler');
+const walmartHandler = require('./handlers/walmartHandler');
 
 // Directorio para guardar captchas
 const CAPTCHA_DIR = '/data/captchas';
@@ -975,6 +976,12 @@ const PORTALES = {
     httpOnly: true,
     brands: ['costco'],
     ejecutar: costcoHandler.ejecutar
+  },
+
+  'walmart': {
+    httpOnly: true,
+    brands: ['walmart', 'wal-mart', 'wal mart', 'bodega aurrera', 'bodega aurrerá', 'sams club', "sam's club", 'superama'],
+    ejecutar: walmartHandler.ejecutar
   },
 
   '7-eleven': {
