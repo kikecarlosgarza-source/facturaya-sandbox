@@ -12,6 +12,12 @@ const benavidesHandler = require('./handlers/benavidesHandler');
 const costcoHandler = require('./handlers/costcoHandler');
 const sevenelevenHandler = require('./handlers/sevenelevenHandler');
 const walmartHandler = require('./handlers/walmartHandler');
+const { enviarAlertaPortalEnPreparacion, enviarAlerta } = require('./emailServiceAlert');
+
+// ─── Contadores de validación N=3 (en memoria, se reinician con deploy) ──────
+// Mapa portalKey -> { n: number, alertadoListoPromover: boolean }
+// Solo aplica a portales con estado: 'EN_VALIDACION'.
+const validationCounters = new Map();
 
 // Directorio para guardar captchas
 const CAPTCHA_DIR = '/data/captchas';
@@ -979,9 +985,45 @@ const PORTALES = {
   },
 
   'walmart': {
+    estado: 'EN_VALIDACION',
+    validacionN: 1,
     httpOnly: true,
     brands: ['walmart', 'wal-mart', 'wal mart', 'bodega aurrera', 'bodega aurrerá', 'sams club', "sam's club", 'superama'],
     ejecutar: walmartHandler.ejecutar
+  },
+
+  // ─── Portales EN_DESARROLLO — sin handler todavía ──────────────────
+  // Si llega un ticket de cualquiera de estos, procesarFactura intercepta
+  // antes de intentar timbrar, marca status='fallida_temporal' y dispara
+  // alerta a Enrique. El cliente recibe mensaje "Nuestra AI está trabajando..."
+  'soriana': {
+    estado: 'EN_DESARROLLO',
+    brands: ['soriana', 'tiendas soriana']
+  },
+
+  'chedraui': {
+    estado: 'EN_DESARROLLO',
+    brands: ['chedraui', 'super chedraui', 'selecto chedraui']
+  },
+
+  'sanborns': {
+    estado: 'EN_DESARROLLO',
+    brands: ['sanborns']
+  },
+
+  'oxxo': {
+    estado: 'EN_DESARROLLO',
+    brands: ['oxxo', 'cadena comercial oxxo']
+  },
+
+  'office depot': {
+    estado: 'EN_DESARROLLO',
+    brands: ['office depot', 'officedepot']
+  },
+
+  'liverpool': {
+    estado: 'EN_DESARROLLO',
+    brands: ['liverpool', 'el puerto de liverpool']
   },
 
   '7-eleven': {
@@ -1158,6 +1200,52 @@ async function invocarAgenteVisual(solicitudId, motivo) {
   }
 }
 
+function marcarCompletadoYActualizarValidacion(portal, solicitudId, mensaje) {
+  db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
+    .run('completado', mensaje, solicitudId);
+
+  if (portal.estado !== 'EN_VALIDACION') return;
+
+  const key = portal.key;
+  const counter = validationCounters.get(key) || { n: portal.validacionN || 0, alertadoListoPromover: false };
+  counter.n += 1;
+  validationCounters.set(key, counter);
+
+  console.log(`[VALIDACION] ${key}: timbrado exitoso N=${counter.n}/3`);
+
+  enviarAlerta({
+    subject: `✅ ${key.charAt(0).toUpperCase() + key.slice(1)}: timbrado exitoso N=${counter.n}/3`,
+    body: [
+      `Reino C timbró exitosamente un ticket de ${key}.`,
+      ``,
+      `Solicitud ID: ${solicitudId}`,
+      `Mensaje: ${mensaje}`,
+      `Contador validación: ${counter.n}/3`,
+      ``,
+      counter.n >= 3 ? `🚀 LISTO PARA PROMOVER A REINO A.` : `Faltan ${3 - counter.n} timbrados con tickets diferentes.`
+    ].join('\n')
+  }).catch(err => console.warn(`[ALERT] fallo alerta validación: ${err.message}`));
+
+  if (counter.n >= 3 && !counter.alertadoListoPromover) {
+    counter.alertadoListoPromover = true;
+    validationCounters.set(key, counter);
+    enviarAlerta({
+      subject: `🚀 ${key}: LISTO PARA PROMOVER A REINO A (N=3)`,
+      body: [
+        `El handler de ${key} cumplió los 3 timbrados de validación en Reino C.`,
+        ``,
+        `Acción requerida: promover el handler ${key}Handler.js + entrada PORTALES['${key}'] a Reino A (facturasat-backend).`,
+        ``,
+        `Pasos sugeridos:`,
+        `  1. Copiar services/handlers/${key}Handler.js de Reino C a Reino A.`,
+        `  2. Copiar entrada PORTALES['${key}'] (sin estado/validacionN) a Reino A.`,
+        `  3. Cambiar estado en Reino C a 'PROMOVIDO'.`,
+        `  4. Commit + push en ambos repos.`
+      ].join('\n')
+    }).catch(err => console.warn(`[ALERT] fallo alerta promover: ${err.message}`));
+  }
+}
+
 async function procesarFactura(solicitudId) {
   const solicitud = db.prepare('SELECT * FROM solicitudes WHERE id = ?').get(solicitudId);
   if (!solicitud) throw new Error('Solicitud no encontrada');
@@ -1194,6 +1282,54 @@ async function procesarFactura(solicitudId) {
   }
   console.log(`[AUTO] Portal seleccionado: ${portal.key} (sistema=${solicitud.sistema_facturacion || 'N/A'} shop=${solicitud.shop_name || 'N/A'})`);
 
+  // ─── Interceptor: portal en preparación (sin handler todavía) ──────────────
+  if (portal.estado === 'EN_DESARROLLO') {
+    console.log(`[AUTO] Portal ${portal.key} está EN_DESARROLLO — abortando timbrado, marcando fallida_temporal`);
+    db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
+      .run('fallida_temporal', `Portal en preparación — se procesará en 12-24h`, solicitudId);
+
+    // Fire-and-forget: no bloqueamos el return por el SMTP
+    enviarAlertaPortalEnPreparacion({
+      portal: portal.key,
+      solicitud,
+      contadorPendientes: 1,
+      validacionN: 0
+    }).catch(err => console.warn(`[ALERT] fallo al disparar alerta EN_DESARROLLO: ${err.message}`));
+
+    return {
+      success: false,
+      fallidaTemporal: true,
+      mensaje: `Nuestra AI está trabajando en el portal de ${portal.key}, no te preocupes tu factura está siendo procesada, solo que nos tomará un poco de tiempo más. En las próximas 12-24 hrs la recibirás.`
+    };
+  }
+
+  // ─── Interceptor: portal ya promovido a Reino A (no debería llegar a Reino C) ──
+  if (portal.estado === 'PROMOVIDO') {
+    console.log(`[AUTO] Portal ${portal.key} está PROMOVIDO — Reino C no debería recibirlo`);
+    db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
+      .run('manual', `Portal ya promovido a Reino A. Reintentá desde la app.`, solicitudId);
+
+    enviarAlerta({
+      subject: `⚠ Reino C recibió ticket de portal PROMOVIDO: ${portal.key}`,
+      body: [
+        `Un ticket de ${portal.key} llegó a Reino C aunque el portal ya está PROMOVIDO a Reino A.`,
+        `Esto sugiere un routing inconsistente del frontend.`,
+        ``,
+        `Solicitud ID: ${solicitud.id || '(sin id)'}`,
+        `Usuario ID: ${solicitud.usuario_id || '(sin usuario)'}`,
+        `Establecimiento: ${solicitud.establecimiento || '(no detectado)'}`,
+        `Total: ${solicitud.total != null ? `$${solicitud.total}` : '(sin total)'}`,
+        ``,
+        `Acción: revisar por qué la app envió este ticket a Reino C en lugar de Reino A.`
+      ].join('\n')
+    }).catch(err => console.warn(`[ALERT] fallo al disparar alerta PROMOVIDO: ${err.message}`));
+
+    return {
+      success: false,
+      mensaje: `El portal ${portal.key} ya fue promovido a producción. Reintentá desde la app.`
+    };
+  }
+
   db.prepare('UPDATE solicitudes SET status=? WHERE id=?').run('procesando', solicitudId);
 
   const ticketData = {
@@ -1218,8 +1354,7 @@ async function procesarFactura(solicitudId) {
     try {
       const resultado = await portal.ejecutar(perfil, ticketData, solicitudId);
       if (resultado.success) {
-        db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
-          .run('completado', resultado.mensaje, solicitudId);
+        marcarCompletadoYActualizarValidacion(portal, solicitudId, resultado.mensaje);
         return resultado;
       }
       // Si el handler dice "abre WebView" (paso 1 OK, paso 2 lo completa el
@@ -1271,8 +1406,7 @@ async function procesarFactura(solicitudId) {
     const resultado = await portal.ejecutar(page, perfil, ticketData, solicitudId);
 
     if (resultado.success) {
-      db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
-        .run('completado', resultado.mensaje, solicitudId);
+      marcarCompletadoYActualizarValidacion(portal, solicitudId, resultado.mensaje);
     } else if (!resultado.captcha_required) {
       db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
         .run('manual', resultado.mensaje || 'Proceso parcial', solicitudId);
