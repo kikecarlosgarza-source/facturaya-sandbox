@@ -88,8 +88,6 @@ try { db.exec('ALTER TABLE perfiles_fiscales ADD COLUMN nombre_sat TEXT'); } cat
 try { db.exec('ALTER TABLE solicitudes ADD COLUMN sistema_facturacion TEXT'); } catch(e) {}
 // shop_name: handle de Shopify para Facturama-Shopify (ej: "bandeja-mx", "moft")
 try { db.exec('ALTER TABLE solicitudes ADD COLUMN shop_name TEXT'); } catch(e) {}
-// validation_error: testRunner guarda aquí el error del smoke test si falló
-try { db.exec('ALTER TABLE portal_scripts ADD COLUMN validation_error TEXT'); } catch(e) {}
 
 // Scout: cache de URLs descubiertas vía web search, cacheado por RFC o establecimiento
 try { db.exec(`
@@ -118,6 +116,10 @@ db.exec(`
     active      INTEGER DEFAULT 1
   );
 `);
+
+// validation_error: testRunner guarda aquí el error del smoke test si falló
+// (ALTER después del CREATE — antes estaba antes y crasheaba en DB fresca)
+try { db.exec('ALTER TABLE portal_scripts ADD COLUMN validation_error TEXT'); } catch(e) {}
 
 // Cuando la automatización falla, el usuario elige cómo facturar (whatsapp,
 // email, portal web, no_se). Cacheamos por rfc_emisor para que la próxima vez
