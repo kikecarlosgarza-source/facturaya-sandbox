@@ -13,11 +13,7 @@ const costcoHandler = require('./handlers/costcoHandler');
 const sevenelevenHandler = require('./handlers/sevenelevenHandler');
 const walmartHandler = require('./handlers/walmartHandler');
 const { enviarAlertaPortalEnPreparacion, enviarAlerta } = require('./emailServiceAlert');
-
-// ─── Contadores de validación N=3 (en memoria, se reinician con deploy) ──────
-// Mapa portalKey -> { n: number, alertadoListoPromover: boolean }
-// Solo aplica a portales con estado: 'EN_VALIDACION'.
-const validationCounters = new Map();
+const validationStateService = require('./validationStateService');
 
 // Directorio para guardar captchas
 const CAPTCHA_DIR = '/data/captchas';
@@ -1200,35 +1196,38 @@ async function invocarAgenteVisual(solicitudId, motivo) {
   }
 }
 
-function marcarCompletadoYActualizarValidacion(portal, solicitudId, mensaje) {
+function marcarCompletadoYActualizarValidacion(portal, solicitudId, mensaje, numeroTicket) {
   db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
     .run('completado', mensaje, solicitudId);
 
   if (portal.estado !== 'EN_VALIDACION') return;
 
   const key = portal.key;
-  const counter = validationCounters.get(key) || { n: portal.validacionN || 0, alertadoListoPromover: false };
-  counter.n += 1;
-  validationCounters.set(key, counter);
+  const resultado = validationStateService.registrarTimbradoExitoso(key, numeroTicket, solicitudId);
 
-  console.log(`[VALIDACION] ${key}: timbrado exitoso N=${counter.n}/3`);
+  if (resultado.esDuplicado) {
+    console.log(`[VALIDACION] ${key}: ticket duplicado (numero_ticket=${numeroTicket}) — N se mantiene en ${resultado.n}/3`);
+    return;
+  }
+
+  console.log(`[VALIDACION] ${key}: timbrado exitoso N=${resultado.n}/3 (ticket=${numeroTicket || solicitudId})`);
 
   enviarAlerta({
-    subject: `✅ ${key.charAt(0).toUpperCase() + key.slice(1)}: timbrado exitoso N=${counter.n}/3`,
+    subject: `✅ ${key.charAt(0).toUpperCase() + key.slice(1)}: timbrado exitoso N=${resultado.n}/3`,
     body: [
       `Reino C timbró exitosamente un ticket de ${key}.`,
       ``,
       `Solicitud ID: ${solicitudId}`,
+      `Numero ticket: ${numeroTicket || '(sin numero_ticket)'}`,
       `Mensaje: ${mensaje}`,
-      `Contador validación: ${counter.n}/3`,
+      `Contador validación: ${resultado.n}/3`,
+      `Tickets vistos: ${resultado.ticketsVistos.join(', ') || '(ninguno)'}`,
       ``,
-      counter.n >= 3 ? `🚀 LISTO PARA PROMOVER A REINO A.` : `Faltan ${3 - counter.n} timbrados con tickets diferentes.`
+      resultado.n >= 3 ? `🚀 LISTO PARA PROMOVER A REINO A.` : `Faltan ${3 - resultado.n} timbrados con tickets diferentes.`
     ].join('\n')
   }).catch(err => console.warn(`[ALERT] fallo alerta validación: ${err.message}`));
 
-  if (counter.n >= 3 && !counter.alertadoListoPromover) {
-    counter.alertadoListoPromover = true;
-    validationCounters.set(key, counter);
+  if (resultado.llegoA3PorPrimeraVez) {
     enviarAlerta({
       subject: `🚀 ${key}: LISTO PARA PROMOVER A REINO A (N=3)`,
       body: [
@@ -1354,7 +1353,7 @@ async function procesarFactura(solicitudId) {
     try {
       const resultado = await portal.ejecutar(perfil, ticketData, solicitudId);
       if (resultado.success) {
-        marcarCompletadoYActualizarValidacion(portal, solicitudId, resultado.mensaje);
+        marcarCompletadoYActualizarValidacion(portal, solicitudId, resultado.mensaje, ticketData?.numero_ticket);
         return resultado;
       }
       // Si el handler dice "abre WebView" (paso 1 OK, paso 2 lo completa el
@@ -1406,7 +1405,7 @@ async function procesarFactura(solicitudId) {
     const resultado = await portal.ejecutar(page, perfil, ticketData, solicitudId);
 
     if (resultado.success) {
-      marcarCompletadoYActualizarValidacion(portal, solicitudId, resultado.mensaje);
+      marcarCompletadoYActualizarValidacion(portal, solicitudId, resultado.mensaje, ticketData?.numero_ticket);
     } else if (!resultado.captcha_required) {
       db.prepare('UPDATE solicitudes SET status=?, status_detalle=? WHERE id=?')
         .run('manual', resultado.mensaje || 'Proceso parcial', solicitudId);

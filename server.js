@@ -31,6 +31,10 @@ if (require('fs').existsSync(require('path').join(__dirname, '.sandbox-marker'))
   const testInterceptorRoute = require('./routes/testInterceptor');
   app.use('/api', testInterceptorRoute);
   console.log('[REINO C - SANDBOX] Endpoint /api/test-interceptor registrado');
+
+  const adminValidationRoute = require('./routes/adminValidation');
+  app.use('/api', adminValidationRoute);
+  console.log('[REINO C - SANDBOX] Endpoints /api/admin/* registrados');
 }
 
 

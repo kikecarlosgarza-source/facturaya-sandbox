@@ -145,6 +145,17 @@ db.exec(`
   );
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS portal_validation_state (
+    portal_key TEXT PRIMARY KEY,
+    n INTEGER DEFAULT 0,
+    tickets_vistos TEXT DEFAULT '[]',
+    alertado_listo_promover INTEGER DEFAULT 0,
+    ultimo_ticket_id TEXT,
+    ultimo_timbrado_en TEXT
+  );
+`);
+
 // constancia_path: ruta absoluta al PDF/imagen de la Constancia de Situación
 // Fiscal subida por el usuario. Se usa como adjunto al mandar email al negocio
 // y para compartir vía WhatsApp (expo-sharing).
