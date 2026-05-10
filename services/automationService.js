@@ -15,6 +15,8 @@ const walmartHandler = require('./handlers/walmartHandler');
 const { enviarAlertaPortalEnPreparacion, enviarAlerta } = require('./emailServiceAlert');
 const validationStateService = require('./validationStateService');
 
+const ES_REINO_C = fs.existsSync(path.join(__dirname, '..', '.sandbox-marker'));
+
 // Directorio para guardar captchas
 const CAPTCHA_DIR = '/data/captchas';
 try { fs.mkdirSync(CAPTCHA_DIR, { recursive: true }); } catch(e) {}
@@ -988,40 +990,6 @@ const PORTALES = {
     ejecutar: walmartHandler.ejecutar
   },
 
-  // ─── Portales EN_DESARROLLO — sin handler todavía ──────────────────
-  // Si llega un ticket de cualquiera de estos, procesarFactura intercepta
-  // antes de intentar timbrar, marca status='fallida_temporal' y dispara
-  // alerta a Enrique. El cliente recibe mensaje "Nuestra AI está trabajando..."
-  'soriana': {
-    estado: 'EN_DESARROLLO',
-    brands: ['soriana', 'tiendas soriana']
-  },
-
-  'chedraui': {
-    estado: 'EN_DESARROLLO',
-    brands: ['chedraui', 'super chedraui', 'selecto chedraui']
-  },
-
-  'sanborns': {
-    estado: 'EN_DESARROLLO',
-    brands: ['sanborns']
-  },
-
-  'oxxo': {
-    estado: 'EN_DESARROLLO',
-    brands: ['oxxo', 'cadena comercial oxxo']
-  },
-
-  'office depot': {
-    estado: 'EN_DESARROLLO',
-    brands: ['office depot', 'officedepot']
-  },
-
-  'liverpool': {
-    estado: 'EN_DESARROLLO',
-    brands: ['liverpool', 'el puerto de liverpool']
-  },
-
   '7-eleven': {
     httpOnly: true,
     brands: ['7-eleven', '7 eleven', '7eleven', 'seven eleven'],
@@ -1271,7 +1239,15 @@ async function procesarFactura(solicitudId) {
         }
       }
     }
-    if (url && /^https?:\/\//.test(url)) {
+    if (ES_REINO_C) {
+      console.log(`[AUTO] Reino C — portal "${solicitud.establecimiento}" sin handler → EN_DESARROLLO automático`);
+      portal = {
+        key: 'portal-nuevo',
+        estado: 'EN_DESARROLLO',
+        brands: [solicitud.establecimiento.toLowerCase()],
+        establecimientoOriginal: solicitud.establecimiento
+      };
+    } else if (url && /^https?:\/\//.test(url)) {
       console.log(`[AUTO] Sin handler bespoke (establecimiento="${solicitud.establecimiento}") — usando handlerUniversal con ${url}`);
       portal = { key: 'universal', ...PORTALES['universal'] };
     } else {
@@ -1298,7 +1274,7 @@ async function procesarFactura(solicitudId) {
     return {
       success: false,
       fallidaTemporal: true,
-      mensaje: `Nuestra AI está trabajando en el portal de ${portal.key}, no te preocupes tu factura está siendo procesada, solo que nos tomará un poco de tiempo más. En las próximas 12-24 hrs la recibirás.`
+      mensaje: `Nuestra AI está trabajando en el portal de ${portal.establecimientoOriginal || portal.key}, no te preocupes tu factura está siendo procesada, solo que nos tomará un poco de tiempo más. En las próximas 12-24 hrs la recibirás.`
     };
   }
 
