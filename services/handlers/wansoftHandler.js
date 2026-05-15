@@ -38,6 +38,7 @@
 
 const axios = require('axios');
 const claudeAgent = require('../claudeAgent');
+const db = require('../../db/database');
 
 const ORIGIN = 'https://www.wansoft.net';
 const PUB = ORIGIN + '/Wansoft.Web/Public';
@@ -54,19 +55,134 @@ const UUID_ZERO = '00000000-0000-0000-0000-000000000000';
 // https://www.wansoft.net/fact.html para descubrir las ~1000 marcas y sids.
 // El primer patrón que matchee gana; ordenar de más específico a más genérico.
 const SID_CATALOG = [
-  { sid: 5676,  rfcEmisor: 'ADC2401403S2', re: /do[ñn]a\s*concha.*(monarka|calzada\s*del\s*valle|san\s*pedro)/i },
-  { sid: 10900, rfcEmisor: 'ADC2401403S2', re: /do[ñn]a\s*concha.*(cedis|plutarco)/i },
+  { sid: 5676,  rfcEmisor: 'ADC2404103S2', re: /do[ñn]a\s*concha.*(monarka|calzada\s*del\s*valle|san\s*pedro)/i },
+  { sid: 10900, rfcEmisor: 'ADC2404103S2', re: /do[ñn]a\s*concha.*(cedis|plutarco)/i },
   // Fallback genérico Doña Concha → sucursal principal (Plaza Monarka).
-  { sid: 5676,  rfcEmisor: 'ADC2401403S2', re: /do[ñn]a\s*concha/i }
+  { sid: 5676,  rfcEmisor: 'ADC2404103S2', re: /do[ñn]a\s*concha/i },
+
+  // TODO EMPANADAS — 33 sucursales bajo el MISMO RFC TIE2204058E0. Primera
+  // prueba real de desambiguación por dirección (regex específico ANTES del
+  // fallback). Por ahora solo SAN AGUSTÍN (sid 9912) capturada en vivo;
+  // el resto cae al fallback → 9912 (potencial mismatch, ver pendiente E).
+  { sid: 9912,  rfcEmisor: 'TIE2204058E0', re: /todo\s*empanadas.*san\s*agust[íi]n/i },
+  { sid: 9912,  rfcEmisor: 'TIE2204058E0', re: /todo\s*empanadas/i }
 ];
 
-function resolveSid(establecimiento) {
+// ── Utils de matching (inline, sin deps nuevos) ───────────────────────────
+function normalizeText(s) {
+  return String(s || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '') // sin acentos
+    .replace(/[^a-z0-9\s]/g, ' ')                      // sin puntuación
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Jaccard simple sobre tokens (palabras): |A∩B| / |A∪B|.
+function jaccardScore(a, b) {
+  const ta = new Set(normalizeText(a).split(' ').filter(Boolean));
+  const tb = new Set(normalizeText(b).split(' ').filter(Boolean));
+  if (!ta.size || !tb.size) return 0;
+  let inter = 0;
+  for (const t of ta) if (tb.has(t)) inter++;
+  const union = ta.size + tb.size - inter;
+  return union ? inter / union : 0;
+}
+
+// Fallback regex hardcoded (CI/test, o Reino A sin crawl). Devuelve el
+// mismo shape { sid, rfcEmisor }.
+function resolveSidLegacy(establecimiento) {
   const n = (establecimiento || '').trim();
   if (!n) return null;
   for (const entry of SID_CATALOG) {
     if (entry.re.test(n)) return entry;
   }
   return null;
+}
+
+// Cuántas filas activas hay en wansoft_sid_map. Si la tabla no existe
+// (p.ej. Reino A todavía sin crawl) → 0, y se cae al legacy.
+function sidMapActiveCount() {
+  try {
+    return db.prepare('SELECT COUNT(*) c FROM wansoft_sid_map WHERE activo=1').get().c || 0;
+  } catch {
+    return 0;
+  }
+}
+
+// Cobertura: fracción de tokens del establecimiento presentes en el texto
+// del candidato. DESVIACIÓN JUSTIFICADA de la spec (que pedía jaccard) SOLO
+// para desambiguar candidatos del mismo RFC: al concatenar
+// sucursal+direccion+marca el denominador de Jaccard se infla con tokens de
+// la dirección y nunca supera 0.4 aunque el match sea perfecto (causa raíz
+// de las 2 fallas previas del E2E). Cobertura mide "¿están los tokens del
+// ticket en el candidato?", que es justo lo que se quiere acá.
+function coverageScore(text, target) {
+  const tt = new Set(normalizeText(target).split(' ').filter(Boolean));
+  const ct = new Set(normalizeText(text).split(' ').filter(Boolean));
+  if (!tt.size || !ct.size) return 0;
+  let inter = 0;
+  for (const t of tt) if (ct.has(t)) inter++;
+  return inter / tt.size;
+}
+
+// Fuzzy general por marca_nombre / razon_social (Jaccard + gap, tal cual spec).
+function fuzzyByName(all, target) {
+  const scored = all.map(c => ({
+    c,
+    score: Math.max(
+      jaccardScore(c.marca_nombre, target),
+      jaccardScore(c.razon_social || '', target)
+    )
+  })).filter(x => x.score > 0.4);
+  scored.sort((a, b) => b.score - a.score);
+  if (scored.length === 1) return scored[0].c;
+  if (scored.length > 1 && scored[0].score > scored[1].score * 1.3) return scored[0].c;
+  return null;
+}
+
+// resolveSid HÍBRIDO v2 (opción B). Consulta wansoft_sid_map:
+//  1) match por RFC del emisor; si >1 candidato, scorea contra
+//     sucursal_nombre + direccion + marca_nombre COMBINADOS (cobertura).
+//     - max > 0.4 y sin empate → ese.
+//     - empate o todos <= 0.4 → cae al fuzzy general.
+//  2) fuzzy general por marca_nombre / razon_social.
+//  3) todo falla → null (+ alert_reino_b lo pone el handler).
+//  4) tabla vacía/inexistente → SID_CATALOG hardcoded.
+// Síncrono: better-sqlite3 es síncrono.
+function resolveSid(establecimiento, rfcEmisor) {
+  if (sidMapActiveCount() === 0) {
+    return resolveSidLegacy(establecimiento);
+  }
+  const target = normalizeText(establecimiento);
+
+  let all = [];
+  try {
+    all = db.prepare('SELECT * FROM wansoft_sid_map WHERE activo = 1').all();
+  } catch { all = []; }
+
+  // 1. Match por RFC del emisor (lo más confiable).
+  if (rfcEmisor) {
+    const candidatos = all.filter(c => c.rfc_emisor === rfcEmisor);
+    if (candidatos.length === 1) return candidatos[0];
+    if (candidatos.length > 1) {
+      const scored = candidatos.map(c => ({
+        c,
+        score: coverageScore(
+          `${c.sucursal_nombre || ''} ${c.direccion || ''} ${c.marca_nombre || ''}`,
+          target
+        )
+      }));
+      scored.sort((a, b) => b.score - a.score);
+      const top = scored[0];
+      const tie = scored.length > 1 && scored[1].score === top.score;
+      if (top.score > 0.4 && !tie) return top.c;
+      // empate o todos <= 0.4 → cae al fuzzy general
+    }
+  }
+
+  // 2. Fallback fuzzy general por marca_nombre / razon_social.
+  return fuzzyByName(all, target);
 }
 
 function makeReportApi(portal) {
@@ -114,7 +230,22 @@ async function ejecutar(perfil, ticketData, solicitudId) {
   const code = String(ticketData.numero_ticket || ticketData.folio || '').trim();
   if (!code) return { success: false, mensaje: 'Error Wansoft: código de facturación requerido' };
 
-  const sucursal = resolveSid(ticketData.establecimiento);
+  // FIX 2 — validación client-side de plazo (Wansoft no discrimina en su
+  // respuesta). Threshold conservador de 60 días; corta antes de cualquier
+  // request si el ticket es viejo.
+  if (ticketData.fecha) {
+    const ticketDate = new Date(ticketData.fecha);
+    const now = new Date();
+    const diasTranscurridos = (now - ticketDate) / (1000 * 60 * 60 * 24);
+    if (diasTranscurridos > 60) {
+      return { success: false, mensaje: 'Ticket con más de 60 días — probablemente fuera de plazo' };
+    }
+  }
+
+  const sucursal = resolveSid(
+    ticketData.establecimiento,
+    ticketData.rfc_emisor || ticketData.rfcEmisor || null
+  );
   if (!sucursal) {
     // alert_reino_b: el dispatcher solo lee success/mensaje, pero el flag
     // queda para que Reino B sepa que falta mapear esta sucursal al catálogo.
@@ -163,6 +294,11 @@ async function ejecutar(perfil, ticketData, solicitudId) {
         continue;
       }
       if (r.status >= 400) {
+        // FIX 1 — 404 con status real (vs. el 404 servido como 200 que
+        // captura el check referer.includes('/404') más abajo).
+        if (r.status === 404) {
+          return { success: false, mensaje: 'Marca Wansoft no disponible (HTTP 404)', alert_reino_b: true };
+        }
         return { success: false, mensaje: `Error Wansoft: PASO1 HTTP ${r.status}` };
       }
       html = typeof r.data === 'string' ? r.data : '';
@@ -170,12 +306,19 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       break;
     }
     if (!referer) {
-      return { success: false, mensaje: 'Error Wansoft: PASO1 sin página de facturación (demasiados redirects)' };
+      return { success: false, mensaje: 'Error Wansoft: PASO1 sin página de facturación' };
+    }
+    // FIX 1 — detectar sid roto: 200 OK pero sin formulario válido.
+    if (referer.includes('/404')) {
+      return { success: false, mensaje: 'Marca Wansoft no disponible (404)', alert_reino_b: true };
+    }
+    if (!referer.includes('autoInvoicing')) {
+      return { success: false, mensaje: 'Sucursal Wansoft deshabilitada (sid roto)', alert_reino_b: true };
     }
     token = extractToken(html);
     console.log(`[Wansoft] PASO1 referer=${referer} cookies=[${Object.keys(jar).join(',')}] token=${token ? token.length + ' chars' : 'NO ENCONTRADO'}`);
     if (!token) {
-      return { success: false, mensaje: 'Error Wansoft: __RequestVerificationToken no encontrado en el formulario' };
+      return { success: false, mensaje: 'Sucursal Wansoft devolvió formulario inválido', alert_reino_b: true };
     }
   } catch (e) {
     reportApi(`${PUB}/ElectronicInvoice?sid=${sid}`, null, e);
@@ -222,8 +365,12 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       if (/no\s+est[áa]\s+disponible|no\s+existe/i.test(msg)) {
         return { success: false, mensaje: 'Código de facturación inválido o ticket no disponible' };
       }
-      if (/plazo|venc|fecha\s*l[íi]mite|d[íi]as/i.test(msg)) {
-        return { success: false, mensaje: 'Fuera del plazo de facturación' };
+      // FIX 2 — regex de "plazo vencido" eliminada: capturado en vivo que
+      // Wansoft NUNCA devuelve ese mensaje. La detección de plazo es
+      // client-side al inicio de ejecutar() (threshold 60 días).
+      // FIX 3 — código con formato inválido (Wansoft sí devuelve este texto).
+      if (/c[óo]digo\s+de\s+factura\s+es\s+invalido/i.test(msg)) {
+        return { success: false, mensaje: 'Código de facturación con formato inválido (debe ser de 18 dígitos numéricos)' };
       }
       return { success: false, mensaje: `Error Wansoft: ${msg || 'respuesta sin datos del ticket'}` };
     }
@@ -264,6 +411,12 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     console.log(`[Wansoft] PASO3 GetBillingInformationWithTotalAndTip status=${r.status} body=${bodyStr.substring(0, 300)}`);
     if (r.status >= 400) {
       return { success: false, mensaje: `Error Wansoft: PASO3 HTTP ${r.status}` };
+    }
+    // FIX 4 — Wansoft también valida en PASO 3: si no devuelve
+    // billingCodeInfo pero sí un Message, es un rechazo, no avanzar a PASO 4.
+    const data3 = r.data || {};
+    if (!data3.billingCodeInfo && data3.Message) {
+      return { success: false, mensaje: `Error Wansoft PASO 3: ${data3.Message}` };
     }
   } catch (e) {
     reportApi(`${PUB}/GetBillingInformationWithTotalAndTip`, { code, subsidiaryId: sid }, e);
@@ -309,9 +462,8 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     // + status Vigente.
     if (!uuid || uuid === UUID_ZERO || doc?.status !== 'Vigente') {
       const detalle = r.data?.Message || bodyStr.substring(0, 200);
-      if (/plazo|venc|fecha\s*l[íi]mite/i.test(String(detalle))) {
-        return { success: false, mensaje: 'Fuera del plazo de facturación' };
-      }
+      // FIX 2 — regex de "plazo vencido" eliminada también acá (código
+      // muerto: Wansoft nunca devuelve ese texto; plazo es client-side).
       return { success: false, mensaje: `Error Wansoft: ${detalle || 'timbrado no confirmado'}` };
     }
 

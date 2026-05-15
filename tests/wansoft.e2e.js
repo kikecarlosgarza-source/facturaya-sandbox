@@ -26,7 +26,8 @@ const wansoftHandler = require('../services/handlers/wansoftHandler');
 
 const ticketData = {
   numero_ticket: '260510158074016848',
-  establecimiento: 'Doña Concha',   // → catálogo fallback → sid 5676
+  establecimiento: 'DOÑA CONCHA PLAZA MONARKA', // lo que trae el OCR de un ticket real
+  rfc_emisor: 'ADC2404103S2',       // RFC real del emisor (lo trae el OCR/QR)
   total: '75.00'
 };
 
