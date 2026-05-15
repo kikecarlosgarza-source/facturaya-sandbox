@@ -12,6 +12,7 @@ const benavidesHandler = require('./handlers/benavidesHandler');
 const costcoHandler = require('./handlers/costcoHandler');
 const sevenelevenHandler = require('./handlers/sevenelevenHandler');
 const walmartHandler = require('./handlers/walmartHandler');
+const wansoftHandler = require('./handlers/wansoftHandler');
 const { enviarAlertaPortalEnPreparacion, enviarAlerta } = require('./emailServiceAlert');
 const validationStateService = require('./validationStateService');
 
@@ -996,6 +997,23 @@ const PORTALES = {
     ejecutar: sevenelevenHandler.ejecutar
   },
 
+  // Wansoft (motor POS de Clip, ~1000+ marcas). Routing primario por
+  // sistema_facturacion === 'wansoft' (ver detectarPortal). brands es solo
+  // el fallback heurístico por nombre; lista conservadora de marcas Wansoft
+  // exclusivas — 'italianni' se omite a propósito (lo reclama Alsea).
+  'wansoft': {
+    estado: 'EN_VALIDACION',
+    validacionN: 1,
+    httpOnly: true,
+    brands: [
+      'doña concha', 'dona concha', 'tony roma', 'oakberry',
+      'cassava roots', 'pasión del cielo', 'pasion del cielo',
+      'johnny rockets', 'le pain quotidien', 'doña tota', 'dona tota',
+      'el mexiquense'
+    ],
+    ejecutar: wansoftHandler.ejecutar
+  },
+
   // Fallback: detección heurística + IA para portales sin handler bespoke (lee ticketData.portal_url)
   'universal': {
     httpOnly: true,
@@ -1134,10 +1152,7 @@ function detectarPortal(establecimiento, sistemaFacturacion) {
     case 'oxxo_gas':
       return { key: 'oxxo gas', ...PORTALES['oxxo gas'] };
     case 'wansoft':
-      // Wansoft no tiene implementación HTTP genérica todavía. Cada cliente
-      // tiene su propio subdominio (factura.{empresa}.com.mx) y necesita
-      // captura específica de su API. Marcamos manual para intervención.
-      return null;
+      return { key: 'wansoft', ...PORTALES['wansoft'] };
   }
   if (!establecimiento) return null;
   const n = establecimiento.toLowerCase();
