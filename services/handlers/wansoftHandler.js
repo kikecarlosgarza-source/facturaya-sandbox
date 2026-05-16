@@ -182,7 +182,13 @@ function resolveSid(establecimiento, rfcEmisor) {
   }
 
   // 2. Fallback fuzzy general por marca_nombre / razon_social.
-  return fuzzyByName(all, target);
+  const fuzzy = fuzzyByName(all, target);
+  if (fuzzy) return fuzzy;
+
+  // 3. Red de seguridad: marcas multi-sucursal sin rfc_emisor disponible
+  // hacen que fuzzyByName devuelva null por ambigüedad. Caer al SID_CATALOG
+  // hardcoded como último recurso antes de declarar "no reconocida".
+  return resolveSidLegacy(establecimiento);
 }
 
 function makeReportApi(portal) {
