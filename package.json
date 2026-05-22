@@ -9,6 +9,7 @@
     "test": "jest",
     "e2e:wansoft": "DB_DIR=/tmp/reino-c-e2e node tests/wansoft.e2e.js",
     "e2e:wansoft:happy": "DB_DIR=/tmp/reino-c-e2e node tests/wansoft.e2e.happy.js",
+    "e2e:walmart": "DB_DIR=/tmp/reino-c-e2e node tests/walmart.e2e.js",
     "crawl:wansoft": "DB_DIR=/tmp/reino-c-e2e node services/handlers/wansoftCrawler.js",
     "sample:wansoft": "DB_DIR=/tmp/reino-c-e2e node tests/wansoft.sample.js"
   },

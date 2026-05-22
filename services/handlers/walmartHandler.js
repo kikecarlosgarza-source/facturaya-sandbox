@@ -20,10 +20,19 @@
 
 const { launchStealthBrowser, closeBrowser } = require('../koneshBrowser');
 const claudeAgent = require('../claudeAgent');
+const fs = require('fs');
+const path = require('path');
 
 const PORTAL_URL = 'https://facturacion.walmartmexico.com.mx/';
 const TIMEOUT_NAV = 30000;
 const TIMEOUT_EL = 15000;
+
+// Fase 2 (descarga PDF best-effort tras timbrado exitoso).
+// Misma convención de path que routes/constancia.js → en sandbox queda
+// /tmp/reino-c-e2e/facturas/<id>.pdf; en prod /data/facturas/<id>.pdf.
+const FACTURAS_DIR = process.env.FACTURAS_DIR
+  || path.join(process.env.DB_DIR || '/data', 'facturas');
+const FASE2_TIMEOUT_MS = 60000;
 
 function makeReportApi(portal) {
   return (endpoint, request, e) =>
@@ -48,6 +57,112 @@ function mapPaymentType(ticketData) {
   // Si tarjeta sin tipo — default crédito (caso más común en tickets impresos)
   if (/tarjeta|mastercard|visa|amex/i.test(raw)) return '04';
   return '04';
+}
+
+// Fase 2 best-effort: tras un timbrado exitoso (Fase 1, email enviado),
+// reusa la misma sesión Playwright (mismas cookies ASP.NET_SessionId) para
+// recorrer el flujo de Consulta y descargar el PDF binario desde el iframe
+// /frmReportPDF2.aspx. Walmart identifica qué CFDI servir por session +
+// txtTCFact (no por query params).
+//
+// Si algo falla, NO afecta el éxito de Fase 1: devuelve
+// { pdf_descargado:false, pdf_error:'<razón>' } y el caller decide.
+// Timeout overall hard-cap en FASE2_TIMEOUT_MS para no bloquear el handler.
+async function descargarPdfWalmart({ context, page, ticketData, solicitudId }) {
+  const t0 = Date.now();
+  const tc = String(ticketData.numero_ticket || ticketData.tc || ticketData.ticket_code || '').trim();
+  if (!solicitudId) return { pdf_descargado: false, pdf_error: 'Fase 2 skip: solicitudId vacío' };
+  if (!tc)          return { pdf_descargado: false, pdf_error: 'Fase 2 skip: TC# vacío' };
+
+  const pdfPath = path.join(FACTURAS_DIR, `${solicitudId}.pdf`);
+
+  const work = (async () => {
+    console.log('[AUTO] Walmart - Fase 2: navegando a portal para descarga PDF');
+    await page.goto(PORTAL_URL, { waitUntil: 'networkidle' });
+    try {
+      await page.evaluate(() => {
+        const btn = Array.from(document.querySelectorAll('button'))
+          .find(b => /aceptar/i.test(b.textContent || ''));
+        if (btn) btn.click();
+      });
+      await page.waitForTimeout(500);
+    } catch (_) {}
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'networkidle', timeout: 30000 }),
+      page.evaluate(() => {
+        const link = document.querySelector('a[href="frmDatos.aspx"]');
+        if (link) link.click();
+      })
+    ]);
+
+    // radConsultar: postback parcial; reemplaza el form a un único input txtTCFact
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'networkidle', timeout: 20000 }).catch(() => null),
+      page.click('#ctl00_ContentPlaceHolder1_radConsultar')
+    ]);
+    await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => null);
+
+    await page.waitForSelector('#ctl00_ContentPlaceHolder1_txtTCFact', { state: 'visible', timeout: 15000 });
+    await page.fill('#ctl00_ContentPlaceHolder1_txtTCFact', tc);
+    console.log('[AUTO] Walmart - Fase 2: txtTCFact relleno, click btnAceptar');
+
+    // btnAceptar → nav real a /frmConsultaFactura.aspx
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'networkidle', timeout: 30000 }),
+      page.click('#ctl00_ContentPlaceHolder1_btnAceptar')
+    ]);
+    if (!/frmConsultaFactura\.aspx/i.test(page.url())) {
+      throw new Error(`URL inesperada tras btnAceptar — ${page.url()}`);
+    }
+
+    // rdDescargar viene checked por default; reafirmamos por defensa
+    await page.waitForSelector('#ctl00_ContentPlaceHolder1_rdDescargar', { state: 'visible', timeout: 15000 });
+    await page.check('#ctl00_ContentPlaceHolder1_rdDescargar');
+
+    // btnAceptar (Aceptar) → postback parcial que carga el iframe del PDF
+    await page.click('#ctl00_ContentPlaceHolder1_btnAceptar');
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => null);
+    await page.waitForTimeout(2000);
+
+    await page.waitForSelector('#ctl00_ContentPlaceHolder1_Iframe1', { state: 'attached', timeout: 15000 });
+    const iframeSrc = await page.evaluate(() => {
+      const f = document.querySelector('#ctl00_ContentPlaceHolder1_Iframe1');
+      return f ? f.src : null;
+    });
+    if (!iframeSrc) throw new Error('iframe sin src tras click Aceptar');
+    console.log(`[AUTO] Walmart - Fase 2: iframe detectado src=${iframeSrc}`);
+
+    // GET con cookies de la sesión (context.request hereda cookies del browser)
+    const res = await context.request.get(iframeSrc, { timeout: 30000 });
+    if (res.status() !== 200) throw new Error(`GET iframe status=${res.status()}`);
+    const ct = (res.headers()['content-type'] || '').toLowerCase();
+    if (!/application\/pdf/i.test(ct)) throw new Error(`Content-Type inesperado "${ct}"`);
+    const body = await res.body();
+    const head5 = body.slice(0, 5).toString('ascii');
+    if (head5 !== '%PDF-') throw new Error(`header "${head5}" no es %PDF-`);
+
+    if (!fs.existsSync(FACTURAS_DIR)) fs.mkdirSync(FACTURAS_DIR, { recursive: true });
+    fs.writeFileSync(pdfPath, body);
+    console.log(`[AUTO] Walmart - Fase 2: PDF descargado ${body.length} bytes, %PDF válido → ${pdfPath} (${Date.now() - t0}ms)`);
+    return { pdf_descargado: true, pdf_path: pdfPath, pdf_size_bytes: body.length };
+  })();
+
+  try {
+    return await Promise.race([
+      work,
+      new Promise((_, reject) => {
+        const id = setTimeout(
+          () => reject(new Error(`timeout overall ${FASE2_TIMEOUT_MS}ms`)),
+          FASE2_TIMEOUT_MS
+        );
+        if (id.unref) id.unref();
+      })
+    ]);
+  } catch (err) {
+    const msg = (err && err.message || String(err)).split('\n')[0];
+    console.log(`[AUTO] Walmart - Fase 2 FALLÓ (best-effort): ${msg}`);
+    return { pdf_descargado: false, pdf_error: msg };
+  }
 }
 
 async function ejecutar(perfil, ticketData, solicitudId) {
@@ -240,24 +355,74 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     }
 
     // ─────────────────────────────────────────────────────────
-    // PASO 5 — frmReportAdmin.aspx: timbrado final
+    // PASO 5 — frmReportAdmin.aspx: dual-mode detection
     // ─────────────────────────────────────────────────────────
-    console.log('[AUTO] Walmart - step 5: timbrado final');
+    // Esta pantalla tiene DOS modos posibles:
+    //   (a) "factura nueva"  → radio rdCorreo + btnFacturar (flujo legacy)
+    //   (b) "refactura"      → solo btnRefacturar visible (CFDI YA emitido,
+    //       el timbrado real ocurrió en algún paso previo —
+    //       probablemente al cruzar el modal del paso 3b).
+    // El portal NO expone UUID/folio en modo refactura, por eso ahí
+    // devolvemos success:false sin clickear btnRefacturar (clickearlo
+    // re-envía el CFDI existente al correo del receptor, lo que duplicaría
+    // emails en escenarios de retry).
+    console.log('[AUTO] Walmart - step 5: detectando modo de frmReportAdmin');
+    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => null);
+    await page.waitForTimeout(1500);
 
-    // Por default: enviar a correo (rdCorreo) — viene auto-llenado de step 3
+    const refacturaBtn = page.locator('#ctl00_ContentPlaceHolder1_btnRefacturar');
+    const rdCorreoLoc  = page.locator('#ctl00_ContentPlaceHolder1_rdCorreo');
+    const isRefactura  = await refacturaBtn.isVisible({ timeout: 5000 }).catch(() => false);
+    const isFacturaNueva = !isRefactura && await rdCorreoLoc.isVisible({ timeout: 2000 }).catch(() => false);
+
+    if (isRefactura) {
+      // Ticket ya facturado previamente (o timbrado backend implícito en paso
+      // 3b). El handler NO clickea btnRefacturar para evitar enviar email
+      // duplicado al receptor. Verificación vía email/XML es responsabilidad
+      // del caller.
+      console.log('[AUTO] Walmart - step 5: modo REFACTURA detectado (CFDI ya existe)');
+      const refState = await page.evaluate(() => ({
+        url: window.location.href,
+        preview: (document.body?.innerText || '').replace(/\s+/g, ' ').trim().substring(0, 400)
+      }));
+      return {
+        success: false,
+        refactura: true,
+        mensaje: 'Walmart: ticket ya estaba facturado previamente (modo refactura). El CFDI ya existe — verificar email del receptor para UUID.',
+        facturaData: { url: refState.url, preview: refState.preview }
+      };
+    }
+
+    if (!isFacturaNueva) {
+      // Estado inesperado — ni refactura ni form clásico. Dump para diagnóstico.
+      console.log('[AUTO] Walmart - step 5: estado DESCONOCIDO (sin btnRefacturar ni rdCorreo)');
+      try {
+        const html = await page.evaluate(() => document.documentElement.outerHTML);
+        require('fs').writeFileSync('/tmp/walmart-step5-unknown.html', html);
+        await page.screenshot({ path: '/tmp/walmart-step5-unknown.png', fullPage: true }).catch(() => null);
+      } catch (_) {}
+      const unkState = await page.evaluate(() => ({
+        url: window.location.href,
+        title: document.title,
+        preview: (document.body?.innerText || '').replace(/\s+/g, ' ').trim().substring(0, 400)
+      }));
+      return {
+        success: false,
+        mensaje: `Walmart: estado desconocido en paso 5 — url ${unkState.url}, título "${unkState.title}". DOM dumpeado a /tmp/walmart-step5-unknown.{html,png}. Preview: ${unkState.preview.substring(0, 200)}`
+      };
+    }
+
+    // Modo factura nueva: flujo clásico con radio rdCorreo + btnFacturar.
+    console.log('[AUTO] Walmart - step 5: modo factura nueva (rdCorreo + btnFacturar)');
     await page.check('#ctl00_ContentPlaceHolder1_rdCorreo');
-
-    // Confirmar email — Walmart pre-rellena con el del paso 3 pero por si acaso
     if (perfil.email) {
       await page.fill('#ctl00_ContentPlaceHolder1_txtEmail', perfil.email);
     }
-
-    // Click final → timbra
     await Promise.all([
       page.waitForNavigation({ waitUntil: 'networkidle', timeout: 60000 }).catch(() => null),
       page.click('#ctl00_ContentPlaceHolder1_btnFacturar')
     ]);
-
+    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => null);
     await page.waitForTimeout(2000);
 
     // ─────────────────────────────────────────────────────────
@@ -265,11 +430,8 @@ async function ejecutar(perfil, ticketData, solicitudId) {
     // ─────────────────────────────────────────────────────────
     const finalState = await page.evaluate(() => {
       const text = document.body.innerText;
-      // Buscar UUID típico CFDI (8-4-4-4-12 hex)
       const uuidMatch = text.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
-      // Buscar folio fiscal o número de factura
       const folioMatch = text.match(/folio[:\s]+([A-Z0-9-]{6,})/i);
-      // Buscar mensaje de éxito
       const successKeyword = /factura.{0,50}(generad|enviad|emitid|timbrad|exitos)/i.test(text);
       return {
         uuid: uuidMatch ? uuidMatch[0] : null,
@@ -280,8 +442,12 @@ async function ejecutar(perfil, ticketData, solicitudId) {
       };
     });
 
+    // Logging detallado del estado post-submit para diagnosticar futuros bumps.
+    console.log(`[AUTO] Walmart - step 5 post-submit: url=${finalState.url} uuid=${finalState.uuid || '∅'} folio=${finalState.folio || '∅'} successKw=${finalState.successKeyword}`);
+    console.log(`[AUTO] Walmart - step 5 body preview (300): ${finalState.bodyPreview.substring(0, 300)}`);
+
     if (finalState.uuid || finalState.folio || finalState.successKeyword) {
-      return {
+      const successResult = {
         success: true,
         uuid: finalState.uuid,
         folio: finalState.folio,
@@ -289,12 +455,21 @@ async function ejecutar(perfil, ticketData, solicitudId) {
         emailEnviado: !!perfil.email,
         facturaData: { url: finalState.url, preview: finalState.bodyPreview.substring(0, 300) }
       };
+      // Fase 2 (best-effort): descarga del PDF en la misma sesión Playwright.
+      // No afecta el éxito del timbrado: si falla, agrega pdf_descargado:false.
+      const pdfResult = await descargarPdfWalmart({ context, page, ticketData, solicitudId });
+      return { ...successResult, ...pdfResult };
     }
 
-    // Si no detectamos éxito claro, devolver diagnóstico
+    // Sin UUID ni keyword pero llegamos a post-submit. Dump diagnóstico.
+    try {
+      const html = await page.evaluate(() => document.documentElement.outerHTML);
+      require('fs').writeFileSync('/tmp/walmart-step5-post-submit-ambiguous.html', html);
+      await page.screenshot({ path: '/tmp/walmart-step5-post-submit-ambiguous.png', fullPage: true }).catch(() => null);
+    } catch (_) {}
     return {
       success: false,
-      mensaje: `Walmart: estado post-timbrado ambiguo en URL ${finalState.url} — preview: ${finalState.bodyPreview.substring(0, 200)}`
+      mensaje: `Walmart: estado post-timbrado ambiguo en URL ${finalState.url} (sin UUID/folio/keyword). DOM dumpeado a /tmp/walmart-step5-post-submit-ambiguous.{html,png}. Preview: ${finalState.bodyPreview.substring(0, 200)}`
     };
 
   } catch (e) {
